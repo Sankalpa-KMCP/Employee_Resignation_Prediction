@@ -1,0 +1,10 @@
+Check,Result
+Number of rows,100000
+Number of columns,20
+Total missing values,0
+Duplicate rows,0
+Duplicate Employee IDs,0
+Resigned = False,89990
+Resigned = True,10010
+Number of model inputs,17
+Target column,Resigned
