@@ -179,3 +179,19 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Data files
+data/raw/*
+data/processed/*
+*.csv
+*.tsv
+*.parquet
+
+# Models and Results
+results/*
+*.pkl
+*.model
+*.h5
+
+# Presentation Assets (optional, but good to ignore large outputs)
+presentations/assets/*
