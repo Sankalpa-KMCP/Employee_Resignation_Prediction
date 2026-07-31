@@ -1,0 +1,21 @@
+Column,Data_Type,Missing_Values,Unique_Values,Role
+Employee_ID,int64,0,100000,Identifier - excluded from model
+Department,str,0,9,Categorical input
+Gender,str,0,3,Categorical input
+Age,int64,0,39,Numerical input
+Job_Title,str,0,7,Categorical input
+Hire_Date,str,0,3650,Audit-only date column
+Years_At_Company,int64,0,11,Numerical input
+Education_Level,str,0,4,Categorical input
+Performance_Score,int64,0,5,Numerical input
+Monthly_Salary,float64,0,28,Numerical input
+Work_Hours_Per_Week,int64,0,31,Numerical input
+Projects_Handled,int64,0,50,Numerical input
+Overtime_Hours,int64,0,30,Numerical input
+Sick_Days,int64,0,15,Numerical input
+Remote_Work_Frequency,int64,0,5,Numerical input
+Team_Size,int64,0,19,Numerical input
+Training_Hours,int64,0,100,Numerical input
+Promotions,int64,0,3,Numerical input
+Employee_Satisfaction_Score,float64,0,401,Numerical input
+Resigned,bool,0,2,Target/output
