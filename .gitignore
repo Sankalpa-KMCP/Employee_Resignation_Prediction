@@ -183,4 +183,12 @@ cython_debug/
 # Models and Results
 *.pkl
 *.model
-*.h5
+*.h5
+*.joblib
+*.onnx
+
+# Processed & Intermediate Data
+data/processed/
+data/interim/
+*.parquet
+
