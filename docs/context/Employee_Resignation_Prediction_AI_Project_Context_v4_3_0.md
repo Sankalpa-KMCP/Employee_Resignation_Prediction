@@ -2,8 +2,8 @@
 title: "Design and Evaluation of Machine Learning Models for Employee Resignation Risk and Resource-Constrained Retention Prioritization"
 subtitle: "Canonical project specification, live state, and AI handoff memory"
 author: "IT2011 Project Group"
-date: "2026-08-06"
-version: "4.2.0"
+date: "2026-08-07"
+version: "4.3.0"
 ---
 
 # AI entry point - read this first
@@ -12,8 +12,8 @@ This package is intentionally duplicated in two synchronized formats for AI comp
 
 ```yaml
 ai_handoff_entry:
-  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.md
-  companion_file: Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.docx
+  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md
+  companion_file: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx
   canonical_rule: Read Markdown first. Use Word only as a synchronized fallback or navigation-friendly rendering.
   duplicate_rule: Repeated content across the two files is one source, not independent evidence.
   conflict_rule: If substantive content differs, follow Markdown, report the mismatch, and regenerate Word.
@@ -27,19 +27,18 @@ ai_handoff_entry:
     optional_lightweight_benchmark:
       - Logistic Regression
     required_advanced_models:
-      - CatBoost Classifier
-      - Explainable Boosting Machine (ExplainableBoostingClassifier)
-      - FT-Transformer (rtdl_revisiting_models.FTTransformer with PyTorch)
-    pair_ownership:
-      - Pair 1 / Members 1-2: CatBoost plus data audit, preprocessing, split registry, and feature contract
-      - Pair 2 / Members 3-4: EBM plus EDA, interpretation, and subgroup-analysis support
-      - Pair 3 / Members 5-6: FT-Transformer plus shared evaluation, calibration, prioritization, and deep-model artefacts
+      - Member 1: FT-Transformer (rtdl_revisiting_models.FTTransformer with PyTorch)
+      - Member 2: CatBoost Classifier
+      - Member 3: XGBoost Classifier (xgboost.XGBClassifier)
+      - Member 4: LightGBM Classifier (lightgbm.LGBMClassifier)
+      - Member 5: Explainable Boosting Machine (ExplainableBoostingClassifier)
+      - Member 6: TabNet Classifier (pytorch_tabnet.tab_model.TabNetClassifier)
+    individual_ownership_rule: Each member owns at least one required advanced model and must be able to explain, train, tune, evaluate, and defend that model.
+    shared_experiment_rule: All six headline models use the same saved development/holdout rows and the same five outer stratified folds, with leakage-safe model-specific preprocessing.
     superseded_core_models:
       - Random Forest Classifier
       - Decision Tree Classifier
       - RBF-SVM
-    contingency_only:
-      - XGBoost, only after a logged pre-holdout substitution decision if FT-Transformer cannot be made reproducible
   primary_prediction_metric: Average Precision / PR-AUC
   primary_capacity: 0.20
   formal_holdout_rule: Never use the formal holdout for preprocessing design, tuning, early stopping, calibration choice, threshold choice, proxy choice, capacity choice, strategy choice, or model selection.
@@ -48,14 +47,14 @@ ai_handoff_entry:
     data_dependent_work: Also require the exact assigned CSV and checksum verification.
     implementation_work: Use the canonical GitHub repository and inspect the relevant current files before making code-dependent claims.
     generated_outputs: Experiment outputs are repository artefacts created during implementation; they are not missing context inputs and must never be invented.
-  current_methodology_change: The user-approved v4.2.0 decision locks CatBoost, EBM, and FT-Transformer as the three required advanced models, one per two-member pair. Dummy is mandatory; Logistic Regression is optional.
+  current_methodology_change: The user-approved v4.3.0 decision requires six headline advanced models, one per member: Member 1 FT-Transformer, Member 2 CatBoost, Member 3 XGBoost, Member 4 LightGBM, Member 5 EBM, Member 6 TabNet. Dummy baselines remain mandatory; Logistic Regression remains optional.
 ```
 
-**Fast operational summary:** Build and compare CatBoost, EBM, and FT-Transformer under the same locked development/holdout rows and five outer stratified folds. Use model-specific, fold-fitted preprocessing. Retain two DummyClassifier strategies as mandatory no-skill references; run Logistic Regression only as an optional lightweight benchmark. Select by development evidence, not model reputation. Assess calibration before using probabilities in the retention-prioritization score. Do not claim real employee worth, causal resignation drivers, intervention success, a real monetary budget, operational readiness, legal fairness, or suitability for actual employment decisions.
+**Fast operational summary:** Build and compare six required advanced models under the same locked development/holdout rows and five outer stratified folds: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet. Each member owns one model. Use model-specific, fold-fitted preprocessing; never force all six models onto one transformed matrix. Retain two DummyClassifier strategies as mandatory no-skill references; run Logistic Regression only as an optional lightweight benchmark. Select by development evidence, not model reputation or complexity. Assess calibration before using probabilities in the retention-prioritization score. Do not claim real employee worth, causal resignation drivers, intervention success, a real monetary budget, operational readiness, legal fairness, or suitability for actual employment decisions.
 
 # Document map
 
-- **AI entry point** - canonical-file rule, active model registry, pair ownership, and artefact requirements.
+- **AI entry point** - canonical-file rule, active model registry, individual ownership, and artefact requirements.
 - **0. AI execution contract** - authority, mandatory behaviour, startup check, and anti-hallucination rules.
 - **1. Machine-readable project memory** - structured project, dataset, methodology, live state, requirements, and update rules.
 - **2. AI quick reference** - one-minute summary, terminology, and prohibited assumptions.
@@ -84,14 +83,14 @@ This file is the persistent AI-first project memory for **Design and Evaluation 
 
 **DECIDED** - The retention-value measure is explicitly a **proxy**, not actual employee worth. The primary proxy is an equal-weight average of development-fitted min-max normalized `Performance_Score`, `Monthly_Salary`, and `Years_At_Company`. A no-salary proxy and a normalized multiplicative proxy are sensitivity analyses because salary is deterministically related to job title and performance in this dataset.
 
-**DECIDED** - The three required advanced models are CatBoost, EBM, and FT-Transformer, assigned one per two-member pair. DummyClassifier is mandatory as a shared no-skill reference; Logistic Regression is optional and not a headline model.
+**DECIDED** - The six required advanced models are FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet, with one headline model owned by each member. Member 1 owns FT-Transformer; Member 2 CatBoost; Member 3 XGBoost; Member 4 LightGBM; Member 5 EBM; Member 6 TabNet. DummyClassifier remains a mandatory shared no-skill reference; Logistic Regression remains optional and is not a headline model.
 
 **DECIDED** - The assessed build remains an academic, reproducible Python study. It does not estimate whether a real retention intervention would succeed, does not perform genuine monetary budget optimization, and must not be used for real employment actions. Academic record-level ranking is permitted only inside the controlled simulation on the assigned dataset.
 
 ## 0.2 Canonical-source rule
 
 1. This Markdown file is the canonical source of truth for project context.
-2. The Word file named `Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.docx` is a synchronized companion generated from this content.
+2. The Word file named `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx` is a synchronized companion generated from this content.
 3. If Markdown and Word differ substantively, use the Markdown version and regenerate the Word companion.
 4. Code, notebooks, results, reports, and slides must not silently override a **DECIDED** item in this file. A change must be logged first.
 5. The assigned CSV is identified by filename and SHA-256. Never substitute a similarly named dataset without an explicit, logged decision and checksum update.
@@ -136,9 +135,9 @@ Before substantive work, check:
 - [ ] The dataset has 100,000 rows and 20 columns before transformation.
 - [ ] The target is `Resigned`, with `True` as the positive class.
 - [ ] The two-stage scope is preserved: resignation-risk evaluation followed by resource-constrained prioritization simulation.
-- [ ] The active model registry is mandatory Dummy baselines, optional Logistic Regression, and required CatBoost, EBM, and FT-Transformer.
+- [ ] The active model registry is mandatory Dummy baselines, optional Logistic Regression, and six required advanced models: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet.
 - [ ] Random Forest, Decision Tree, and RBF-SVM appear only as historical references unless a new logged decision reinstates them.
-- [ ] CatBoost, EBM, and FT-Transformer use separate appropriate feature representations but identical saved rows/folds; optional Logistic Regression uses its own Pipeline.
+- [ ] All six required models use identical saved rows/folds but model-specific leakage-safe representations; optional Logistic Regression uses its own Pipeline.
 - [ ] The primary capacity is 20%; 10% and 30% are sensitivity scenarios, not separate tuned targets.
 - [ ] The retention-value measure is called a proxy and is not described as actual employee worth, replacement cost, or financial contribution.
 - [ ] Proxy normalization parameters are fitted on development-training data only and then applied to validation/formal-holdout records.
@@ -189,7 +188,7 @@ Do not invent:
 
 - Preserve every **DECIDED** item unless a higher-authority source requires a change.
 - The 2026-08-01 expansion from resignation prediction alone to prediction plus constrained retention-prioritization simulation is an approved major scope change and is recorded in Section 8.36.
-- CatBoost, EBM, and FT-Transformer are the approved required advanced models. DummyClassifier is mandatory and Logistic Regression is optional. Do not add or substitute Random Forest, Decision Tree, RBF-SVM, XGBoost, LightGBM, TabNet, TabPFN, stacking, additional targets, deployment components, causal intervention models, or monetary optimization engines without a new logged pre-holdout decision.
+- FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet are the approved required advanced models. DummyClassifier is mandatory and Logistic Regression is optional. Do not add or substitute Random Forest, Decision Tree, RBF-SVM, TabPFN, stacking, additional targets, deployment components, causal intervention models, or monetary optimization engines without a new logged pre-holdout decision.
 - A target pivot after viewing formal holdout results is prohibited. A justified pivot before formal holdout evaluation requires a logged group or lecturer decision.
 - Any change to the 20% primary capacity, value-proxy definition, ranking strategies, or evaluation metrics must be chosen from development evidence only and logged before formal-holdout access.
 - If the Word companion is missing, outdated, or inconsistent, continue using this Markdown file and report that regeneration is required.
@@ -201,7 +200,7 @@ Before performing project-dependent work, an AI must provide a compact **Context
 1. project objective and the two-stage build;
 2. current phase and immediate milestone;
 3. target column and positive class;
-4. active model registry, pair ownership, model-specific representations, and primary prediction metric;
+4. active six-model registry, individual member ownership, model-specific representations, and primary prediction metric;
 5. primary prioritization capacity, strategies, proxy definition, and ranking metrics;
 6. formal holdout restriction and the historical preliminary-audit exposure caveat;
 7. principal provenance or data-quality limitation;
@@ -225,12 +224,12 @@ This acknowledgement is a parsing check, not a request for the user to repeat de
 
 ```yaml
 document_control:
-  context_schema_version: '4.2'
-  project_context_version: 4.2.0
-  synchronization_id: ERPC-20260806-V4.2.0
-  generated_at: 2026-08-06 Asia/Colombo
-  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.md
-  word_companion_file: Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.docx
+  context_schema_version: '4.3'
+  project_context_version: 4.3.0
+  synchronization_id: ERPC-20260807-V4.3.0
+  generated_at: 2026-08-07 Asia/Colombo
+  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md
+  word_companion_file: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx
   substantive_content_rule: Both files contain the same project information. Markdown is canonical; Word is a synchronized
     rendering/fallback.
   duplicate_input_rule: When both files are supplied, read Markdown first, treat repeated text as one source, and
@@ -288,10 +287,16 @@ project:
     - reproducible preprocessing and exploratory data analysis
     - shared split/fold registry and model-specific preprocessing adapters
     - DummyClassifier non-learning baselines and an optional Logistic Regression reference benchmark
-    - CatBoost Classifier advanced predictive pipeline with native categorical handling
-    - Explainable Boosting Machine advanced inherently interpretable pipeline with explicit feature types
     - FT-Transformer advanced deep tabular pipeline using fold-local numerical normalization, categorical integer
-      encoding, embeddings, and PyTorch training controls
+      vocabularies/embeddings, PyTorch training controls, and training-only inner validation
+    - CatBoost Classifier advanced gradient-boosted predictive pipeline with native categorical handling
+    - XGBoost Classifier advanced gradient-boosted predictive pipeline with fold-local one-hot categorical encoding
+      and histogram tree training
+    - LightGBM Classifier advanced gradient-boosted predictive pipeline with fold-local categorical handling and
+      bounded tree search
+    - Explainable Boosting Machine advanced inherently interpretable nonlinear pipeline with explicit feature types
+    - TabNet Classifier advanced attentive deep tabular pipeline with fold-local category codes/embeddings, numerical
+      scaling, and training-only inner validation
     - hyperparameter tuning within five-fold stratified development cross-validation
     - calibration assessment because predicted probabilities feed the prioritization score
     - one-time formal-holdout corroboration after model, calibration, proxy, capacity, and strategy freeze
@@ -312,12 +317,12 @@ project:
       materially exceeds the dummy baseline or no prioritization strategy exceeds random selection.
 live_state:
   status: active
-  current_phase: implementation planning and repository synchronization after the user-approved three-model, three-pair
-    decision
-  current_milestone: commit synchronized v4.2.0 context, update project artefacts to CatBoost/EBM/FT-Transformer,
-    and implement the shared split, model adapters, and pair ownership protocol
-  last_updated: '2026-08-06'
-  updated_by: ChatGPT following the user-approved CatBoost, EBM, and FT-Transformer model decision
+  current_phase: six-model implementation planning and shared experimental-foundation synchronization after the
+    user-approved one-model-per-member decision
+  current_milestone: commit synchronized v4.3.0 context, update repository artefacts to the six-model registry,
+    then implement the shared split/fold registry and six model-specific adapters before headline training
+  last_updated: '2026-08-07'
+  updated_by: ChatGPT following the user-approved six-model, one-model-per-member methodology decision
   evidence:
   - SRC-001
   - SRC-002
@@ -328,6 +333,7 @@ live_state:
   - SRC-010
   - SRC-011
   - SRC-012
+  - SRC-013
   completed:
   - formal requirement extraction
   - dataset audit and data contract
@@ -335,20 +341,25 @@ live_state:
   - canonical GitHub repository URL recorded
   - 01_data_audit notebook created with reusable CSV outputs and target-distribution figure
   - project scope expanded to include resource-constrained retention-prioritization simulation
-  - CatBoost, Explainable Boosting Machine, and FT-Transformer selected as the three required advanced models
+  - CatBoost, Explainable Boosting Machine, and FT-Transformer selected as the prior three required advanced models
+    (superseded by SRC-013)
   - DummyClassifier retained as the mandatory no-skill reference; Logistic Regression retained only as an optional
     lightweight benchmark
-  - three two-member model pairs and cross-review responsibilities approved
-  - context v4.2.0 generated with synchronized three-model implementation, tuning, evaluation, artefact, report,
-    and viva rules
+  - 'six required advanced models selected: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet'
+  - 'one headline model assigned per member: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6
+    TabNet'
+  - context v4.3.0 generated with synchronized six-model ownership, preprocessing, tuning, evaluation, artefact,
+    report, and viva rules
   active_next_actions:
-  - replace repository context files with synchronized v4.2.0 Markdown and Word copies
-  - update proposal slides, scripts, report plan, README, notebooks, and configuration files to the CatBoost/EBM/FT-Transformer
-    registry
-  - 'implement the shared split registry and four adapters: Dummy/optional Logistic, CatBoost, EBM, and FT-Transformer'
-  - complete and peer-review the formal data audit and EDA notebooks
-  - smoke-test CatBoost, InterpretML, PyTorch, and rtdl_revisiting_models in the chosen environment before formal
-    experiments
+  - replace repository context files with synchronized v4.3.0 Markdown and Word copies
+  - update proposal slides, scripts, README, notebooks, model registry, search spaces, and environment specification
+    to the six-model registry
+  - implement and save one stratified 80/20 development/formal-holdout split and five shared outer folds before
+    any headline model training
+  - implement six model adapters plus Dummy/optional Logistic under one row-parity and OOF-output contract
+  - complete and peer-review the formal data audit and development-only EDA
+  - smoke-test CatBoost, XGBoost, LightGBM, InterpretML, PyTorch/RTDL, and pytorch-tabnet in the chosen environment
+    before formal experiments
   blockers:
   - team names and final ownership mapping are not supplied in the context
   - real intervention costs, outcomes, replacement costs, and business value are unavailable; monetary optimization
@@ -416,6 +427,14 @@ source_files:
   statement: Use CatBoost, Explainable Boosting Machine, and FT-Transformer as the three required advanced models,
     one per two-member pair; retain DummyClassifier as the shared mandatory baseline and Logistic Regression only
     as an optional lightweight benchmark; update both synchronized AI context files.
+  status: SUPERSEDED BY SRC-013 FOR ACTIVE MODEL REGISTRY AND TEAM OWNERSHIP
+- id: SRC-013
+  name: User-approved six-model individual-ownership update
+  date: '2026-08-07'
+  authority: explicit user decision
+  statement: 'Use six required advanced models with one headline model per member: Member 1 FT-Transformer, Member
+    2 CatBoost, Member 3 XGBoost, Member 4 LightGBM, Member 5 EBM, Member 6 TabNet. Retain DummyClassifier baselines
+    and optional Logistic Regression. Keep one shared split/fold/evaluation protocol.'
 embedded_source_policy:
   normalized_requirement_extracts_included: true
   complete_verbatim_transcripts_included: false
@@ -521,30 +540,31 @@ dataset:
     raw_dtype: string/category
     nullable: false
     role: predictor
-    model_policy: categorical predictor; optional one-hot for Logistic Regression; native categorical for CatBoost;
-      nominal feature type for EBM; fold-fitted integer vocabulary with missing/unknown codes and embeddings for
-      FT-Transformer
+    model_policy: categorical predictor; native categorical for CatBoost; fold-local one-hot for XGBoost and optional
+      Logistic Regression; fold-local pandas/category-code handling for LightGBM; nominal feature type for EBM;
+      fold-fitted integer vocabulary/embedding inputs for FT-Transformer and TabNet
   - name: Gender
     raw_dtype: string/category
     nullable: false
     role: sensitive predictor and audit attribute
-    model_policy: sensitive categorical predictor and audit attribute; optional one-hot for Logistic Regression;
-      native categorical for CatBoost; nominal feature type for EBM; fold-fitted integer vocabulary with missing/unknown
-      codes and embeddings for FT-Transformer; exclude in no-Gender sensitivity model
+    model_policy: sensitive categorical predictor and audit attribute; native categorical for CatBoost; fold-local
+      one-hot for XGBoost and optional Logistic Regression; fold-local pandas/category-code handling for LightGBM;
+      nominal feature type for EBM; fold-fitted integer vocabulary/embedding inputs for FT-Transformer and TabNet;
+      exclude in no-Gender sensitivity model
   - name: Age
     raw_dtype: integer
     nullable: false
     role: sensitive predictor and audit attribute
-    model_policy: numeric sensitive predictor and audit attribute; optional fold-fitted standardization for Logistic
-      Regression; native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer;
-      exclude in no-Gender/no-Age sensitivity model
+    model_policy: numeric sensitive predictor and audit attribute; native numeric for CatBoost/LightGBM/EBM; fold-local
+      scaling for XGBoost/optional Logistic where used; fold-local imputation/standardization for FT-Transformer
+      and TabNet; exclude in no-Gender/no-Age sensitivity model
   - name: Job_Title
     raw_dtype: string/category
     nullable: false
     role: predictor
-    model_policy: categorical predictor; optional one-hot for Logistic Regression; native categorical for CatBoost;
-      nominal feature type for EBM; fold-fitted integer vocabulary with missing/unknown codes and embeddings for
-      FT-Transformer
+    model_policy: categorical predictor; native categorical for CatBoost; fold-local one-hot for XGBoost and optional
+      Logistic Regression; fold-local pandas/category-code handling for LightGBM; nominal feature type for EBM;
+      fold-fitted integer vocabulary/embedding inputs for FT-Transformer and TabNet
   - name: Hire_Date
     raw_dtype: date-time text
     nullable: false
@@ -554,81 +574,81 @@ dataset:
     raw_dtype: integer
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Education_Level
     raw_dtype: string/category
     nullable: false
     role: predictor
-    model_policy: categorical predictor; optional one-hot for Logistic Regression; native categorical for CatBoost;
-      nominal feature type for EBM; fold-fitted integer vocabulary with missing/unknown codes and embeddings for
-      FT-Transformer
+    model_policy: categorical predictor; native categorical for CatBoost; fold-local one-hot for XGBoost and optional
+      Logistic Regression; fold-local pandas/category-code handling for LightGBM; nominal feature type for EBM;
+      fold-fitted integer vocabulary/embedding inputs for FT-Transformer and TabNet
   - name: Performance_Score
     raw_dtype: integer/ordinal
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Monthly_Salary
     raw_dtype: integer/numeric
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Work_Hours_Per_Week
     raw_dtype: integer
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Projects_Handled
     raw_dtype: integer
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Overtime_Hours
     raw_dtype: integer
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Sick_Days
     raw_dtype: integer
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Remote_Work_Frequency
     raw_dtype: integer percentage
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Team_Size
     raw_dtype: integer
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Training_Hours
     raw_dtype: integer
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Promotions
     raw_dtype: integer count
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Employee_Satisfaction_Score
     raw_dtype: float/numeric
     nullable: false
     role: predictor
-    model_policy: retain as numeric/ordinal as documented; optional fold-fitted standardization for Logistic Regression;
-      native numeric for CatBoost and EBM; fold-fitted imputation and standardization for FT-Transformer
+    model_policy: retain as approved numeric/ordinal predictor; native numeric for CatBoost/LightGBM/EBM; fold-local
+      numerical matrix for XGBoost; fold-local scaling where required by optional Logistic, FT-Transformer, or TabNet
   - name: Resigned
     raw_dtype: boolean
     nullable: false
@@ -643,6 +663,12 @@ dataset:
     ft_transformer: Fit categorical vocabularies on each outer training fold only; reserve explicit missing and
       unknown integer codes; export cardinalities and mapping metadata; never infer vocabulary from outer validation
       or formal holdout.
+    xgboost: Use fold-local OneHotEncoder(handle_unknown="ignore") in the primary protocol; do not fit categories
+      on outer validation or formal holdout.
+    lightgbm: Fit categorical dtype/category mapping on each outer training fold only; unseen validation/holdout
+      values must map to missing/unknown handling and be reported.
+    tabnet: Fit categorical vocabularies on each outer training fold only; reserve explicit missing/unknown integer
+      codes and export cat_idxs/cat_dims metadata.
   row_identity_policy: Use Employee_ID only to save split membership and prediction traceability; never as a predictor.
 audit_exposure:
   status: HISTORICAL LIMITATION
@@ -699,31 +725,41 @@ methodology:
       role: majority-threshold and accuracy reference
     optional_lightweight_benchmark:
       model: Logistic Regression
-      role: transparent conventional reference only; not a required advanced model and not owned as a full two-member
-        model workstream
+      role: transparent conventional reference only; not a required advanced model and not an individually owned
+        headline workstream
       execution_rule: Run only if time permits after the shared evaluator is ready; do not allow it to delay the
-        three required advanced models.
+        six required advanced models.
     required_advanced_models:
-    - model: CatBoost Classifier
-      role: advanced gradient-boosted predictive model with native categorical handling
-    - model: Explainable Boosting Machine
-      implementation: interpret.glassbox.ExplainableBoostingClassifier
-      role: advanced inherently interpretable nonlinear model
-    - model: FT-Transformer
+    - member: Member 1
+      model: FT-Transformer
       implementation: rtdl_revisiting_models.FTTransformer with PyTorch
       role: advanced attention-based deep tabular model using numerical and categorical feature tokens
+    - member: Member 2
+      model: CatBoost Classifier
+      role: advanced gradient-boosted predictive model with native categorical handling
+    - member: Member 3
+      model: XGBoost Classifier
+      implementation: xgboost.XGBClassifier
+      role: advanced gradient-boosted tree model using a fold-local encoded matrix
+    - member: Member 4
+      model: LightGBM Classifier
+      implementation: lightgbm.LGBMClassifier
+      role: advanced leaf-wise gradient-boosted tree model with efficient tabular training
+    - member: Member 5
+      model: Explainable Boosting Machine
+      implementation: interpret.glassbox.ExplainableBoostingClassifier
+      role: advanced inherently interpretable nonlinear additive model
+    - member: Member 6
+      model: TabNet Classifier
+      implementation: pytorch_tabnet.tab_model.TabNetClassifier
+      role: advanced attentive deep-learning model for tabular data
     superseded_core_models:
     - Random Forest Classifier
     - Decision Tree Classifier
     - RBF-SVM
-    contingency_only_model:
-      model: XGBoost
-      status: not active
-      trigger: Only if FT-Transformer cannot be made reproducible in the tested environment after a documented smoke-test
-        and bounded debugging attempt.
-      decision_rule: Requires an explicit logged pre-holdout group/user decision before substitution.
-    addition_rule: No additional model family, stacking, voting, or selected-model ensemble without a logged pre-holdout
-      decision.
+    addition_rule: No seventh headline model family, stacking, voting, or selected-model ensemble without a logged
+      pre-holdout decision. Dummy baselines and optional Logistic Regression do not count toward the six headline
+      models.
   model_specific_preprocessing:
     shared:
     - exclude Employee_ID and raw Hire_Date from primary modelling
@@ -753,6 +789,22 @@ methodology:
     - pass continuous features as floating tensors and categorical features as int64 tensors
     - do not one-hot encode categorical inputs for FT-Transformer
     - use a training-only inner validation subset for early stopping and epoch selection
+    xgboost:
+    - one-hot encode categorical variables inside each outer training fold with unknown-category handling
+    - use an sklearn ColumnTransformer or equivalent fold-fitted encoder; do not build one full-data encoded matrix
+    - pass numerical values in a dense/sparse matrix as appropriate; scaling is not required solely for tree boosting
+    - use training-only inner validation if early stopping is enabled
+    lightgbm:
+    - use pandas DataFrame/category-aware input or a documented fold-local category-code adapter
+    - fit category mappings on each outer training fold and preserve feature names
+    - do not standardize solely for LightGBM
+    - use training-only inner validation if early stopping is enabled
+    tabnet:
+    - construct a numeric matrix with continuous values and fold-local categorical integer codes
+    - fit continuous imputation/standardization on each outer training fold only
+    - fit categorical vocabularies on each outer training fold; reserve missing/unknown codes and export cat_idxs/cat_dims
+    - use training-only inner validation for early stopping; never use outer validation/formal holdout to control
+      training
   logistic_search:
     method: GridSearchCV or equivalent fold registry
     solver: liblinear unless the tested scikit-learn environment and parameter grid justify another compatible solver
@@ -837,12 +889,12 @@ methodology:
     interpretability_rule: Prefer fewer interactions when PR-AUC is practically indistinguishable; report retained
       main effects and interactions explicitly. Any internal validation used by EBM must remain inside the outer
       training fold.
-  model_selection_rule: Rank the three required advanced models by mean development-CV Average Precision using identical
-    outer folds. Inspect fold stability, calibration, runtime, training failures, and explanation quality. Use a
-    practical-equivalence rule rather than choosing a numerically higher score automatically. When performance is
-    practically equivalent, prefer the model with stronger reproducibility, lower operational complexity, and clearer
-    valid interpretation. Freeze the complete model, preprocessing, calibration source, and threshold before formal
-    holdout use.
+  model_selection_rule: Rank all six required advanced models by mean development-CV Average Precision using identical
+    outer folds. Inspect fold stability, calibration, runtime, training failures, reproducibility, and explanation
+    quality. Use a practical-equivalence rule rather than choosing a numerically higher score automatically. When
+    performance is practically equivalent, prefer the model with stronger reproducibility, lower unnecessary complexity,
+    and clearer valid interpretation. Freeze the complete model, preprocessing, calibration source, and threshold
+    before formal holdout use.
   threshold_policy:
     reference_threshold: 0.5
     secondary_threshold: threshold maximizing F1 on pooled out-of-fold development predictions
@@ -852,11 +904,11 @@ methodology:
     cv: mean, standard deviation, and fold values
     formal_holdout: 95% percentile bootstrap interval with 2000 stratified resamples and seed 42 when metric is
       defined
-  calibration_rule: Generate out-of-fold probabilities for CatBoost, EBM, and FT-Transformer; include optional Logistic
+  calibration_rule: Generate out-of-fold probabilities for all six required advanced models; include optional Logistic
     Regression only if executed. Compare Brier score and reliability curves. If development evidence shows material
     miscalibration, compare development-only sigmoid or isotonic calibration where sample support is adequate. Because
-    class weighting can alter probability calibration, assess weighted and unweighted probability behaviour explicitly.
-    Freeze the probability source before formal holdout access.
+    class/loss weighting can alter probability calibration, assess weighted and unweighted probability behaviour
+    explicitly. Freeze the probability source before formal holdout access.
   usable_signal_rule: Prediction signal is potentially useful only when CV Average Precision exceeds the prior baseline
     consistently, the absolute mean improvement is at least 0.01, uncertainty is not dominated by baseline performance,
     and no serious subgroup failure invalidates the claim. Prioritization is potentially useful only when the risk-based
@@ -955,6 +1007,135 @@ methodology:
     - save the selected epoch count and training curves for every outer fold
     - do not claim attention weights are causal explanations or reliable feature importance without a validated
       method
+  xgboost_search:
+    method: bounded randomized or staged candidate search using the shared five-fold registry
+    maximum_configurations: 12
+    fixed:
+      objective: binary:logistic
+      tree_method: hist
+      random_state: 42
+      n_jobs: recorded environment value
+    search_space:
+      n_estimators:
+      - 300
+      - 600
+      - 1000
+      max_depth:
+      - 3
+      - 5
+      - 7
+      learning_rate:
+      - 0.03
+      - 0.05
+      - 0.1
+      min_child_weight:
+      - 1
+      - 5
+      - 10
+      subsample:
+      - 0.8
+      - 1.0
+      colsample_bytree:
+      - 0.8
+      - 1.0
+      reg_lambda:
+      - 1
+      - 5
+      - 10
+      scale_pos_weight:
+      - '1'
+      - outer-training negative_count / positive_count
+    restriction: If early stopping is used, the eval_set must be a training-only inner validation subset, never
+      the outer validation fold or formal holdout.
+  lightgbm_search:
+    method: bounded randomized or staged candidate search using the shared five-fold registry
+    maximum_configurations: 12
+    fixed:
+      objective: binary
+      random_state: 42
+      verbosity: -1
+    search_space:
+      n_estimators:
+      - 300
+      - 600
+      - 1000
+      num_leaves:
+      - 15
+      - 31
+      - 63
+      max_depth:
+      - -1
+      - 6
+      - 10
+      learning_rate:
+      - 0.03
+      - 0.05
+      - 0.1
+      min_child_samples:
+      - 20
+      - 50
+      - 100
+      subsample:
+      - 0.8
+      - 1.0
+      colsample_bytree:
+      - 0.8
+      - 1.0
+      reg_lambda:
+      - 0
+      - 1
+      - 5
+      class_weight:
+      - 'null'
+      - balanced
+    restriction: If early stopping is used, callbacks/evaluation data must come only from a training-only inner
+      validation subset.
+  tabnet_search:
+    method: bounded staged candidate search; no full Cartesian grid
+    maximum_configurations: 10
+    implementation: pytorch_tabnet.tab_model.TabNetClassifier
+    fixed:
+      seed: 42
+      max_epochs: 150
+      early_stopping_metric: inner-validation Average Precision via external evaluation/compatible custom metric
+      patience: 15
+    search_space:
+      n_d:
+      - 8
+      - 16
+      - 32
+      n_a:
+      - 8
+      - 16
+      - 32
+      n_steps:
+      - 3
+      - 5
+      - 7
+      gamma:
+      - 1.2
+      - 1.5
+      lambda_sparse:
+      - 1.0e-05
+      - 0.0001
+      - 0.001
+      optimizer_learning_rate:
+      - 0.01
+      - 0.02
+      batch_size:
+      - 1024
+      - 2048
+      virtual_batch_size:
+      - 128
+      - 256
+      weights:
+      - '0'
+      - 1 (automatic inverse-frequency balancing)
+    validity_rules:
+    - virtual_batch_size must divide batch_size
+    - categorical vocabularies and numerical scaler are fitted on outer training only
+    - save training history, selected epoch, cat_idxs/cat_dims, preprocessing state, seed and device
+    - do not interpret attentive masks as causal evidence
 fairness_protocol:
   gender_groups:
   - Female
@@ -998,6 +1179,9 @@ environment_contract:
   - interpret
   - torch
   - rtdl_revisiting_models
+  - xgboost
+  - lightgbm
+  - pytorch-tabnet
   - jupyter
   - joblib
   - pytest
@@ -1006,11 +1190,13 @@ environment_contract:
     repository specification. Do not hard-code package versions in this context file; record exact tested versions
     in the execution environment artefact.
   compatibility_rule: Record the tested environment identifier with formal execution and verify imports, CPU/GPU
-    device selection, fitting, probability output, explanation, checkpoint reload, and serialization.
-  serialization_rule: 'Save family-appropriate artefacts: CatBoost native model plus metadata; verified joblib/pickle-compatible
-    EBM artefact; FT-Transformer PyTorch state_dict plus architecture configuration, feature vocabularies, scaler
-    state, selected epoch, and device-independent reload test; optional Logistic Regression sklearn pipeline when
-    executed.'
+    device selection where relevant, fitting, probability output, explanation methods, checkpoint/model reload,
+    and serialization for all six headline models.
+  serialization_rule: 'Save family-appropriate artefacts: CatBoost native model plus metadata; XGBoost booster/model
+    plus encoder metadata; LightGBM booster/model plus category metadata; verified EBM artefact; FT-Transformer
+    PyTorch state_dict plus architecture/vocabularies/scaler/epoch/device-independent reload test; TabNet save_model
+    artefact plus preprocessing/category metadata and reload test; optional Logistic Regression sklearn pipeline
+    when executed.'
 deliverables:
 - name: Proposal presentation
   format: PowerPoint
@@ -1026,25 +1212,23 @@ deliverables:
 - name: Viva preparation and participation
   format: oral review
   status: VERIFIED requirement
-- name: Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.md
+- name: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md
   format: Markdown
   status: canonical project context
-- name: Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.docx
+- name: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx
   format: DOCX
   status: synchronized companion with same substantive content
 fixed_decisions:
 - Primary target remains Resigned with True as the positive class.
 - 'The project has two linked stages: resignation-risk modelling and constrained retention-prioritization simulation.'
-- The three required advanced models are CatBoost Classifier, Explainable Boosting Machine, and FT-Transformer.
-- 'The six members work as three two-member model pairs: Pair 1 CatBoost, Pair 2 EBM, and Pair 3 FT-Transformer,
-  each with additional rubric ownership and cross-review obligations.'
+- The six required advanced models are FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet.
+- 'Each member owns one headline model: Member 1 FT-Transformer; Member 2 CatBoost; Member 3 XGBoost; Member 4 LightGBM;
+  Member 5 EBM; Member 6 TabNet.'
+- All six models share the same source rows, target mapping, 80/20 split, five outer folds, evaluation metrics,
+  and holdout restrictions while using model-specific fold-local preprocessing.
 - DummyClassifier prior and most_frequent strategies are mandatory shared no-skill references.
 - Logistic Regression is optional as a lightweight conventional benchmark; it is not a required advanced model and
-  must not displace work on the three selected models.
-- Random Forest, Decision Tree, and RBF-SVM are superseded as core models; XGBoost is contingency-only and requires
-  a logged pre-holdout substitution decision.
-- Each model uses its own appropriate preprocessing representation while sharing the same source rows, target mapping,
-  split, outer folds, evaluation metrics, and holdout restrictions.
+  must not displace work on the six required headline models.
 - FT-Transformer uses fold-local continuous normalization, categorical vocabularies with missing/unknown codes,
   embeddings, PyTorch BCE-with-logits training, and training-only inner validation for early stopping.
 - Primary capacity is the top 20 percent of records under an equal-cost hypothetical constraint; 10 and 30 percent
@@ -1087,17 +1271,22 @@ prohibited_assumptions:
 - Do not one-hot encode categorical variables for CatBoost merely to reuse the Logistic Regression matrix.
 - Do not assume CatBoost is the winner because it is more complex.
 - Do not call EBM a simple linear model; it is the required advanced interpretable nonlinear model.
-- Do not add XGBoost, LightGBM, TabNet, TabPFN, stacking, or another model family without a logged pre-holdout decision.
 - Do not assume FT-Transformer is the winner because it is deep learning or uses attention.
 - Do not interpret raw attention weights as causal explanations or validated feature importance.
+- Do not let any member create a private train/test split or private outer CV folds for headline comparison.
+- Do not force all six required models to reuse one transformed feature matrix when their valid input representations
+  differ.
+- Do not assume the three boosting libraries or the two deep-learning models will produce materially different results
+  simply because their architectures differ.
+- Do not interpret TabNet attentive masks as causal explanations.
 startup_acknowledgement:
   required_before_project_dependent_work: true
   fields:
   - project objective and two-stage scope
   - current phase
   - target and positive class
-  - active model registry, pair roles, model-specific representations, and primary prediction metric
-  - three model-pair ownership map
+  - active six-model registry, individual ownership, model-specific representations, and primary prediction metric
+  - six-member model ownership map
   - capacity, proxy definition, comparison strategies, and ranking metrics
   - formal holdout restriction and historical exposure caveat
   - principal provenance/data-quality limitation
@@ -1134,34 +1323,33 @@ update_rules:
 
 **What is being created:** An academically defensible two-stage study. Stage 1 evaluates whether the assigned employee variables contain out-of-sample signal for `Resigned=True`. Stage 2 uses the frozen probability output to compare limited-capacity retention-prioritization strategies.
 
-**Required advanced models:**
+**Six required advanced models and ownership:**
 
-- CatBoost Classifier - performance-oriented gradient boosting with native categorical handling;
-- Explainable Boosting Machine (`ExplainableBoostingClassifier`) - nonlinear, inherently interpretable generalized additive boosting;
-- FT-Transformer (`rtdl_revisiting_models.FTTransformer`) - attention-based deep learning for mixed tabular inputs.
+- **Member 1 — FT-Transformer** (`rtdl_revisiting_models.FTTransformer`): attention-based deep tabular learning with numerical and categorical feature tokens.
+- **Member 2 — CatBoost Classifier:** gradient boosting with native categorical handling.
+- **Member 3 — XGBoost Classifier** (`xgboost.XGBClassifier`): histogram-based boosted trees using a fold-local encoded matrix.
+- **Member 4 — LightGBM Classifier** (`lightgbm.LGBMClassifier`): efficient leaf-wise gradient boosting with fold-local categorical handling.
+- **Member 5 — Explainable Boosting Machine** (`ExplainableBoostingClassifier`): nonlinear, inherently interpretable additive boosting.
+- **Member 6 — TabNet Classifier** (`pytorch_tabnet.tab_model.TabNetClassifier`): attentive deep learning for tabular data.
 
-**References:** `DummyClassifier(strategy="prior")` and `DummyClassifier(strategy="most_frequent")` are mandatory no-skill baselines. Logistic Regression is optional as a lightweight conventional benchmark; it is not one of the three headline models and must not delay them.
+**References:** `DummyClassifier(strategy="prior")` and `DummyClassifier(strategy="most_frequent")` are mandatory no-skill baselines. Logistic Regression is optional as a lightweight conventional benchmark and does not count toward the six headline models.
 
-**Pair ownership:** Members 1-2 own CatBoost plus shared data/split foundations. Members 3-4 own EBM plus EDA and interpretation. Members 5-6 own FT-Transformer plus shared evaluation, calibration, prioritization, and deep-model artefacts. All pairs use the same saved rows and outer folds and must cross-review another pair.
+**Shared experimental foundation:** Every member uses the exact same saved 80/20 stratified development/formal-holdout split and the same five outer stratified CV folds. No member may create a private comparison split. Model-specific preprocessing is allowed and required where appropriate, but it must be fitted only inside the relevant training fold.
 
-**Why this set:** The comparison spans three materially different model families: gradient-boosted trees, interpretable additive boosting, and attention-based deep tabular learning. The evaluator-facing question is not only which model scores highest, but what performance, calibration, stability, interpretability, and computational trade-offs each family creates.
-
-**Fixed evaluation:** Stratified 80/20 development/formal-holdout split with seed 42; five-fold stratified CV on the development partition; PR-AUC/Average Precision as the primary prediction metric; calibration assessment for every advanced model; one-time formal-holdout corroboration after the complete design is frozen.
-
-**Model-specific preprocessing:** CatBoost receives named categorical columns directly. EBM receives preserved names with explicit nominal/continuous types. FT-Transformer receives fold-fitted standardized continuous tensors and fold-fitted categorical integer codes with missing/unknown tokens and cardinalities. No model reuses another model's transformed matrix.
+**Fixed evaluation:** PR-AUC/Average Precision is the primary prediction metric. Secondary metrics include ROC-AUC, precision, recall, F1, balanced accuracy, confusion matrix, calibration/Brier score, fold stability, runtime, reproducibility, and valid interpretability evidence. The formal holdout is used only once after the complete design is frozen.
 
 **Prioritization:** Primary capacity is 20%; 10% and 30% are fixed sensitivities. Compare repeated random selection, risk-only, value-proxy-only, risk-times-value-proxy, and threshold-reference strategies. The retention-value score is a transparent proxy, not actual employee worth.
 
-**Critical limitation:** Preliminary audit-only evidence suggests the target may contain little predictive signal. Complex models cannot create absent information. A rigorous no-signal result remains valid and must prevent operational claims.
+**Critical limitation:** Preliminary audit-only evidence suggests the target may contain little predictive signal. Six complex models cannot create absent information. A rigorous no-signal result remains valid and must prevent operational claims.
 
-**Current phase:** Synchronize v4.2.0, update repository artefacts to the three-model registry, implement the locked split and model adapters, then complete development-only experiments. Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Prediction`.
+**Current phase:** Synchronize v4.3.0, then lock and save the shared split/fold registry before headline model training.
 
 ## 2.2 Critical terminology
 
 | Term | Project-specific meaning |
 | --- | --- |
 | Positive class | `Resigned=True`. |
-| Required advanced model | One of CatBoost, EBM, or FT-Transformer. Each is a headline comparative model and pair-owned workstream. |
+| Required advanced model | One of the six headline models: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, or TabNet. Each is individually owned by one member. |
 | Shared baseline | Mandatory DummyClassifier reference evaluated under the same row/fold protocol but not presented as an advanced solution. |
 | Optional benchmark | Logistic Regression, used only if time permits as a transparent conventional reference. |
 | Outer fold | One of five StratifiedKFold development-CV folds used for unbiased model comparison. |
@@ -1200,19 +1388,19 @@ update_rules:
 
 ## 3.1 Current milestone
 
-**LIVE RECORD - 2026-08-06:** CatBoost, EBM, and FT-Transformer are the three required advanced models, one per two-member pair. DummyClassifier baselines are mandatory; Logistic Regression is optional. The current milestone is to commit the synchronized v4.2.0 handoff, update repository artefacts, and implement the shared split plus model-specific adapters.
+**LIVE RECORD - 2026-08-07:** The active registry contains six required advanced models, one per member: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet. DummyClassifier baselines remain mandatory and Logistic Regression remains optional. The immediate milestone is to commit the synchronized v4.3.0 handoff, update repository configuration, and create the one shared split/fold registry before any headline model training.
 
 Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Prediction`.
 
 ## 3.2 Immediate objectives
 
-1. Replace repository context files with the synchronized v4.2.0 Markdown and Word copies.
-2. Update README, slides, notebooks, report plan, model registry, and search-space configuration.
-3. Implement one saved stratified development/holdout split and five saved outer folds.
-4. Implement CatBoost, EBM, FT-Transformer, Dummy, and optional Logistic adapters without sharing incompatible transformed matrices.
-5. Smoke-test imports, fitting, probability output, checkpoint reload, and CPU/GPU device selection.
-6. Complete formal EDA and peer review.
-7. Run development-only model comparison, calibration, prioritization, explanation, subgroup, and robustness analyses.
+1. Replace repository context files with synchronized v4.3.0 Markdown and Word copies.
+2. Update README, slides, notebooks, report plan, `model_registry.yaml`, `search_spaces.yaml`, and the dependency specification.
+3. Implement and save one stratified 80/20 development/formal-holdout split and five saved outer folds.
+4. Implement a shared feature contract and six model-specific leakage-safe adapters.
+5. Smoke-test all six libraries/implementations and their fit, probability, serialization/reload paths.
+6. Complete formal audit and development-only EDA.
+7. Only then begin the six individually owned training/tuning workstreams.
 
 ## 3.3 Completed work
 
@@ -1220,33 +1408,32 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 - **COMPLETED** - Canonical GitHub repository URL is recorded.
 - **IN PROGRESS / FUNCTIONAL** - `01_data_audit.ipynb` and reusable audit outputs exist; fresh-kernel and peer-review checks remain required.
 - **DECIDED 2026-08-01** - Project includes constrained retention-prioritization simulation after resignation-risk modelling.
-- **SUPERSEDED 2026-08-05** - Earlier CatBoost-plus-EBM-only core registry.
-- **DECIDED 2026-08-06** - CatBoost, EBM, and FT-Transformer are required advanced models; Dummy is mandatory; Logistic Regression is optional; work is divided into three two-member pairs.
-- **COMPLETED 2026-08-06** - Context v4.2.0 synchronizes the three-model methodology, pair ownership, preprocessing, tuning, evaluation, artefacts, report, and viva rules.
+- **SUPERSEDED 2026-08-06** - Three-model / three-pair registry (CatBoost, EBM, FT-Transformer).
+- **DECIDED 2026-08-07** - Six headline models are required with one model per member: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet.
+- **COMPLETED 2026-08-07** - Context v4.3.0 synchronizes the six-model methodology, individual ownership, preprocessing, tuning, evaluation, artefacts, report, and viva rules.
 
 ## 3.4 Work that may proceed now
 
-- commit v4.2.0 and update active-model references;
-- finish audit and EDA notebooks;
-- build split/fold controls and model adapters;
-- implement bounded development-CV searches and training-only early stopping;
-- implement calibration, interpretability, ranking, fairness, and sensitivity modules;
-- draft evidence-backed report/presentation content;
-- prepare pair-specific and whole-project viva explanations.
+- commit v4.3.0 and update active-model references;
+- complete audit/EDA and shared feature contract;
+- build and test the shared development/holdout split plus five-fold registry;
+- create model adapters and bounded search configurations;
+- smoke-test each model on a small development subset without accessing the formal holdout;
+- prepare common evaluator/output schemas and viva explanations.
 
 ## 3.5 Blocked or conditional work
 
+- formal six-model comparison is blocked until the shared split/fold registry and row-parity contract exist;
 - genuine monetary budget optimization is blocked because intervention costs, effects, replacement costs, and verified business-value data are absent;
 - causal claims that a retention action prevents resignation are blocked;
 - production use, employment decisions, legal-compliance claims, and fairness certification are outside scope;
-- FT-Transformer GPU use is conditional on the tested environment; CPU execution remains a valid fallback;
-- XGBoost substitution is blocked unless a logged pre-holdout decision formally replaces FT-Transformer;
+- GPU acceleration is conditional on the tested environment; CPU execution remains valid where feasible;
 - final numerical findings remain conditional on executing the approved workflow and must not be invented.
 
 ## 3.6 Work not to prioritize now
 
 - dashboard, GUI, website, API, database, cloud deployment, or mobile application;
-- model stacking, voting, foundation models, or extra model families;
+- model stacking, voting, foundation models, or seventh headline model families;
 - unrestricted hyperparameter search;
 - synthetic provenance narratives or assumed salary currency;
 - automated record-level employment actions.
@@ -1258,44 +1445,43 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 | R-001 | Target may contain little usable signal. | High | High | Dummy baselines, PR-AUC, uncertainty, no-signal rule. |
 | R-002 | Historical preliminary audit exposed aggregate holdout-related diagnostics. | Certain | Medium | Freeze protocol; preserve exposure caveat; use holdout only as corroboration. |
 | R-003 | Salary determinism may dominate proxy or model behaviour. | High | High | No-salary sensitivity and explicit redundancy analysis. |
-| R-004 | Deep-model complexity may not produce a meaningful gain. | Medium | Medium | Fair folds, bounded search, runtime reporting, practical-equivalence rule. |
-| R-005 | Model-specific adapters may create row/fold parity errors. | Medium | High | Shared registry, row-ID assertions, adapter tests, prediction-coverage tests. |
-| R-006 | FT-Transformer category vocabularies or early stopping may leak validation information. | Medium | High | Fit vocabularies/scalers on outer training only; create inner validation only inside training. |
-| R-007 | PyTorch results may vary by device/seed. | Medium | Medium | Seed controls, deterministic settings where feasible, device metadata, additional-seed sensitivity for selected configuration. |
-| R-008 | Probabilities may be poorly calibrated, especially under class weighting. | Medium | High | OOF reliability curves, Brier score, development-only calibration comparison. |
-| R-009 | Pair work may drift into inconsistent pipelines. | Medium | High | Shared contracts, weekly integration, cross-pair review, single evaluator. |
+| R-004 | Six-model scope may create duplicated or inconsistent experiments. | Medium | High | One split/fold registry, one evaluator contract, one result schema. |
+| R-005 | Model-specific adapters may create row/fold parity errors. | Medium | High | Shared row-ID assertions and OOF-coverage tests. |
+| R-006 | Deep models may leak validation information through vocabularies, scaling, or early stopping. | Medium | High | Fit preprocessing on outer training only; inner validation stays inside outer training. |
+| R-007 | FT-Transformer and TabNet may vary by seed/device. | Medium | Medium | Seed/device logs and additional-seed sensitivity for selected configurations when feasible. |
+| R-008 | Probabilities may be poorly calibrated, especially under class weighting. | Medium | High | OOF reliability curves, Brier score, development-only calibration. |
+| R-009 | Six members may accidentally use different metrics or threshold rules. | Medium | High | Shared evaluator module and frozen metric definitions. |
 | R-010 | AI-generated code or explanations may be accepted without ownership. | Medium | High | Tests, source verification, manual review, AI-use records, viva preparation. |
 
 ## 3.8 Next concrete actions
 
-1. Commit v4.2.0 context files.
-2. Update `model_registry.yaml`, `search_spaces.yaml`, README, and notebooks.
-3. Finalize the data contract, saved split, outer folds, and row-parity tests.
-4. Implement and smoke-test CatBoost, EBM, and FT-Transformer minimal pipelines.
-5. Freeze the bounded search spaces before formal model comparison.
-6. Generate OOF probabilities and common comparison tables.
-7. Add calibration and prioritization only after OOF coverage tests pass.
+1. Commit v4.3.0 context files.
+2. Update model/dependency/configuration references to all six required models.
+3. Finalize the data contract and create the saved split plus five outer folds.
+4. Add row-parity and split-integrity tests.
+5. Implement minimal adapters and smoke tests for all six models.
+6. Freeze bounded search spaces before formal comparison.
+7. Generate OOF probabilities only after the shared experimental foundation passes review.
 
 # 4. Task router for AI assistants
 
 | Future request | Must read | Must verify | May generate | Must not invent |
 | --- | --- | --- | --- | --- |
-| Understand the project | Sections 0-3 and 8.1-8.10 | Version, two-stage scope, three-model registry, pair ownership, status | Concise status-aware summary | New objectives, dates, or results |
-| Inspect data | Sections 5, 8.10-8.15, 8.18-8.19 | CSV checksum, shape, schema | Audit code, tables, EDA plan | Units, provenance, missingness, semantics |
-| Generate preprocessing code | Sections 8.17-8.19 | Feature policy, fold boundaries, model adapter | Leakage-safe transformations and tests | Full-data fitting or one shared model matrix |
-| Generate CatBoost code | Sections 8.18-8.22 | Native categorical contract, folds, bounded search | CatBoost pipeline, tuning, OOF predictions | One-hot input or holdout early stopping |
-| Generate EBM code | Sections 8.18-8.23 | Feature names/types, interaction limits | EBM pipeline and explanations | Reusing CatBoost/FT encodings or causal claims |
-| Generate FT-Transformer code | Sections 8.18-8.23 | Continuous/categorical tensors, vocabularies, inner validation, device | PyTorch training loop, checkpointing, OOF predictions | Holdout early stopping, untracked category codes, attention-as-causality |
-| Generate baseline code | Sections 8.20-8.22 | Shared rows/folds and baseline role | Dummy baselines; optional Logistic benchmark | Presenting a baseline as a required advanced model |
-| Generate prioritization code | Sections 8.16-8.24 | Frozen capacity, proxy, calibration, strategies, ranking metrics | Random and top-k comparisons | Actual worth, intervention benefit, optimal-budget claims |
-| Tune models | Section 8.21 | Search caps, seed, scoring, early-stopping boundaries | Bounded search code and result schema | Formal-holdout tuning or unlimited search |
-| Evaluate results | Sections 8.22-8.25 and 8.33 | OOF coverage, saved predictions, identical rows/folds | Prediction, calibration, ranking, uncertainty, error, fairness tables | A winner from unstable differences |
-| Write report/presentation | Sections 8.6-8.9 and relevant evidence sections | Formal structure and actual generated results | Evidence-backed prose and figures | Fabricated findings or omitted limitations |
-| Prepare viva | Sections 8.2, 8.13, 8.17-8.25, 8.30, 8.33 | Approved decisions and actual outputs | Pair and whole-project questions/answers | Results not generated |
-| Debug code | Sections 5, 8.17-8.18, 8.25 and repository | Environment, paths, split, failing tests | Minimal fix with regression test | Method changes that conceal failures |
-| Update status | Sections 3, 7, 8.31-8.36 | Evidence | Status, risk, AI-use, decision records | Unverified completion |
-| Recommend scope change | Sections 0.9, 6, 8.8, 8.36 | Trigger, cost, authority | Decision proposal | Automatic unlogged implementation |
-| Handle missing file | Sections 5 and 7 | Manifest, checksum, exact filename | Recovery steps | Substituting a different file |
+| Understand the project | Sections 0-3 and 8.1-8.10 | v4.3.0, six-model registry, individual ownership, current status | concise status-aware summary | new objectives or results |
+| Inspect data | Sections 5, 8.10-8.15, 8.18-8.19 | exact CSV checksum, shape, schema | audit code/tables/EDA plan | units or provenance |
+| Create shared split/folds | Sections 8.16-8.19 | seed 42, stratification, row IDs, holdout lock | split/fold registry and tests | alternate private member splits |
+| Generate FT-Transformer code | Sections 8.18-8.23 | fold-local scaler/vocabularies, inner validation, device | M1 pipeline/training/checkpoint code | holdout early stopping or attention-as-causality |
+| Generate CatBoost code | Sections 8.18-8.23 | native categoricals, common folds | M2 pipeline/tuning/OOF predictions | full-data categorical statistics |
+| Generate XGBoost code | Sections 8.18-8.23 | fold-local encoder, common folds | M3 pipeline/tuning/OOF predictions | full-data one-hot matrix |
+| Generate LightGBM code | Sections 8.18-8.23 | fold-local category mapping, common folds | M4 pipeline/tuning/OOF predictions | category mapping learned from holdout |
+| Generate EBM code | Sections 8.18-8.23 | explicit feature types/interactions | M5 pipeline/tuning/explanations | causal interpretation |
+| Generate TabNet code | Sections 8.18-8.23 | fold-local codes/scaler, inner validation | M6 pipeline/tuning/history | holdout early stopping or mask-as-causality |
+| Generate baseline code | Sections 8.20-8.22 | shared rows/folds | Dummy baselines; optional Logistic | counting baseline as one of six |
+| Tune/evaluate models | Sections 8.21-8.25 and 8.33 | frozen search caps, OOF coverage, identical folds | metrics/calibration/uncertainty tables | holdout-guided tuning |
+| Generate prioritization code | Sections 8.16-8.24 | frozen capacity/proxy/probability source | random/top-k comparisons | actual worth or intervention benefit |
+| Write report/presentation | Sections 8.6-8.9 and generated evidence | actual results and six-member ownership | evidence-backed prose/figures | fabricated findings |
+| Prepare viva | Sections 8.2, 8.13, 8.16-8.25, 8.30, 8.33 | each member's own model plus whole workflow | member-specific and shared Q&A | ungenerated results |
+| Update status/decision | Sections 3, 7, 8.35-8.38 | evidence and authority | live-state/change records | silent methodology changes |
 
 # 5. Companion-file manifest and handoff package
 
@@ -1303,8 +1489,8 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 
 | ID | Canonical filename or path | Required for | Integrity rule | Status |
 | --- | --- | --- | --- | --- |
-| CTX-MD | `Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.md` | All project-dependent work | Canonical; version/date must match. | VERIFIED generated |
-| CTX-DOCX | `Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.docx` | Synchronized fallback/navigation | Regenerate from CTX-MD after substantive changes. | VERIFIED generated |
+| CTX-MD | `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md` | All project-dependent work | Canonical; version/date must match. | VERIFIED generated |
+| CTX-DOCX | `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx` | Synchronized fallback/navigation | Regenerate from CTX-MD after substantive changes. | VERIFIED generated |
 | SRC-001 | `Group Assignment Specification.pdf` or Section 9.2 extract | Requirements and marks | Original PDF remains authoritative; checksum recorded. | VERIFIED |
 | SRC-002 | `Proposal Presentation.pdf` or Section 9.3 extract | Proposal requirements | Original PDF remains authoritative; checksum recorded. | VERIFIED |
 | SRC-003 | `archive.zip` | Original assigned archive | Verify recorded SHA-256. | VERIFIED |
@@ -1348,9 +1534,12 @@ Employee_Resignation_Prediction/
 │   ├── feature_contract.py
 │   ├── model_adapters.py
 │   ├── baselines.py
-│   ├── catboost_model.py
-│   ├── ebm_model.py
 │   ├── ft_transformer_model.py
+│   ├── catboost_model.py
+│   ├── xgboost_model.py
+│   ├── lightgbm_model.py
+│   ├── ebm_model.py
+│   ├── tabnet_model.py
 │   ├── torch_training.py
 │   ├── calibrate.py
 │   ├── explain.py
@@ -1367,9 +1556,12 @@ Employee_Resignation_Prediction/
 │   ├── test_prioritization.py
 │   └── test_serialization.py
 ├── models/
-│   ├── catboost/
-│   ├── ebm/
 │   ├── ft_transformer/
+│   ├── catboost/
+│   ├── xgboost/
+│   ├── lightgbm/
+│   ├── ebm/
+│   ├── tabnet/
 │   └── optional_logistic_regression/
 ├── results/
 │   ├── predictions/
@@ -1382,8 +1574,8 @@ Employee_Resignation_Prediction/
 ├── presentations/
 └── docs/
     └── context/
-        ├── Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.md
-        └── Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.docx
+        ├── Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md
+        └── Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx
 ```
 
 ## 5.4 Missing or mismatched file protocol
@@ -1401,7 +1593,7 @@ Employee_Resignation_Prediction/
 - Markdown is authoritative.
 - Make material changes in Markdown first.
 - Regenerate and visually inspect Word after every material change.
-- Both files must show the same version, model registry, pair ownership, state, placeholders, and references.
+- Both files must show the same version, six-model registry, individual ownership, state, placeholders, and references.
 
 ## 5.6 Handoff package levels
 
@@ -1420,50 +1612,42 @@ Employee_Resignation_Prediction/
 ```text
 Formal requirements
     -> approved two-stage framing
-        -> target and feature policy
-            -> exact dataset and checksum
-                -> saved development/holdout split
+        -> exact dataset and checksum
+            -> shared feature contract
+                -> saved 80/20 development/formal-holdout split
                     -> saved five outer folds
-                        -> model-specific fold-local adapters
-                            -> Dummy references and bounded CatBoost/EBM/FT-Transformer training
-                                -> OOF probabilities and calibration assessment
-                                    -> model/preprocessing/calibration freeze
-                                        -> proxy normalization and prioritization strategy freeze
-                                            -> one-time formal-holdout corroboration
-                                                -> error, explanation, subgroup, and robustness analysis
-                                                    -> report, presentation, and viva
+                        -> six model-specific fold-local adapters
+                            -> Dummy references + six individually owned headline models
+                                -> complete OOF probabilities on identical rows/folds
+                                    -> common prediction/calibration/stability comparison
+                                        -> model/preprocessing/calibration freeze
+                                            -> proxy/capacity/strategy freeze
+                                                -> one-time formal-holdout corroboration
+                                                    -> prioritization, subgroup, error, and robustness analysis
+                                                        -> report, presentation, and viva
 
-FT-Transformer
-    -> tested PyTorch + rtdl_revisiting_models environment
-        -> device selection and reproducible seeds
-            -> fold-local categorical vocabularies and continuous scaler
+Deep models (FT-Transformer and TabNet)
+    -> tested PyTorch-related environment
+        -> device/seed controls
+            -> fold-local vocabularies/scalers
                 -> training-only inner validation
-                    -> checkpoint and reload tests
-
-Usable resignation-risk signal
-    -> meaningful risk-based prioritization
-        -> comparison with repeated random, value-only, and risk-only strategies
+                    -> checkpoint/model reload tests
 
 Actual intervention cost/effect evidence
     -> genuine budget optimization
         -> NOT AVAILABLE; blocked and outside scope
-
-Actual AI assistance
-    -> live usage records
-        -> final AI Tool Usage Declaration
 ```
 
 ## 6.2 Blocking table
 
 | Dependency | Blocks | Current status | Continue? |
 | --- | --- | --- | --- |
-| Exact assigned CSV/checksum | Data-dependent work | VERIFIED available | Yes |
-| Approved target/framing | Methodology | DECIDED | Yes |
-| Split/fold protocol | Formal modelling | DECIDED; implementation pending | Yes, implement first |
-| Tested CatBoost/InterpretML/PyTorch/RTDL environment | Model execution | TO BE GENERATED | Yes, smoke-test before experiments |
-| Canonical repository | Collaboration | URL recorded | Yes |
-| Named team map | Personal accountability | PLACEHOLDER | Yes, numbered pair roles active |
-| Real intervention/business-value evidence | Genuine optimization/causal claims | NOT AVAILABLE | No; retain simulation-only framing |
+| Exact assigned CSV/checksum | data-dependent work | VERIFIED available | Yes |
+| Approved six-model registry/ownership | model work division | DECIDED | Yes |
+| Shared split/fold registry | fair headline training/comparison | TO BE GENERATED | Implement next |
+| Tested CatBoost/XGBoost/LightGBM/InterpretML/PyTorch/RTDL/TabNet environment | model execution | TO BE GENERATED | Smoke-test before experiments |
+| Named team identities | formal accountability | PLACEHOLDER | Numbered member roles are sufficient for now |
+| Real intervention/business-value evidence | genuine optimization/causal claims | NOT AVAILABLE | No; retain simulation-only framing |
 
 # 7. Update protocol and handoff rules
 
@@ -1475,7 +1659,7 @@ For every material change:
 2. Update date, synchronization ID, filenames, and document-control table.
 3. Update machine-readable memory.
 4. Update Section 3 live state.
-5. Update model registry, pair map, decision records, risks, and placeholders.
+5. Update model registry, individual ownership map, decision records, risks, and placeholders.
 6. Update methodology, result templates, references, and AI-use records.
 7. Add a change-log entry with evidence and approver.
 8. Regenerate Word from Markdown.
@@ -1492,7 +1676,7 @@ Record decision ID, date, previous value, new value, rationale, authority, affec
 
 ## 7.4 Reusable handoff instruction
 
-> Read `Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.md` first and treat it as canonical. The DOCX is a synchronized fallback. The required advanced models are CatBoost, EBM, and FT-Transformer, one per two-member pair. DummyClassifier baselines are mandatory; Logistic Regression is optional. Use identical saved rows and outer folds but model-specific fold-local representations. Fit FT-Transformer category vocabularies/scalers and any inner early-stopping validation only inside each outer training fold. Verify the exact CSV checksum before data work and inspect the current GitHub files before code-dependent claims. Never invent results, never tune or early-stop on the formal holdout, and update live state, AI-use, decisions, version, and Word after material changes.
+> Read `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md` first and treat it as canonical. The DOCX is a synchronized fallback. The six required advanced models are individually owned: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet. DummyClassifier baselines are mandatory; Logistic Regression is optional. All headline models must use identical saved development/holdout rows and outer folds but model-specific fold-local representations. Lock the formal holdout against all preprocessing design, tuning, early stopping, calibration choice, threshold choice, proxy/capacity/strategy choice, and model selection. Verify the exact CSV checksum before data work, inspect current repository files before code-dependent claims, never invent results, and update live state/AI-use/decisions/version/Word after material changes.
 
 # 8. Full canonical project specification
 
@@ -1500,16 +1684,16 @@ Record decision ID, date, previous value, new value, rationale, authority, affec
 
 | Field | Value | Status |
 | --- | --- | --- |
-| Context version | 4.2.0 | ACTIVE |
-| Date | 2026-08-06 | VERIFIED |
-| Canonical file | `Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.md` | DECIDED |
-| Word companion | `Employee_Resignation_Prediction_AI_Project_Context_v4_2_0.docx` | DECIDED |
+| Context version | 4.3.0 | ACTIVE |
+| Date | 2026-08-07 | VERIFIED |
+| Canonical file | `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md` | DECIDED |
+| Word companion | `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx` | DECIDED |
 | Canonical repository | `https://github.com/Sankalpa-KMCP/Employee_Resignation_Prediction` | DECIDED |
-| Current phase | Three-model implementation planning and repository synchronization | LIVE RECORD |
-| Required advanced models | CatBoost, EBM, FT-Transformer | DECIDED |
+| Current phase | Six-model implementation planning and shared split/fold synchronization | LIVE RECORD |
+| Required advanced models | FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet | DECIDED |
 | Mandatory baselines | DummyClassifier `prior` and `most_frequent` | DECIDED |
 | Optional benchmark | Logistic Regression | DECIDED |
-| Pair ownership | Pair 1 CatBoost; Pair 2 EBM; Pair 3 FT-Transformer | DECIDED |
+| Individual ownership | M1 FT-Transformer; M2 CatBoost; M3 XGBoost; M4 LightGBM; M5 EBM; M6 TabNet | DECIDED |
 | Superseded core models | Random Forest, Decision Tree, RBF-SVM | SUPERSEDED |
 | Primary metric | Average Precision / PR-AUC | DECIDED |
 | Primary capacity | Top 20% | DECIDED |
@@ -1521,11 +1705,14 @@ The group is designing, implementing, and critically evaluating a two-stage AI/M
 1. **Prediction stage:** determine whether available employee-related features provide reproducible out-of-sample signal for `Resigned=True`.
 2. **Prioritization stage:** use frozen, calibrated probability outputs in a controlled top-k simulation to compare how limited HR review/retention capacity might be allocated.
 
-The three required advanced models are:
+The six required advanced models are:
 
-1. **CatBoost Classifier** - gradient-boosted trees and native categorical handling;
-2. **Explainable Boosting Machine** - nonlinear additive boosting with inherent global/local interpretability;
-3. **FT-Transformer** - attention-based deep tabular learning with continuous and categorical feature tokens.
+1. **FT-Transformer** - attention-based deep tabular learning with continuous and categorical feature tokens;
+2. **CatBoost Classifier** - gradient-boosted trees and native categorical handling;
+3. **XGBoost Classifier** - histogram-based gradient boosting on a fold-local encoded feature matrix;
+4. **LightGBM Classifier** - efficient leaf-wise gradient boosting with fold-local categorical handling;
+5. **Explainable Boosting Machine** - nonlinear additive boosting with inherent global/local interpretability;
+6. **TabNet Classifier** - attentive deep learning for tabular data.
 
 DummyClassifier provides mandatory no-skill references. Logistic Regression is optional as a conventional transparent benchmark and is not a headline advanced model.
 
@@ -1543,7 +1730,7 @@ The assessed build is an end-to-end, reproducible Python workflow containing:
 4. saved five outer development-CV folds;
 5. model-specific leakage-safe adapters;
 6. mandatory DummyClassifier references and optional Logistic benchmark;
-7. bounded CatBoost, EBM, and FT-Transformer tuning;
+7. bounded tuning for FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet;
 8. training-only inner validation for iterative-model early stopping;
 9. OOF probabilities, common metrics, calibration, and uncertainty;
 10. one-time formal-holdout corroboration after complete freeze;
@@ -1565,7 +1752,7 @@ The project must answer this without claiming that observed associations are cau
 
 - understand and justify the dataset;
 - clean, validate, and visualize it reproducibly;
-- implement three advanced and structurally different supervised classifiers;
+- implement six advanced supervised classifiers spanning boosted-tree, interpretable additive, and deep-tabular approaches;
 - use identical saved rows/folds and model-appropriate preprocessing;
 - tune within bounded development-only protocols;
 - compare prediction, calibration, stability, interpretability, and computational cost;
@@ -1576,9 +1763,9 @@ The project must answer this without claiming that observed associations are cau
 ### 8.4.2 Project questions
 
 - PQ-01: Does any model consistently exceed the Dummy prior baseline in development PR-AUC?
-- PQ-02: How do CatBoost, EBM, and FT-Transformer compare under identical outer folds?
-- PQ-03: Does FT-Transformer's added training complexity create a stable gain over CatBoost or EBM?
-- PQ-04: Does CatBoost's performance justify its lower inherent transparency than EBM?
+- PQ-02: How do all six headline models compare under identical outer folds?
+- PQ-03: Do the two deep models (FT-Transformer and TabNet) justify their added training complexity relative to boosted-tree and EBM alternatives?
+- PQ-04: How do CatBoost, XGBoost, and LightGBM differ in performance, stability, calibration, runtime, and explanation burden?
 - PQ-05: Are probability estimates sufficiently calibrated for use in the combined priority score?
 - PQ-06: Which model is most reproducible and stable across folds and, where feasible, seeds?
 - PQ-07: Which features/terms are associated with predictions, and what explanations are valid for each model family?
@@ -1603,7 +1790,7 @@ Affected stakeholders include employees represented by records, especially becau
 | REQ-001 | Use assigned dataset and frame aligned real-world problem. | Employee resignation risk and constrained retention-prioritization simulation. |
 | REQ-002 | Describe source, features, target, size, quality, suitability. | Sections 8.10-8.14 and generated EDA. |
 | REQ-003 | Clean/preprocess and analyse with visualizations. | Shared audit plus model-specific fold-local adapters. |
-| REQ-004 | Select and justify at least two suitable algorithms. | Three required advanced models: CatBoost, EBM, FT-Transformer. |
+| REQ-004 | Select and justify at least two suitable algorithms. | Six required advanced models, one per member: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet. |
 | REQ-005 | Implement in Python with tuning and pipelines. | Bounded searches, adapters, saved configuration, tests, and artefacts. |
 | REQ-006 | Use metrics, k-fold CV, compare, justify best performer. | Five outer folds, PR-AUC primary, calibration/uncertainty/complexity comparison. |
 | REQ-007 | Discuss ethics and bias mitigation. | Section 8.24 plus subgroup analysis. |
@@ -1615,9 +1802,9 @@ Affected stakeholders include employees represented by records, especially becau
 | --- | --- |
 | Problem framing and dataset understanding | Accurate source/target/feature/quality explanation and limitations |
 | Preprocessing and EDA | Reproducible audit, leakage-safe transformations, meaningful visuals and insights |
-| Model design and implementation | Justified CatBoost, EBM, FT-Transformer; bounded tuning; pipelines/adapters; reproducibility |
+| Model design and implementation | Six justified headline models; bounded tuning; model-specific adapters; shared folds; reproducibility |
 | Evaluation and comparison | Five-fold CV, relevant metrics, OOF coverage, calibration, uncertainty, runtime, justified final selection |
-| Report and teamwork | Professional evidence-backed report, ethics, AI transparency, reflections, references, clear pair and individual ownership |
+| Report and teamwork | Professional evidence-backed report, ethics, AI transparency, reflections, references, clear individual model ownership |
 
 Acceptance is based on correctness and critical evaluation, not on obtaining a high score. A verified no-signal outcome is acceptable.
 
@@ -1627,7 +1814,7 @@ Acceptance is based on correctness and critical evaluation, not on obtaining a h
 
 - binary classification of `Resigned`;
 - data audit, EDA, and leakage controls;
-- CatBoost, EBM, FT-Transformer;
+- FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet;
 - Dummy references and optional Logistic benchmark;
 - model-specific preprocessing and bounded tuning;
 - five-fold development CV and one-time formal holdout;
@@ -1663,7 +1850,8 @@ Complexity must be described accurately: FT-Transformer is a deep tabular model,
 | SRC-004 | `Extended_Employee_Performance_and_Productivity_Data.csv` | Authoritative project artefact for all data facts. | 100,000 x 20; mechanically inspected; checksum recorded. |
 | SRC-005 | [Kaggle dataset page](https://www.kaggle.com/datasets/mexwell/employee-performance-and-productivity-data) | Third-party listing for source link and licence metadata. | Listing reports CC0: Public Domain. It is not evidence of original organizational provenance. |
 | SRC-006 to SRC-011 | Prior dated conversation decisions | Historical authority for earlier approved changes. | Superseded items remain historical; newer logged decisions take precedence. |
-| SRC-012 | Conversation decision on 2026-08-06 | Authority for the active three-model and three-pair registry. | CatBoost, EBM, FT-Transformer required; Dummy mandatory; Logistic optional. |
+| SRC-012 | Conversation decision on 2026-08-06 | Historical authority for the superseded three-model / three-pair registry. | CatBoost, EBM, FT-Transformer required at that time; Dummy mandatory; Logistic optional. |
+| SRC-013 | Conversation decision on 2026-08-07 | Authority for the active six-model / individual-ownership registry. | M1 FT-Transformer; M2 CatBoost; M3 XGBoost; M4 LightGBM; M5 EBM; M6 TabNet. |
 
 ### Provenance position
 
@@ -1692,24 +1880,24 @@ Complexity must be described accurately: FT-Transformer is a deep tabular model,
 | Column | Semantic/storage type | Observed values | Role | Approved treatment | Important limitation |
 | --- | --- | --- | --- | --- | --- |
 | Employee_ID | Integer | 1 to 100,000; unique | Identifier | Exclude from model; preserve for row/split traceability | Index-like leakage/noise if modelled |
-| Department | Categorical | 9 categories | Predictor | One-hot encode | May proxy organizational structure; all job-title combinations occur |
-| Gender | Categorical | Female, Male, Other | Sensitive predictor/audit attribute | Use in full model; exclude in fairness sensitivity model; one-hot encode | Potential direct discrimination; subgroup sizes must be reported |
-| Age | Integer | 22 to 60 | Sensitive predictor/audit attribute | Retain in full model; exclude in second fairness sensitivity model; scale for LR | Potential age discrimination; no causal interpretation |
-| Job_Title | Categorical | 7 categories | Predictor | One-hot encode | Strong deterministic relationship with salary |
+| Department | Categorical | 9 categories | Predictor | Model-specific fold-local categorical handling | May proxy organizational structure; all job-title combinations occur |
+| Gender | Categorical | Female, Male, Other | Sensitive predictor/audit attribute | Use in full model; model-specific fold-local handling; exclude in fairness sensitivity models | Potential direct discrimination; subgroup sizes must be reported |
+| Age | Integer | 22 to 60 | Sensitive predictor/audit attribute | Retain in full model; scale only where the model adapter requires it; exclude in second fairness sensitivity model | Potential age discrimination; no causal interpretation |
+| Job_Title | Categorical | 7 categories | Predictor | Model-specific fold-local categorical handling | Strong deterministic relationship with salary |
 | Hire_Date | Date-time text | 2014-09-07 to 2024-09-03; identical time component | Audit field | Parse for audit; exclude raw value from primary model | Near-duplicate of tenure; generation artefact |
 | Years_At_Company | Integer | 0 to 10 | Predictor | Retain as tenure representation | Near-redundant with Hire_Date; implied hire age can be implausible |
-| Education_Level | Categorical | High School, Bachelor, Master, PhD | Predictor | One-hot encode | Do not assume equal spacing without a separate sensitivity test |
+| Education_Level | Categorical | High School, Bachelor, Master, PhD | Predictor | Model-specific fold-local categorical handling | Do not assume equal spacing without a separate sensitivity test |
 | Performance_Score | Integer/ordinal | 1 to 5 | Predictor | Retain numeric or ordinal; document representation | Salary is deterministically based partly on this field |
 | Monthly_Salary | Numeric | 3,850 to 9,000; 28 distinct values | Predictor | Retain in primary model; unit unverified; optional redundancy sensitivity | Completely determined by Job_Title and Performance_Score |
-| Work_Hours_Per_Week | Integer | 30 to 60 | Predictor | Retain; scale for LR | Bounded regular distribution; no automatic outlier removal |
-| Projects_Handled | Integer | 0 to 49 | Predictor | Retain; scale for LR | Count semantics/time window undocumented |
-| Overtime_Hours | Integer | 0 to 29 | Predictor | Retain; scale for LR | Time window and units undocumented |
-| Sick_Days | Integer | 0 to 14 | Predictor | Retain; scale for LR | Time window undocumented; potentially sensitive workplace attribute |
+| Work_Hours_Per_Week | Integer | 30 to 60 | Predictor | Retain; fold-local scaling only for adapters that require it | Bounded regular distribution; no automatic outlier removal |
+| Projects_Handled | Integer | 0 to 49 | Predictor | Retain; fold-local scaling only for adapters that require it | Count semantics/time window undocumented |
+| Overtime_Hours | Integer | 0 to 29 | Predictor | Retain; fold-local scaling only for adapters that require it | Time window and units undocumented |
+| Sick_Days | Integer | 0 to 14 | Predictor | Retain; fold-local scaling only for adapters that require it | Time window undocumented; potentially sensitive workplace attribute |
 | Remote_Work_Frequency | Integer percentage | 0, 25, 50, 75, 100 | Predictor | Retain numeric; optional categorical sensitivity | Meaning appears percentage but observation window undocumented |
-| Team_Size | Integer | 1 to 19 | Predictor | Retain; scale for LR | Organizational context undocumented |
-| Training_Hours | Integer | 0 to 99 | Predictor | Retain; scale for LR | Time window undocumented |
-| Promotions | Integer count | 0 to 2 | Predictor | Retain; scale for LR or categorical sensitivity | Time window undocumented |
-| Employee_Satisfaction_Score | Numeric | 1.00 to 5.00 | Predictor | Retain; scale for LR | Measurement instrument and timing undocumented |
+| Team_Size | Integer | 1 to 19 | Predictor | Retain; fold-local scaling only for adapters that require it | Organizational context undocumented |
+| Training_Hours | Integer | 0 to 99 | Predictor | Retain; fold-local scaling only for adapters that require it | Time window undocumented |
+| Promotions | Integer count | 0 to 2 | Predictor | Retain; document numeric/ordinal representation; scale only where required | Time window undocumented |
+| Employee_Satisfaction_Score | Numeric | 1.00 to 5.00 | Predictor | Retain; fold-local scaling only for adapters that require it | Measurement instrument and timing undocumented |
 | Resigned | Boolean | False or True | Target | Map True=1 and False=0 | Label timing and definition beyond Boolean status undocumented |
 
 ## 8.11.1 Exact technical data contract
@@ -1725,7 +1913,7 @@ This contract is intended for direct code generation. It reflects the mechanical
 - Expected column count: 20
 - Nullability: no null values are expected in any raw column
 - Boolean target mapping: `False -> 0`; `True -> 1`
-- Unknown categorical values: fail the validation report for audit visibility; modelling pipelines use `OneHotEncoder(handle_unknown="ignore")` so later inference fails safely rather than structurally
+- Unknown categorical values: fail the validation report for audit visibility. Handling is model-specific and fold-local: XGBoost/optional Logistic use unknown-safe one-hot encoding; CatBoost uses native strings; LightGBM uses training-fold category mappings; EBM uses nominal types; FT-Transformer and TabNet use explicit unknown integer codes.
 
 Exact ordered header:
 
@@ -1906,10 +2094,10 @@ The following values were produced during the context audit solely to determine 
 | A-010 | The primary proxy uses equal weights because no verified business weights exist. | DECIDED | Do not tune weights on the formal holdout. |
 | A-011 | No intervention-effect data exist. | VERIFIED limitation | Do not claim selected support prevents resignation. |
 | A-012 | Probability estimates require calibration assessment before use in the combined priority score. | DECIDED | Report Brier/reliability and freeze calibration choice. |
-| A-013 | CatBoost, EBM, and FT-Transformer require model-specific representations rather than one shared transformed matrix. | DECIDED | Same rows/folds; separate adapters and tests. |
-| A-014 | CatBoost, InterpretML, PyTorch, and rtdl_revisiting_models APIs must be validated in the project environment before use. | VERIFIED implementation constraint | Maintain a tested dependency specification in the repository and run smoke tests. |
+| A-013 | The six headline models require model-specific representations rather than one shared transformed matrix. | DECIDED | Same rows/folds; separate fold-local adapters and tests. |
+| A-014 | CatBoost, XGBoost, LightGBM, InterpretML, PyTorch/RTDL, and pytorch-tabnet APIs must be validated in the project environment before use. | VERIFIED implementation constraint | Maintain a tested dependency specification in the repository and run smoke tests. |
 | C-001 | Final report maximum is 15 pages. | VERIFIED | Prioritize high-mark sections and concise visuals. |
-| C-002 | At least two algorithms and k-fold CV are required. | VERIFIED | Use CatBoost, EBM, FT-Transformer, and five-fold CV; retain Dummy baselines and optional Logistic Regression. |
+| C-002 | At least two algorithms and k-fold CV are required. | VERIFIED | Use six headline models and five-fold CV; retain Dummy baselines and optional Logistic Regression. |
 | C-004 | No deployment is required. | VERIFIED absence plus DECIDED scope | Do not prioritize application development. |
 
 ## 8.15 Deliberately unresolved placeholders
@@ -1929,51 +2117,46 @@ The following values were produced during the context audit solely to determine 
 | Split | Stratified 80% development / 20% formal holdout, seed 42 |
 | CV | Five saved stratified outer folds on development data |
 | Primary metric | Average Precision / PR-AUC |
-| Required advanced models | CatBoost, EBM, FT-Transformer |
+| Required headline models | FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet |
+| Individual ownership | M1 FT; M2 CatBoost; M3 XGBoost; M4 LightGBM; M5 EBM; M6 TabNet |
 | Mandatory baselines | Dummy prior and most-frequent |
 | Optional benchmark | Logistic Regression |
-| Pair ownership | Pair 1 CatBoost; Pair 2 EBM; Pair 3 FT-Transformer |
-| Early stopping | Training-only inner validation inside each outer training fold |
-| Class imbalance | Model-appropriate weights/loss weighting plus threshold analysis; no pre-split resampling |
+| Early stopping | Training-only inner validation inside each outer training fold where required |
+| Class imbalance | Model-appropriate class/loss weighting plus threshold analysis; no pre-split resampling |
 | Calibration | OOF Brier/reliability assessment; development-only calibration if justified |
 | Primary capacity | Top 20%; fixed 10% and 30% sensitivity |
 | Priority score | Frozen calibrated resignation probability × frozen retention-value proxy |
 | Holdout | Used once only after model, preprocessing, calibration, proxy, capacity, strategy, and threshold freeze |
 | Negative result | Valid and required if models remain near baseline |
 
-The three advanced models are equally legitimate candidates. The project must not select CatBoost, EBM, or FT-Transformer in advance.
+No headline model is preselected as the winner. Complexity, popularity, or deep-learning status is not evidence of superior performance.
 
 ## 8.17 End-to-end workflow and experimental protocol
 
 1. Verify exact CSV filename, SHA-256, shape, schema, and target orientation.
 2. Preserve raw data unchanged.
 3. Reproduce and peer-review the data audit.
-4. Create a persistent row identifier for experimental tracking without using `Employee_ID` as a predictor.
-5. Create and save the stratified 80/20 development/formal-holdout split.
-6. Create and save five stratified outer folds within development data.
-7. Freeze the feature contract and model-specific adapter contracts.
-8. Perform EDA using development data; use target-aware plots carefully and avoid holdout-guided design.
-9. Implement mandatory Dummy baselines.
-10. Implement minimal smoke-test versions of CatBoost, EBM, and FT-Transformer.
-11. Freeze bounded search spaces.
-12. For every model and outer fold:
-    - fit all preprocessing on outer training rows only;
-    - create training-only inner validation when early stopping is required;
-    - train/tune without using outer validation or formal holdout for training control;
-    - predict the outer validation rows exactly once;
-    - save fold configuration, runtime, seed/device, failures, and probability outputs.
-13. Verify complete OOF coverage and identical row order across candidates.
-14. Calculate prediction metrics, fold uncertainty, calibration, and runtime.
-15. Select a model/preprocessing/calibration configuration using the development-only rule.
-16. Freeze thresholds, proxy design, capacity scenarios, and ranking strategies.
-17. Refit the selected configuration on the full development partition using only development-derived training controls.
+4. Create a persistent experimental row identifier without using `Employee_ID` as a predictor.
+5. **Create and save the one stratified 80/20 development/formal-holdout split.**
+6. **Create and save the five stratified outer folds within development data.**
+7. Freeze the feature contract and six model-specific adapter contracts.
+8. Perform EDA using development data without holdout-guided design.
+9. Implement mandatory Dummy baselines and optional Logistic benchmark.
+10. Implement minimal smoke-test versions of all six headline models.
+11. Freeze bounded search spaces before formal comparison.
+12. For every model and outer fold: fit preprocessing on outer training only; use training-only inner validation if required; train/tune without outer-validation or holdout training control; predict each outer-validation row exactly once; save configuration, runtime, seed/device, failures, and probabilities.
+13. Verify complete OOF coverage and identical row order/fold membership across all six candidates.
+14. Calculate prediction metrics, fold uncertainty, calibration, runtime, and valid explanation evidence.
+15. Select a model/preprocessing/calibration configuration using development-only evidence.
+16. Freeze threshold, proxy design, capacity scenarios, and ranking strategies.
+17. Refit the selected configuration on the full development partition using development-derived controls only.
 18. Access the formal holdout once for corroborative prediction and prioritization evaluation.
 19. Perform error, interpretation, subgroup, capacity, and proxy sensitivity analysis.
 20. Save artefacts, update logs, write the report, and rehearse the viva.
 
 ### Experimental fairness rule
 
-Every headline model receives a reasonable but bounded tuning opportunity. Search budgets do not need identical configuration counts, but they must be declared before results and must not be expanded merely because one model is underperforming.
+All six members receive the same development rows, outer folds, target definition, primary metric, and evaluation code. Search budgets may differ modestly by model family but must be bounded and frozen before results. A member may not expand tuning merely because their model is underperforming.
 
 ## 8.18 Architecture, repository, data handling, and leakage controls
 
@@ -1981,230 +2164,147 @@ Every headline model receives a reasonable but bounded tuning opportunity. Searc
 
 | Component | Responsibility | Required output |
 | --- | --- | --- |
-| `data_validation.py` | Verify checksum, schema, types, ranges, target orientation | validation report |
-| `split_registry.py` | Save/reload split and five outer folds | row-level split/fold registry |
-| `feature_contract.py` | Declare predictors, exclusions, types, sensitive fields | versioned feature contract |
-| `model_adapters.py` | Shared adapter interface and row-parity assertions | adapter metadata |
+| `data_validation.py` | checksum/schema/types/ranges/target checks | validation report |
+| `split_registry.py` | save/reload 80/20 split and five outer folds | row-level split/fold registry |
+| `feature_contract.py` | predictors/exclusions/types/sensitive fields | versioned feature contract |
+| `model_adapters.py` | shared adapter interface and row-parity assertions | adapter metadata |
 | `baselines.py` | Dummy and optional Logistic | OOF reference predictions |
-| `catboost_model.py` | Native categorical CatBoost training | model, parameters, OOF probabilities |
-| `ebm_model.py` | Explicit-type EBM training/explanations | model, terms, OOF probabilities |
-| `ft_transformer_model.py` | Architecture/configuration and tensor interface | model definition and metadata |
-| `torch_training.py` | FT training, early stopping, checkpoints, device/seed controls | curves, best epoch, checkpoint |
-| `calibrate.py` | Reliability, Brier, optional development-only calibration | calibration artefacts |
-| `evaluate.py` | Common prediction metrics, uncertainty, comparison | comparison tables |
-| `explain.py` | Family-valid explanations | explanation artefacts |
-| `prioritize.py` | Proxy, top-k strategies, ranking metrics | prioritization results |
-| `fairness.py` | Subgroup prediction/selection audit | subgroup tables |
+| `ft_transformer_model.py` | M1 FT architecture/tensor interface/training metadata | model, checkpoint, OOF probabilities |
+| `catboost_model.py` | M2 native-categorical CatBoost | model, parameters, OOF probabilities |
+| `xgboost_model.py` | M3 encoded-matrix XGBoost | model, encoder metadata, OOF probabilities |
+| `lightgbm_model.py` | M4 category-aware LightGBM | model, category metadata, OOF probabilities |
+| `ebm_model.py` | M5 explicit-type EBM and explanations | model, terms, OOF probabilities |
+| `tabnet_model.py` | M6 TabNet preprocessing/training/history | model, metadata, OOF probabilities |
+| `calibrate.py` | reliability/Brier/development-only calibration | calibration artefacts |
+| `evaluate.py` | common metrics/uncertainty/comparison | comparison tables |
+| `explain.py` | family-valid explanation methods | explanation artefacts |
+| `prioritize.py` | proxy/top-k strategies/ranking metrics | prioritization results |
+| `fairness.py` | subgroup prediction/selection audit | subgroup tables |
 
 ### 8.18.2 Model-adapter contract
 
 | Model | Input representation | Categorical handling | Numerical handling | Required exported metadata |
 | --- | --- | --- | --- | --- |
-| Dummy | Target-only training statistics or constant strategy | none | none | strategy, prevalence |
-| Optional Logistic | sklearn matrix in Pipeline | fold-fitted one-hot encoding with unknown handling | fold-fitted scaling | feature names, encoder/scaler state, coefficients |
-| CatBoost | pandas DataFrame or `Pool` | named native categorical columns | raw approved numerical values unless justified | categorical names/indices, parameters, tree count |
-| EBM | pandas DataFrame or compatible array | explicit nominal types | explicit continuous types; no unnecessary scaling | feature names/types, bins, terms, interactions |
-| FT-Transformer | separate continuous and categorical tensors | fold-fitted integer vocabularies; missing/unknown codes; embeddings | fold-fitted imputation and standardization | vocabularies, cardinalities, scaler/imputer state, architecture, epoch, seed/device |
+| Dummy | target statistics/constant strategy | none | none | strategy, prevalence |
+| Optional Logistic | sklearn matrix in Pipeline | fold-fitted one-hot | fold-fitted scaling | feature names, encoder/scaler, coefficients |
+| FT-Transformer | separate continuous/categorical tensors | fold-fitted integer vocabularies + embeddings | fold-fitted imputation/standardization | vocabularies, cardinalities, scaler, architecture, epoch, seed/device |
+| CatBoost | pandas DataFrame or `Pool` | named native categorical columns | raw approved numeric values unless justified | categorical names/indices, parameters, tree count |
+| XGBoost | fold-local encoded matrix | fold-fitted one-hot with unknown handling | numeric matrix; scaling not required for trees | encoder state, feature names, booster parameters |
+| LightGBM | pandas/category-aware DataFrame or documented codes | training-fold category mapping | raw approved numeric values | category mapping, feature names, booster parameters |
+| EBM | DataFrame/compatible array | explicit nominal feature types | explicit continuous types | feature names/types, bins, terms, interactions |
+| TabNet | numeric matrix + categorical metadata | fold-fitted integer codes with `cat_idxs`/`cat_dims` | fold-fitted imputation/standardization | vocabularies, cat metadata, scaler, architecture, epoch/history, seed/device |
 
-All adapters must produce predictions indexed by the same saved row IDs.
+All adapters must output probabilities indexed by the same saved row IDs.
 
 ### 8.18.3 Leakage and integrity controls
 
 - No preprocessing object is fitted on the full dataset before outer CV.
-- No category vocabulary may inspect an outer validation fold or formal holdout.
-- No early-stopping metric may use an outer validation fold or formal holdout.
+- No categorical vocabulary, encoder, scaler, binning rule, or category map may inspect outer validation or formal holdout.
+- No early-stopping metric may use outer validation or formal holdout.
 - No proxy normalizer may use the formal holdout.
 - No threshold, calibration method, capacity, or strategy is chosen from formal-holdout performance.
 - `Employee_ID` is for tracking only; raw `Hire_Date` is excluded from primary modelling.
-- Holdout rows remain inaccessible to model-pair notebooks until the freeze gate.
-- Every OOF prediction file must contain each development row exactly once per model.
-- Any failure, skipped fold, NaN probability, or row mismatch invalidates comparison until corrected.
+- Holdout rows remain inaccessible to member model notebooks until the freeze gate.
+- Every OOF file must contain each development row exactly once per model.
+- Any skipped fold, NaN probability, duplicate/missing row, or row mismatch invalidates comparison until corrected.
 
 ## 8.19 Preprocessing and EDA plan
 
 ### 8.19.1 Shared data preparation
 
-- verify column names/types and Boolean target mapping;
-- identify missing, duplicate, invalid, impossible, and construction-like values;
-- preserve raw rows unless an exclusion is explicitly justified and logged;
-- use the same predictor policy for all main models, apart from representation requirements;
-- keep `Gender` and `Age` available for the primary predictive experiment but perform sensitive-feature ablations;
-- exclude `Employee_ID` and raw `Hire_Date`;
-- preserve `Years_At_Company`;
-- fit every transformation only within the applicable training data.
+- verify checksum, columns/types, and Boolean target mapping;
+- preserve raw rows unless an exclusion is justified and logged;
+- use the same predictor policy across headline models apart from representation requirements;
+- keep `Gender` and `Age` for the primary predictive experiment but perform sensitive-feature ablations;
+- exclude `Employee_ID` and raw `Hire_Date`; preserve `Years_At_Company`;
+- fit every transformation only within applicable training data.
 
 ### 8.19.2 Model-specific preparation
 
-**CatBoost**
+**FT-Transformer (M1)** — fold-local standardized continuous tensors; fold-local categorical vocabularies with missing/unknown codes; training-only inner validation; PyTorch checkpoints; no one-hot categoricals.
 
-- preserve categorical strings and column names;
-- pass `cat_features` names/indices directly;
-- do not one-hot encode;
-- compare no class weights versus balanced weights within bounded search;
-- do not use formal holdout as `eval_set`.
+**CatBoost (M2)** — categorical strings/column names passed natively; no forced one-hot/scaling; class-weight options tested inside development CV; no holdout `eval_set`.
 
-**EBM**
+**XGBoost (M3)** — fold-local `OneHotEncoder(handle_unknown="ignore")` for categorical variables; numerical features passed without tree-unnecessary scaling; inner validation only if early stopping is used.
 
-- preserve feature names and declare nominal/continuous types;
-- inspect feature-type routing before formal CV;
-- bound main effects/interactions;
-- report the final term list and any interaction pruning.
+**LightGBM (M4)** — fold-local category mapping/pandas categorical handling; preserve feature names; no tree-unnecessary standardization; inner validation only if early stopping is used.
 
-**FT-Transformer**
+**EBM (M5)** — preserve feature names; explicit nominal/continuous feature types; bounded interactions; report final term list.
 
-- continuous predictors: training-fold imputation and standardization;
-- categorical predictors: training-fold vocabulary, explicit missing/unknown indices, exported cardinalities;
-- tensors: continuous float, categorical `int64`, binary target float for BCE-with-logits;
-- create a stratified inner validation split from outer training data only;
-- use mini-batches, checkpointing, early stopping, and device-independent reload;
-- do not one-hot encode categorical features.
+**TabNet (M6)** — fold-local categorical integer codes and `cat_idxs`/`cat_dims`; fold-local continuous scaling; training-only inner validation; save training history/model reload artefacts.
 
-**Optional Logistic Regression**
-
-- use one-hot encoding and standardization inside a Pipeline;
-- execute only after required shared infrastructure is complete.
+**Optional Logistic Regression** — fold-local one-hot + scaling inside a Pipeline; execute only after required shared infrastructure.
 
 ### 8.19.3 EDA questions and figures
 
-Minimum EDA evidence:
-
-- target prevalence and imbalance;
-- numerical distributions and suspicious ranges;
-- categorical frequencies;
-- target rate by major categorical/ordinal groups with uncertainty-aware interpretation;
-- feature redundancy/correlation, especially salary/job-title/performance construction;
-- tenure, age, weekly-hours, overtime, satisfaction, and sick-day relationships;
-- missingness/duplicates/outliers;
-- proxy-component distributions and salary-removal sensitivity;
-- sensitive-group representation;
-- clear distinction between descriptive association and causation.
+Minimum EDA evidence remains: target prevalence/imbalance; numerical/categorical distributions; target rates with cautious interpretation; feature redundancy/correlation; construction-like patterns; proxy-component distributions; sensitive-group representation; and clear association-versus-causation wording.
 
 ## 8.20 Model and algorithm selection
 
-| Model | Status | Why included | Main limitations |
+| Model | Status / owner | Why included | Main limitations |
 | --- | --- | --- | --- |
-| Dummy `prior` | Mandatory baseline | Establishes prevalence probability and PR-AUC reference | Not a learned solution |
-| Dummy `most_frequent` | Mandatory baseline | Exposes misleading majority-class accuracy | No probability ranking |
-| Logistic Regression | Optional benchmark | Transparent conventional linear reference | Basic; may miss nonlinearities; not pair-owned headline model |
-| CatBoost | Required advanced | Strong mixed-tabular model, native categoricals, nonlinear interactions | Post-hoc interpretation, tuning/runtime, calibration risk |
-| EBM | Required advanced | Nonlinear additive boosting with inspectable feature effects/interactions | Interaction growth can reduce clarity; API/environment testing |
-| FT-Transformer | Required advanced | Distinct deep-learning family; numerical/categorical feature tokens and self-attention | Greater compute, seed/device variability, less inherent explanation |
-| XGBoost | Contingency only | Reliable fallback if FT implementation is irreparably blocked | Not active; overlaps with CatBoost; requires decision |
-| Random Forest, Decision Tree, RBF-SVM | Superseded | Historical options only | Not active |
+| Dummy `prior` | Mandatory shared baseline | prevalence probability and PR-AUC reference | not learned |
+| Dummy `most_frequent` | Mandatory shared baseline | exposes misleading majority-class accuracy | no ranking |
+| Logistic Regression | Optional shared benchmark | transparent conventional reference | basic; may miss nonlinearities |
+| FT-Transformer | Required — M1 | distinct Transformer-based deep tabular model | compute, seed/device variability, explanation burden |
+| CatBoost | Required — M2 | strong mixed-tabular boosting with native categoricals | post-hoc explanations, calibration/tuning risk |
+| XGBoost | Required — M3 | mature high-performance gradient boosting | preprocessing/tuning burden; overlaps with boosting family |
+| LightGBM | Required — M4 | efficient leaf-wise boosting and fast large-table training | leaf-wise overfitting risk; categorical/version handling must be controlled |
+| EBM | Required — M5 | nonlinear but inherently interpretable additive model | interaction growth can reduce clarity |
+| TabNet | Required — M6 | attentive neural architecture designed for tabular data | compute/seed sensitivity; attention masks are not causal explanations |
+| Random Forest, Decision Tree, RBF-SVM | Superseded | historical options only | not active |
 
 ### Model comparison research questions
 
-1. Which model has the strongest and most stable development PR-AUC?
+1. Which of the six models has the strongest and most stable development PR-AUC?
 2. Are differences practically meaningful relative to fold variability?
 3. Are probabilities calibrated enough for prioritization?
-4. Does FT-Transformer justify its extra training complexity?
-5. Does CatBoost justify lower inherent transparency than EBM?
-6. Does the selected model improve top-k prioritization over repeated random selection?
+4. Do FT-Transformer or TabNet justify their extra training complexity?
+5. How do CatBoost, XGBoost, and LightGBM differ despite belonging to the boosting family?
+6. Does EBM retain useful performance while providing clearer inherent explanations?
+7. Does the selected model improve top-k prioritization over repeated random selection?
 
 ## 8.21 Tuning and configuration plan
 
 ### 8.21.1 Global configuration
 
-- outer comparison: five saved stratified folds;
-- primary scoring: Average Precision;
-- fixed base seed: 42;
-- search spaces frozen before results;
-- maximum active required candidates: CatBoost, EBM, FT-Transformer;
-- no formal-holdout tuning;
-- log configuration, fold, runtime, device, seed, failures, and output paths;
-- use bounded candidate lists/random search rather than exhaustive Cartesian grids.
+- five saved stratified outer folds; Average Precision primary scoring; base seed 42;
+- all search spaces frozen before results and formal holdout kept inaccessible;
+- bounded candidate lists rather than exhaustive grids;
+- log configuration, fold, runtime, device/seed, failures, and output paths;
+- no member may change the shared split/folds.
 
 ### 8.21.2 Optional Logistic Regression search
 
-Maximum eight configurations. Candidate dimensions:
+Maximum eight configurations across compatible penalty/`C`/class-weight choices. It must not delay the six required models.
 
-- penalty `l1`/`l2` with compatible solver;
-- `C` in a compact logarithmic range;
-- `class_weight` none/balanced.
+### 8.21.3 FT-Transformer search — M1
 
-This benchmark must not delay required models.
+Maximum twelve staged configurations. Candidate blocks 2/3; block dimension 64/128/192; heads 4/8 with divisibility; attention/FFN dropout 0.1/0.2; AdamW learning rate 1e-4/3e-4/1e-3; weight decay 1e-6/1e-5/1e-4; batch 256/512; positive-class weight none or training-fold ratio. Maximum 100 epochs; patience 12 on inner-validation PR-AUC. Save architecture, vocabularies, scaler, curves, selected epoch, seed/device, and reload test.
 
-### 8.21.3 CatBoost search
+### 8.21.4 CatBoost search — M2
 
-Maximum twelve configurations. Candidate dimensions:
+Maximum twelve configurations over iterations 300/600/1000; depth 4/6/8; learning rate 0.03/0.05/0.1; L2 3/5/10; random strength 0/1/2; class weights none/balanced. Use `Logloss`, seed 42, and only training-inner validation for early stopping if enabled.
 
-- iterations: 300, 600, 1000;
-- depth: 4, 6, 8;
-- learning rate: 0.03, 0.05, 0.1;
-- L2 regularization: 3, 5, 10;
-- random strength: 0, 1, 2;
-- class weighting: none or balanced.
+### 8.21.5 XGBoost search — M3
 
-Use `Logloss`, seed 42, no uncontrolled file writing. Use fixed iterations or training-only inner validation; never outer validation/formal holdout for early stopping.
+Maximum twelve configurations. Primary candidates: `n_estimators` 300/600/1000; `max_depth` 3/5/7; learning rate 0.03/0.05/0.1; `min_child_weight` 1/5/10; subsample 0.8/1.0; `colsample_bytree` 0.8/1.0; `reg_lambda` 1/5/10; `scale_pos_weight` 1 or training-fold negative/positive ratio. Use `binary:logistic`, `tree_method="hist"`, seed 42. Early stopping, if used, uses training-inner validation only.
 
-### 8.21.4 EBM search
+### 8.21.6 LightGBM search — M4
 
-Maximum ten configurations. Candidate dimensions:
+Maximum twelve configurations. Primary candidates: `n_estimators` 300/600/1000; `num_leaves` 15/31/63; `max_depth` -1/6/10; learning rate 0.03/0.05/0.1; `min_child_samples` 20/50/100; subsample 0.8/1.0; `colsample_bytree` 0.8/1.0; `reg_lambda` 0/1/5; class weights none/balanced. Use binary objective and seed 42. Early-stopping callbacks may only see training-inner validation.
 
-- learning rate: 0.005, 0.015, 0.03;
-- max leaves: 2 or 3;
-- minimum samples per leaf: 2, 4, 10;
-- interactions: 0, 5, 10;
-- bounded maximum rounds and early-stopping patience.
+### 8.21.7 EBM search — M5
 
-Prefer fewer interactions under practical equivalence. Keep internal validation inside outer training.
+Maximum ten configurations over learning rate 0.005/0.015/0.03; max leaves 2/3; minimum samples per leaf 2/4/10; interactions 0/5/10; bounded rounds/patience. Prefer fewer interactions under practical equivalence; internal validation stays inside outer training.
 
-### 8.21.5 FT-Transformer search
+### 8.21.8 TabNet search — M6
 
-Maximum twelve staged configurations, not a full grid.
+Maximum ten staged configurations. Candidate `n_d`/`n_a` 8/16/32; steps 3/5/7; gamma 1.2/1.5; sparse penalty 1e-5/1e-4/1e-3; optimizer learning rate 0.01/0.02; batch 1024/2048; virtual batch 128/256 with divisibility; class balancing off/on. Maximum 150 epochs and patience 15. Use training-inner validation only; save training history, preprocessing/category metadata, selected epoch, seed/device, and reload artefact.
 
-**Core architecture candidates**
+### 8.21.9 Threshold, calibration, proxy, and capacity selection
 
-- blocks: 2 or 3;
-- token/block dimension: 64, 128, or 192;
-- attention heads: 4 or 8, with divisibility enforced;
-- attention dropout: 0.1 or 0.2;
-- feed-forward dropout: 0.1 or 0.2.
-
-**Training candidates**
-
-- AdamW learning rate: 1e-4, 3e-4, or 1e-3;
-- weight decay: 1e-6, 1e-5, or 1e-4;
-- batch size: 256 or 512;
-- positive-class loss weight: none or outer-training negative/positive ratio;
-- maximum 100 epochs;
-- early stopping patience 12 on inner-validation PR-AUC.
-
-Use `rtdl_revisiting_models.FTTransformer`; use `model.make_parameter_groups()` or package default optimizer. Save the best epoch, training curves, architecture, vocabularies, scaler state, seed, and device. Run an additional-seed sensitivity for the selected configuration when feasible.
-
-### 8.21.6 Threshold and calibration selection
-
-- reference threshold: 0.5;
-- secondary threshold: F1-maximizing threshold from pooled OOF development probabilities;
-- report precision-recall trade-off rather than only one threshold;
-- compare Brier score and reliability curves;
-- test sigmoid/isotonic calibration only from development evidence;
-- freeze raw versus calibrated probability source before formal holdout.
-
-### 8.21.7 Retention-value proxy configuration
-
-Primary proxy:
-
-`V_i = (normalized Performance_i + normalized Salary_i + normalized Tenure_i) / 3`
-
-Each tilde denotes development-fitted min-max normalization. Sensitivities:
-
-- no-salary proxy;
-- epsilon-adjusted normalized multiplicative proxy.
-
-No proxy is actual employee worth.
-
-### 8.21.8 Capacity and strategy configuration
-
-Capacities: 10%, 20% primary, 30%.
-
-Strategies:
-
-- repeated random selection at same capacity;
-- top-k calibrated risk;
-- top-k proxy value;
-- top-k calibrated risk × proxy value;
-- reference threshold with actual selected fraction reported.
+Reference threshold 0.5 plus a secondary F1-maximizing threshold derived only from pooled development OOF predictions. Assess Brier/reliability for all six models; calibration choice remains development-only. The retention-value proxy, 20% primary capacity, 10%/30% sensitivities, and ranking strategies remain frozen before formal holdout.
 
 ## 8.22 Evaluation and comparison framework
 
@@ -2215,78 +2315,57 @@ Strategies:
 | Primary ranking | Average Precision / PR-AUC |
 | Secondary discrimination | ROC-AUC |
 | Threshold performance | precision, recall, F1, balanced accuracy, confusion matrix; accuracy with warning |
-| Stability | fold values, mean, standard deviation, failures |
-| Calibration | Brier score, reliability curve, calibration slope/intercept when implemented |
-| Runtime/resources | fit time, prediction time, device, epoch/tree/round count, parameter count for FT when available |
+| Stability | five fold values, mean, standard deviation, failures |
+| Calibration | Brier score, reliability curve, optional calibration slope/intercept |
+| Runtime/resources | fit/predict time, device, tree/round/epoch count; deep-model parameter count when feasible |
 | Reproducibility | seed, environment, reload test, deterministic limitations |
-| Interpretation | EBM term completeness, CatBoost post-hoc explanation, FT permutation/ablation if valid |
+| Interpretation | family-valid EBM/tree/deep explanation evidence |
 | Complexity | preprocessing burden, training code, artefact count, compute and maintenance |
 
 ### 8.22.2 Prioritization metrics
 
-- precision@capacity;
-- recall@capacity;
-- lift@capacity;
-- captured-positive count;
-- value-weighted recall@capacity;
-- selected proxy-value share;
-- repeated-random distribution and uncertainty.
+Precision@capacity, Recall@capacity, Lift@capacity, captured-positive count, value-weighted recall@capacity, selected proxy-value share, and repeated-random uncertainty.
 
 ### 8.22.3 Model and strategy selection rule
 
-1. Confirm every candidate has complete OOF coverage.
-2. Rank by mean development PR-AUC.
-3. Inspect fold variation and practical difference.
-4. Reject candidates with invalid leakage, unstable failures, or unreproducible artefacts.
-5. Compare calibration because probability enters the priority score.
-6. Compare runtime, complexity, interpretation, and subgroup behaviour.
-7. Under practical equivalence, prefer stronger reproducibility and valid interpretability over unnecessary complexity.
-8. Freeze the winner before formal holdout.
-9. Do not call any model operationally useful unless it exceeds the predefined usable-signal and top-k lift rules.
+1. Confirm complete OOF coverage for all six required models.
+2. Rank by mean development PR-AUC and inspect fold variation/practical difference.
+3. Reject leakage, unstable failures, row mismatches, or unreproducible artefacts.
+4. Compare calibration because probabilities feed the priority score.
+5. Compare runtime, complexity, valid interpretation, and subgroup behaviour.
+6. Under practical equivalence, prefer stronger reproducibility and clearer valid interpretation over unnecessary complexity.
+7. Freeze the winner before formal holdout.
+8. Do not call a model operationally useful unless predefined usable-signal and top-k lift rules are met.
 
 ### 8.22.4 Uncertainty and robustness
 
-- report all five fold values, mean, and standard deviation;
-- bootstrap formal-holdout metrics when defined;
-- compare selected FT configuration across extra seeds when feasible;
-- report class-weight sensitivity;
-- report sensitive-feature ablations;
-- report capacity and proxy sensitivity;
-- explicitly state when uncertainty prevents a confident winner.
+Report all fold values/mean/SD; bootstrap formal-holdout metrics when defined; run additional-seed sensitivity for selected deep configurations when feasible; report class-weight, sensitive-feature, capacity, and proxy sensitivity; state when uncertainty prevents a confident winner.
 
 ## 8.23 Explainability and interpretability plan
 
-### Explainable Boosting Machine
+### EBM — M5
+Global feature-effect functions, retained interactions, local additive contributions, shape/sparse-region inspection; associations only, not causes.
 
-- global feature-effect functions;
-- retained pairwise interactions;
-- local additive contribution breakdowns;
-- inspection for implausible shapes and sparse-region instability;
-- explicit statement that effects are model associations, not causes.
+### CatBoost — M2
+Native importance and/or SHAP when reproducible and understood; global summary plus selected local cases; all explanations labelled post-hoc model behaviour.
 
-### CatBoost
+### XGBoost — M3
+Gain/cover/split importance and/or SHAP when validated; preserve encoded-to-original feature mapping; do not infer causality.
 
-- native feature importance and/or SHAP only when reproducible and understood;
-- global summary and selected local cases;
-- dependence plots only with sample-size/context warnings;
-- label all explanations as post-hoc model-behaviour explanations.
+### LightGBM — M4
+Split/gain importance and/or SHAP when validated; preserve category/feature mapping; explain leaf-wise model behaviour without causal claims.
 
-### FT-Transformer
+### FT-Transformer — M1
+Permutation importance, grouped ablation/masking, or validated gradient attribution. Raw attention weights must not be treated as causal or automatically as feature importance.
 
-FT-Transformer is not inherently interpretable. Use only methods the group can validate and explain:
-
-- permutation importance on untouched outer-validation/holdout predictions;
-- grouped feature ablation or masking sensitivity;
-- optional gradient-based attribution only after implementation validation;
-- do not equate raw attention weights with feature importance or causality.
+### TabNet — M6
+Feature importance and attentive masks may be reported as model-behaviour diagnostics only after implementation validation. They are not causal explanations. Complement with permutation/ablation where feasible.
 
 ### Optional Logistic Regression
-
-Report standardized/encoded coefficients with category/reference-level cautions. Coefficients are associative, not causal.
+Report encoded coefficients with reference-level cautions; associative, not causal.
 
 ### Cross-model explanation comparison
-
-Compare whether the models emphasize similar features, where they disagree, and whether explanation stability changes across folds. Do not force methods into a single numeric scale when their meanings differ.
+Compare broad agreement/disagreement and stability across folds. Do not force family-specific explanation measures onto one numeric scale.
 
 ## 8.24 Ethics, fairness, privacy, security, and risk analysis
 
@@ -2336,27 +2415,32 @@ Run full, no-Gender, and when feasible no-Gender/no-Age sensitivity models. Sepa
 | T-002 | Raw data unchanged |
 | T-003 | Split/outer-fold reproducibility and no overlap |
 | T-004 | Every transformation fitted only on allowed training rows |
-| T-005 | Identical OOF row coverage across CatBoost, EBM, FT-Transformer |
+| T-005 | Identical OOF row coverage across FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet |
 | T-006 | Dummy baselines present |
-| T-007 | CatBoost receives named native categorical values, not one-hot matrix |
-| T-008 | EBM feature names/types and interactions valid |
-| T-009 | FT categorical vocabularies fitted on outer training only; unknown/missing codes work |
-| T-010 | FT tensor dtypes/shapes/cardinalities valid |
-| T-011 | Inner validation contains only outer-training rows |
-| T-012 | Search counts do not exceed frozen caps |
-| T-013 | No holdout access before freeze gate |
-| T-014 | Probability range, NaN, and row-index checks |
-| T-015 | Calibration uses development-only data |
-| T-016 | Proxy normalizers fitted development-only |
-| T-017 | Capacity selections contain exactly expected k records |
-| T-018 | Random baseline reproducible and repeated |
-| T-019 | CatBoost native reload reproduces predictions |
-| T-020 | EBM reload reproduces predictions |
-| T-021 | FT state_dict plus preprocessing reload reproduces predictions on CPU |
-| T-022 | Explanation artefacts reproducible and correctly labelled |
-| T-023 | Subgroup denominators and unstable-rate rules enforced |
-| T-024 | Cross-document model/version/team consistency |
-| T-025 | Fresh-kernel notebook execution and unit tests pass |
+| T-007 | CatBoost receives named native categorical values, not a forced one-hot matrix |
+| T-008 | XGBoost encoder fitted on outer training only; unknown categories work |
+| T-009 | LightGBM category mapping fitted on outer training only; unknown/missing handling works |
+| T-010 | EBM feature names/types and interactions valid |
+| T-011 | FT categorical vocabularies fitted on outer training only; tensor dtypes/shapes/cardinalities valid |
+| T-012 | TabNet categorical vocabularies/cat metadata and numerical scaling fitted on outer training only |
+| T-013 | Inner validation contains only outer-training rows |
+| T-014 | Search counts do not exceed frozen caps |
+| T-015 | No holdout access before freeze gate |
+| T-016 | Probability range, NaN, and row-index checks |
+| T-017 | Calibration uses development-only data |
+| T-018 | Proxy normalizers fitted development-only |
+| T-019 | Capacity selections contain exactly expected k records |
+| T-020 | Random baseline reproducible and repeated |
+| T-021 | FT-Transformer reload reproduces predictions |
+| T-022 | CatBoost reload reproduces predictions |
+| T-023 | XGBoost reload plus encoder reproduces predictions |
+| T-024 | LightGBM reload plus category metadata reproduces predictions |
+| T-025 | EBM reload reproduces predictions |
+| T-026 | TabNet reload plus preprocessing/category metadata reproduces predictions |
+| T-027 | Explanation artefacts reproducible and correctly labelled |
+| T-028 | Subgroup denominators and unstable-rate rules enforced |
+| T-029 | Cross-document model/version/team consistency |
+| T-030 | Fresh-kernel notebook execution and unit tests pass |
 
 ### Review gates
 
@@ -2378,15 +2462,18 @@ Run full, no-Gender, and when feasible no-Gender/no-Age sensitivity models. Sepa
 | Data audit/EDA | saved tables, figures, insights, limitations |
 | Split registry | development/holdout and outer-fold membership |
 | Prediction artefacts | OOF and formal-holdout probabilities with row IDs |
-| CatBoost artefacts | native model, metadata, parameters, explanations |
-| EBM artefacts | model, feature types, terms/interactions, explanations |
-| FT artefacts | state_dict, architecture, vocabularies, scaler/imputer, epoch, curves, seed/device |
+| FT-Transformer artefacts | state_dict, architecture, vocabularies, scaler/imputer, epoch, curves, seed/device, reload evidence |
+| CatBoost artefacts | native model, metadata, parameters, explanations, reload evidence |
+| XGBoost artefacts | model/booster, fold-local encoder metadata, parameters, explanations, reload evidence |
+| LightGBM artefacts | model/booster, category metadata, parameters, explanations, reload evidence |
+| EBM artefacts | model, feature types, terms/interactions, explanations, reload evidence |
+| TabNet artefacts | saved model, preprocessing/category metadata, architecture/training history, seed/device, reload evidence |
 | Evaluation | common metrics, calibration, uncertainty, runtime, errors |
 | Prioritization | strategy/capacity/proxy comparisons |
 | Ethics/fairness | subgroup tables, risks, mitigations, limitations |
 | Report | professional, evidence-backed, within formal page limit |
 | Presentation | required proposal/final content as applicable |
-| Viva package | methodology, results, pair ownership, question bank |
+| Viva package | methodology, results, individual ownership, question bank |
 | AI-use declaration | actual tools, tasks, extent, verification, ownership |
 
 ## 8.27 Demonstration or prototype specification
@@ -2410,7 +2497,7 @@ Do not expose real-looking employee names or imply operational deployment.
 | 1. Introduction and Problem Statement | two-stage problem, scope, stakeholders, research questions |
 | 2. Dataset Description | source, schema, target, size, quality, limitations |
 | 3. Preprocessing and EDA | shared audit, model-specific adapters, visuals, insights |
-| 4. Model Design and Implementation | Dummy; optional Logistic; CatBoost; EBM; FT; bounded tuning; fold-local early stopping |
+| 4. Model Design and Implementation | Dummy; optional Logistic; FT-Transformer; CatBoost; XGBoost; LightGBM; EBM; TabNet; bounded tuning; fold-local early stopping |
 | 5. Evaluation and Comparison | five-fold OOF, PR-AUC, calibration, stability, runtime, interpretation, formal holdout |
 | 6. Ethical Considerations and Bias Mitigation | harms, subgroup analysis, proxy risks, prohibited use |
 | 7. AI Tool Usage Declaration | actual tools/tasks/extent/verification/ownership |
@@ -2424,7 +2511,8 @@ Do not expose real-looking employee names or imply operational deployment.
 - Emphasize the 30-mark evaluation/comparison evidence.
 - Report fold variation and no-signal possibility.
 - Do not describe Logistic Regression as a main advanced model.
-- Do not claim FT-Transformer should win because it is deep learning.
+- Do not claim FT-Transformer or TabNet should win because they are deep learning.
+- Do not assume CatBoost, XGBoost, and LightGBM are redundant simply because all are gradient-boosting models; compare their actual evidence.
 - Keep all claims traceable to saved artefacts.
 
 ## 8.29 Proposal presentation plan
@@ -2436,48 +2524,44 @@ Do not expose real-looking employee names or imply operational deployment.
 | 1 | Title, group, module, two-stage objective | Member 1 |
 | 2 | Dataset source, size, target, feature groups | Member 2 |
 | 3 | Data quality, imbalance, construction/provenance limitations | Member 2 |
-| 4 | Real-world framing and why prediction alone is insufficient | Member 3 |
-| 5 | Top-20% capacity and retention-value proxy | Member 3 |
-| 6 | Three model families and why they are diverse | Member 4 |
-| 7 | CatBoost, EBM, FT-Transformer model-specific preprocessing | Member 5 |
-| 8 | Planned CV, tuning, calibration, and metrics | Member 5 |
-| 9 | Ethics, subgroup checks, weak-signal contingency | Member 6 |
-| 10 | AI-tool plan, team division, next steps | Member 6 |
+| 4 | Real-world framing and retention-capacity simulation | Member 3 |
+| 5 | Six-model portfolio and one-model-per-member ownership | Member 3 |
+| 6 | Model-specific preprocessing across boosting, EBM, and deep models | Member 4 |
+| 7 | Shared 80/20 split, five-fold CV, leakage controls | Member 4 |
+| 8 | Tuning, PR-AUC, calibration, and comparison | Member 5 |
+| 9 | Prioritization, ethics, subgroup checks, weak-signal contingency | Member 5 |
+| 10 | AI-tool plan, teamwork, next steps | Member 6 |
 
 ### 8.29.2 Slide content rules
 
-- State that the assignment requires at least two algorithms; the group chose three advanced families.
-- Describe Dummy as a baseline and Logistic Regression as optional.
-- Explain one model per two-member pair.
+- State that the assignment requires at least two algorithms; the group will train six headline models, one per member.
+- Present Dummy as a baseline and Logistic Regression as optional.
+- Explain that the six headline models span boosted-tree, interpretable additive, and deep-tabular approaches.
 - Do not imply completed model results at proposal stage.
 - Do not guarantee full marks or model superiority.
-- Explain that all models use identical rows/folds with different representations.
-- Make the performance-versus-interpretability-versus-complexity comparison visible.
+- Explain that all models use identical saved rows/folds with model-specific fold-local preprocessing.
+- Make performance, calibration, stability, interpretability, and computational complexity trade-offs visible.
 
 ## 8.30 Team responsibility map
 
-### 8.30.1 Pair ownership
+### 8.30.1 Individual model ownership
 
-| Pair | Members | Required model | Additional rubric ownership | Cross-review |
-| --- | --- | --- | --- | --- |
-| Pair 1 | Members 1-2 | CatBoost | data audit, cleaning decisions, split/fold registry, shared feature contract | Review Pair 3 FT preprocessing/row parity |
-| Pair 2 | Members 3-4 | EBM | EDA, visualization, inherent interpretation, subgroup-analysis support | Review Pair 1 CatBoost explanation/configuration |
-| Pair 3 | Members 5-6 | FT-Transformer | common evaluator, calibration, training artefacts, prioritization integration | Review Pair 2 EBM feature types/interactions |
+| Member | Required headline model | Primary responsibility | Closely related shared responsibility |
+| --- | --- | --- | --- |
+| Member 1 | FT-Transformer | preprocessing adapter, architecture, PyTorch training/tuning, checkpoints, OOF probabilities | deep-model seed/device/reload documentation |
+| Member 2 | CatBoost | native-categorical training/tuning, OOF probabilities, model explanation artefacts | data validation, split/feature-contract support |
+| Member 3 | XGBoost | fold-local encoder, training/tuning, OOF probabilities, explanation artefacts | EDA and visualization support |
+| Member 4 | LightGBM | category-aware training/tuning, OOF probabilities, explanation artefacts | common evaluator/runtime/comparison integration |
+| Member 5 | EBM | feature types, training/tuning, terms/interactions/local explanations | interpretability and subgroup-analysis support |
+| Member 6 | TabNet | fold-local category/scaler adapter, neural training/tuning, history/reload, OOF probabilities | deep-model training-curve and artefact QA |
 
-### 8.30.2 Individual numbered roles
+### 8.30.2 Ownership rule
 
-| Member | Primary role | Secondary/shared role |
-| --- | --- | --- |
-| Member 1 | CatBoost implementation/tuning | project integration, requirements, Git workflow |
-| Member 2 | data audit, preprocessing, split/fold registry | CatBoost adapter tests and documentation |
-| Member 3 | EBM implementation/tuning | EDA and feature-effect interpretation |
-| Member 4 | EDA/visuals, EBM explanations | subgroup analysis and report figures |
-| Member 5 | FT architecture/training/checkpoints | common OOF evaluator and runtime logging |
-| Member 6 | FT preprocessing/validation | calibration, prioritization, ethics, AI-use consistency |
+Each member must personally be able to explain their model's input representation, core idea, important hyperparameters, class-imbalance handling, training process, OOF evaluation, calibration implications, limitations, and saved artefacts. Shared code is allowed, but individual ownership must remain visible in commits/notebooks/results/viva evidence.
 
 ### 8.30.3 Shared obligations
 
-All members must understand the dataset, split, leakage controls, PR-AUC, calibration, model roles, prioritization, limitations, ethics, and actual results. Every pair must peer-review code outside its own workstream. Report writing, presentation practice, and final QA are shared.
+All members must understand the dataset, shared split/folds, leakage controls, PR-AUC, calibration, baselines, model comparison, prioritization, limitations, ethics, and actual results. Every member must peer-review at least one other member's model output or shared component. Report writing, presentation practice, prioritization integration, and final QA are shared.
 
 ## 8.31 Timeline and milestones
 
@@ -2485,12 +2569,12 @@ Use milestone dependencies rather than exact administrative dates.
 
 | Milestone | Completion evidence |
 | --- | --- |
-| M1 Context/model decision synchronized | v4.2.0 MD/DOCX and repository commit |
+| M1 Six-model decision synchronized | v4.3.0 MD/DOCX and repository commit |
 | M2 Audit/EDA complete | fresh-kernel outputs and peer review |
-| M3 Split/adapters complete | saved registry and passing tests |
-| M4 Three minimal models smoke-tested | fit/predict/reload for CatBoost, EBM, FT |
+| M3 Shared split/folds + feature contract complete | saved registry and passing integrity tests |
+| M4 Six minimal models smoke-tested | fit/predict/reload evidence for FT, CatBoost, XGBoost, LightGBM, EBM, TabNet |
 | M5 Search spaces frozen | configuration commit |
-| M6 OOF comparison complete | complete predictions and metrics |
+| M6 Six-model OOF comparison complete | complete predictions and common metrics |
 | M7 Model/calibration frozen | decision record |
 | M8 Formal holdout evaluated once | access record and saved outputs |
 | M9 Prioritization/fairness complete | strategy and subgroup tables |
@@ -2502,13 +2586,13 @@ Use milestone dependencies rather than exact administrative dates.
 | --- | --- |
 | Dataset and target | VERIFIED |
 | Two-stage scope | DECIDED |
-| CatBoost/EBM/FT registry | DECIDED |
-| Three two-member pairs | DECIDED |
+| Six-model headline registry | DECIDED |
+| One model per member ownership | DECIDED |
 | Dummy baseline | DECIDED mandatory |
 | Logistic benchmark | DECIDED optional |
 | Audit notebook | IN PROGRESS / FUNCTIONAL |
-| Split/fold registry | TO BE GENERATED |
-| Model adapters | TO BE GENERATED |
+| Shared split/fold registry | TO BE GENERATED — NEXT TECHNICAL STEP |
+| Six model adapters | TO BE GENERATED |
 | Formal model results | TO BE GENERATED |
 | Formal holdout access | NOT YET PERMITTED |
 | Prioritization results | TO BE GENERATED |
@@ -2518,27 +2602,33 @@ Use milestone dependencies rather than exact administrative dates.
 
 ### 8.33.1 Experiment register
 
-| Experiment ID | Model | Fold/seed | Configuration | Device | Runtime | Output path | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| TO BE GENERATED | | | | | | | |
+| Experiment ID | Member | Model | Fold/seed | Configuration | Device | Runtime | Output path | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TO BE GENERATED | | | | | | | | |
 
 ### 8.33.2 Cross-validation comparison
 
-| Model | Mean PR-AUC | SD | Fold values | ROC-AUC | Brier | F1 rule | Runtime | Failures |
-| --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | --- |
-| Dummy prior | | | | | | | | |
-| Optional Logistic | | | | | | | | |
-| CatBoost | | | | | | | | |
-| EBM | | | | | | | | |
-| FT-Transformer | | | | | | | | |
+| Model | Owner | Mean PR-AUC | SD | Fold values | ROC-AUC | Brier | F1 rule | Runtime | Failures |
+| --- | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | --- |
+| Dummy prior | Shared | | | | | | | | |
+| Optional Logistic | Shared | | | | | | | | |
+| FT-Transformer | M1 | | | | | | | | |
+| CatBoost | M2 | | | | | | | | |
+| XGBoost | M3 | | | | | | | | |
+| LightGBM | M4 | | | | | | | | |
+| EBM | M5 | | | | | | | | |
+| TabNet | M6 | | | | | | | | |
 
 ### 8.33.3 Complexity and evidence comparison
 
-| Model | Representation | Interpretability | Training complexity | Artefact complexity | Reproducibility | Practical conclusion |
-| --- | --- | --- | --- | --- | --- | --- |
-| CatBoost | | | | | | |
-| EBM | | | | | | |
-| FT-Transformer | | | | | | |
+| Model | Owner | Representation | Interpretability | Training complexity | Artefact complexity | Reproducibility | Practical conclusion |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| FT-Transformer | M1 | | | | | | |
+| CatBoost | M2 | | | | | | |
+| XGBoost | M3 | | | | | | |
+| LightGBM | M4 | | | | | | |
+| EBM | M5 | | | | | | |
+| TabNet | M6 | | | | | | |
 
 ### 8.33.4 Formal-holdout prediction evaluation
 
@@ -2577,11 +2667,14 @@ Use milestone dependencies rather than exact administrative dates.
 
 ### 8.33.9 Explainability and error analysis template
 
-| Model | Method | Global evidence | Local/error cases | Stability | Valid interpretation | Limitations |
-| --- | --- | --- | --- | --- | --- | --- |
-| CatBoost | | | | | | |
-| EBM | | | | | | |
-| FT-Transformer | | | | | | |
+| Model | Owner | Method | Global evidence | Local/error cases | Stability | Valid interpretation | Limitations |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| FT-Transformer | M1 | | | | | | |
+| CatBoost | M2 | | | | | | |
+| XGBoost | M3 | | | | | | |
+| LightGBM | M4 | | | | | | |
+| EBM | M5 | | | | | | |
+| TabNet | M6 | | | | | | |
 
 ### 8.33.10 Final conclusion template
 
@@ -2589,8 +2682,9 @@ Use milestone dependencies rather than exact administrative dates.
 - Practical-equivalence assessment:
 - Formal-holdout corroboration:
 - Calibration conclusion:
-- FT complexity justified?:
-- CatBoost transparency trade-off justified?:
+- Did either deep model justify added complexity?:
+- Boosting-family comparison conclusion:
+- EBM interpretability/performance conclusion:
 - Prioritization lift over random:
 - Proxy/capacity sensitivity:
 - Subgroup findings:
@@ -2649,7 +2743,8 @@ Use milestone dependencies rather than exact administrative dates.
 | AI-008 | 2026-08-01 | ChatGPT - GPT-5.6 Thinking | Formalized resignation-risk plus constrained retention prioritization; defined capacity, proxies, strategies, metrics, safeguards, and v4.0 context. | Extensive | Rechecked assignment text, preserved dataset evidence, validated Markdown/YAML, rendered Word. | User approved scope; group owns implementation. |
 | AI-009 | 2026-08-05 | ChatGPT - GPT-5.6 Thinking | Reviewed model options, researched CatBoost/InterpretML/scikit-learn behaviour, replaced Random Forest/Decision Tree with CatBoost/EBM, and regenerated v4.1 context. | Extensive | Preserved formal requirements and dataset facts; validated model references; rendered and inspected Word. | User approved; group owns execution. |
 | AI-010 | 2026-08-06 | ChatGPT - GPT-5.6 Thinking | Recorded canonical repository, removed nonessential handoff gaps, aligned requirement IDs, corrected Word tables, and synchronized v4.1.1. | Extensive | Validated YAML, consistency searches, DOCX generation, structural and visual QA. | User approved; group owns repository maintenance. |
-| AI-011 | 2026-08-06 | ChatGPT - GPT-5.6 Thinking | Reviewed v4.1.1, verified primary CatBoost/InterpretML/FT-Transformer documentation, changed the required registry to CatBoost/EBM/FT-Transformer, defined three pair workstreams, added FT preprocessing/tuning/evaluation/artefact rules, removed nonessential administrative timing from active requirement extracts, and regenerated synchronized v4.2.0 files. | Extensive | Parsed and validated YAML, searched superseded model/version statements, generated DOCX from canonical Markdown, rendered every page, visually inspected layouts, and compared extracted DOCX content against Markdown. | User approved the model decision; group owns implementation, testing, repository commit, and final academic use. |
+| AI-011 | 2026-08-06 | ChatGPT - GPT-5.6 Thinking | Created v4.2.0 three-model / three-pair methodology (CatBoost, EBM, FT-Transformer). | Extensive | YAML/content/render QA. | Superseded by v4.3.0 for active model registry and ownership. |
+| AI-012 | 2026-08-07 | ChatGPT - GPT-5.6 Sol | Updated the handoff to six individually owned headline models; added XGBoost, LightGBM, and TabNet preprocessing/search/artefact rules; retained shared split/fold/holdout/evaluation safeguards; regenerated synchronized v4.3.0 Markdown and Word files. | Extensive | Reviewed supplied v4.2.0 files, checked current official XGBoost/LightGBM/TabNet APIs, validated machine-readable YAML and stale-reference searches, rendered/inspected Word. | User directed the six-model update; group owns implementation, testing, and academic use. |
 
 Future records must include actual tool/version if known, precise tasks, extent, verification, retained evidence, and human ownership.
 
@@ -2661,14 +2756,18 @@ Future records must include actual tool/version if known, precise tasks, extent,
 | Q-032 | 2026-08-05 | SUPERSEDED | Two-advanced-model registry | CatBoost and EBM only | Earlier user decision | Superseded by Q-039 |
 | Q-033 | 2026-08-05 | DECIDED | Earlier core models | Random Forest and Decision Tree removed | User | Explicit reinstatement before holdout |
 | Q-034 | 2026-08-05 | SUPERSEDED IN PART | Model-specific preprocessing | CatBoost/EBM rules retained; expanded for FT | User/method requirements | Q-040 |
-| Q-035 | 2026-08-05 | SUPERSEDED IN PART | Performance-transparency rule | Expanded to performance-calibration-stability-interpretability-complexity across three models | User | Q-041 |
+| Q-035 | 2026-08-05 | SUPERSEDED IN PART | Performance-transparency rule | Expanded to performance-calibration-stability-interpretability-complexity across the then-active model set | User | Q-041 |
 | Q-036 to Q-038 | 2026-08-05 to 2026-08-06 | DECIDED | Dual-file handoff, environment, repository | Retained | User | Logged change |
-| Q-039 | 2026-08-06 | DECIDED | Required advanced model registry | CatBoost, EBM, and FT-Transformer; Dummy mandatory; Logistic optional | Explicit user decision | Higher-authority requirement or logged pre-holdout decision |
+| Q-039 | 2026-08-06 | SUPERSEDED | Required advanced model registry | CatBoost, EBM, FT-Transformer; Dummy mandatory; Logistic optional | Earlier user decision | Superseded by Q-045 |
 | Q-040 | 2026-08-06 | DECIDED | FT-Transformer protocol | RTDL/PyTorch, fold-local standardization/vocabularies, embeddings, training-only inner validation, bounded search, checkpoint/reload | User approval plus official implementation guidance | Verified incompatibility plus approved redesign |
-| Q-041 | 2026-08-06 | DECIDED | Model selection | Compare three advanced models on common OOF evidence, calibration, stability, runtime, reproducibility, and valid interpretation; use practical equivalence | Methodological review | Logged pre-holdout change |
-| Q-042 | 2026-08-06 | DECIDED | Team division | One advanced model per two-member pair with additional rubric ownership and cross-review | Explicit user decision | Group-approved role revision |
-| Q-043 | 2026-08-06 | DECIDED | Optional/fallback models | Logistic optional; RBF-SVM superseded; XGBoost contingency-only with explicit substitution decision | Explicit user decision and feasibility review | Logged pre-holdout change |
+| Q-041 | 2026-08-06 | SUPERSEDED IN PART | Model selection | Common OOF/calibration/stability/runtime/reproducibility/interpretation rule retained and expanded to six models | Methodological review | Q-048 |
+| Q-042 | 2026-08-06 | SUPERSEDED | Team division | One advanced model per two-member pair | Earlier user decision | Superseded by Q-046 |
+| Q-043 | 2026-08-06 | SUPERSEDED IN PART | Optional/fallback models | Logistic optional and RBF-SVM superseded retained; XGBoost contingency status superseded | Earlier user decision | Q-045 |
 | Q-044 | 2026-08-06 | DECIDED | Formal-source handoff content | Keep project-relevant requirement extracts; exclude nonessential exact administrative timing/submission logistics from active handoff | Prior user cleanup instruction | Need for exact official wording |
+| Q-045 | 2026-08-07 | DECIDED | Six-model headline registry | FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet; Dummy mandatory; Logistic optional | Explicit user decision | Higher-authority requirement or logged pre-holdout change |
+| Q-046 | 2026-08-07 | DECIDED | Individual model ownership | M1 FT; M2 CatBoost; M3 XGBoost; M4 LightGBM; M5 EBM; M6 TabNet | Explicit user decision / accepted mapping in update request | Group-approved revision before headline training |
+| Q-047 | 2026-08-07 | DECIDED | Six-model preprocessing contract | Same rows/folds; model-specific fold-local adapters; no shared full-data transformed matrix | Methodological requirement | Logged pre-holdout redesign |
+| Q-048 | 2026-08-07 | DECIDED | Six-model selection rule | Compare all six on common OOF PR-AUC plus calibration, stability, runtime, reproducibility, valid interpretation, practical equivalence | Methodological review | Logged pre-holdout change |
 
 ### Change log
 
@@ -2680,7 +2779,8 @@ Future records must include actual tool/version if known, precise tasks, extent,
 | 4.0.0 | 2026-08-01 | Added constrained retention prioritization. | Connect prediction to limited resources. | SUPERSEDED |
 | 4.1.0 | 2026-08-05 | Adopted CatBoost/EBM and model-specific adapters. | More distinctive/interpretable comparison. | SUPERSEDED |
 | 4.1.1 | 2026-08-06 | Added repository and handoff cleanup. | Clean synchronized package. | SUPERSEDED |
-| 4.2.0 | 2026-08-06 | Locked CatBoost, EBM, and FT-Transformer as required advanced models; added pair ownership, FT adapter/training/search/calibration/artefact/testing rules, updated report/presentation/results plans, and normalized formal requirement extracts. | Implement the user-approved strongest three-family comparison while preserving leakage control, reproducibility, and AI handoff completeness. | ACTIVE |
+| 4.2.0 | 2026-08-06 | Locked CatBoost, EBM, and FT-Transformer with three two-member pairs. | Prior active methodology. | SUPERSEDED |
+| 4.3.0 | 2026-08-07 | Expanded to six required headline models with one model per member; activated XGBoost, LightGBM, and TabNet; added six-model preprocessing/search/evaluation/team/repository rules while retaining shared split/CV/holdout safeguards. | Satisfy the one-model-per-member requirement without sacrificing fair comparison or leakage control. | ACTIVE |
 
 ## 8.37 Remaining identity and ownership inputs
 
@@ -2689,7 +2789,7 @@ Future records must include actual tool/version if known, precise tasks, extent,
 | EXT-001 | Official group number and lab batch/session | Add to formal artefacts when known | No |
 | EXT-002 | Six names/student IDs mapped to Members 1-6 | Replace numbered roles after group confirmation | No |
 | EXT-003 | Lecturer/module-coordinator name | Use official module information | No |
-| EXT-004 | Confirmed CPU/GPU execution environment | Record after smoke test; do not assume GPU | No, but affects FT runtime |
+| EXT-004 | Confirmed CPU/GPU execution environment | Record after smoke test; do not assume GPU | No, but affects FT-Transformer and TabNet runtime |
 
 ## 8.38 References and source-file register
 
@@ -2701,7 +2801,8 @@ Future records must include actual tool/version if known, precise tasks, extent,
 4. **SRC-004:** `Extended_Employee_Performance_and_Productivity_Data.csv`; checksum recorded.
 5. **SRC-005:** Kaggle, *Employee Performance and Productivity Data*: `https://www.kaggle.com/datasets/mexwell/employee-performance-and-productivity-data`.
 6. **SRC-006 to SRC-011:** Prior explicit user decisions recorded in the machine-readable source register.
-7. **SRC-012:** User decision, 2026-08-06: CatBoost, EBM, and FT-Transformer required; one per two-member pair; Dummy mandatory; Logistic optional; update synchronized handoff.
+7. **SRC-012:** User decision, 2026-08-06: prior CatBoost/EBM/FT-Transformer three-model / three-pair registry; retained as superseded history.
+8. **SRC-013:** User decision, 2026-08-07: six required headline models, one per member — M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet; Dummy mandatory; Logistic optional; shared split/fold/evaluation protocol retained.
 
 ### Official software and research sources supporting the active methodology
 
@@ -2715,6 +2816,9 @@ Future records must include actual tool/version if known, precise tasks, extent,
 15. Yandex Research. *rtdl-revisiting-models*, official recommended FT-Transformer package implementation. `https://github.com/yandex-research/rtdl-revisiting-models`.
 16. scikit-learn. *Probability calibration*. `https://scikit-learn.org/stable/modules/calibration.html`.
 17. PyTorch. Official documentation for tensors, reproducibility, optimizers, loss functions, data loading, checkpointing, and device management: `https://pytorch.org/docs/stable/`.
+18. XGBoost. *XGBClassifier Python API*. `https://xgboost.readthedocs.io/en/stable/python/python_api.html`.
+19. LightGBM. *LGBMClassifier Python API*. `https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMClassifier.html`.
+20. DreamQuark. *pytorch-tabnet documentation / TabNetClassifier*. `https://dreamquark-ai.github.io/tabnet/`.
 
 ### Reference maintenance rules
 
