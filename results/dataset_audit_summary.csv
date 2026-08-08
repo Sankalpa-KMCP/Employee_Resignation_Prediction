@@ -1,10 +1,21 @@
 Check,Result
+Dataset SHA-256 matches approved file,True
 Number of rows,100000
 Number of columns,20
+Exact schema matches,True
 Total missing values,0
 Duplicate rows,0
 Duplicate Employee IDs,0
+Target values valid,True
 Resigned = False,89990
 Resigned = True,10010
-Number of model inputs,17
+Invalid Hire_Date values,0
+Unique Hire_Date time components,1
+Hire_Date-derived tenure exact matches,99283
+Hire_Date-derived tenure within one year,100000
+Distinct Monthly_Salary values,28
+Maximum salaries per Job_Title + Performance_Score combination,1
+Implied start age below 18,3784
+Implied start age below 16,1503
+Number of primary model inputs,17
 Target column,Resigned
