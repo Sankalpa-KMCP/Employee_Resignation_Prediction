@@ -1,0 +1,10 @@
+topic,eda_observation,shared_implication
+Missing values,0 missing values were found across the approved predictors and target.,No dataset-wide imputation is performed in EDA. Any defensive missing-value handling later remains model-specific and training-fold-local.
+Categorical predictors,Four categorical predictors are frozen in the feature contract.,Do not create one universal encoded matrix. Categorical representation is model-specific.
+Numerical scaling,Numerical predictors have different ranges and cardinalities.,Scaling is applied only for models that need it and must be fitted on the active training fold only.
+Statistical outliers,IQR diagnostics were calculated for review.,No row is removed solely because it is statistically extreme. Any later treatment requires explicit justification.
+Employee_ID,Employee_ID is retained only for record traceability.,Employee_ID must never enter a predictor matrix.
+Hire_Date,The prior audit found strong redundancy with Years_At_Company and construction-like regularity.,Raw Hire_Date remains excluded from primary modelling.
+Monthly_Salary,Development-only analysis verifies the known deterministic Job_Title + Performance_Score salary structure.,Monthly_Salary remains in the frozen primary feature set. A later no-salary sensitivity analysis tests robustness.
+Target imbalance,Development resignation prevalence is 10.01%.,Do not judge models by accuracy alone. PR-AUC / Average Precision is the primary comparison metric.
+Remote_Work_Frequency,The feature is discrete and represented numerically/ordinally.,Do not invent an undocumented observation period or semantics. Keep the frozen primary representation unless a shared decision changes it.

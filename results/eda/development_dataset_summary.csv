@@ -1,0 +1,10 @@
+metric,value
+development_rows,80000.0
+formal_holdout_rows_analyzed,0.0
+primary_predictors,17.0
+categorical_predictors,4.0
+numerical_or_ordinal_predictors,13.0
+missing_values_in_predictors_and_target,0.0
+stayed_count,71992.0
+resigned_count,8008.0
+resignation_rate,0.1001

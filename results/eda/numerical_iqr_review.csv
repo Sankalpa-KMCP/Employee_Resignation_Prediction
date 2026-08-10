@@ -1,0 +1,14 @@
+feature,q1,q3,iqr,lower_fence,upper_fence,flagged_count,flagged_percentage,action_taken
+Age,31.0,51.0,20.0,1.0,81.0,0,0.0,none
+Years_At_Company,2.0,7.0,5.0,-5.5,14.5,0,0.0,none
+Performance_Score,2.0,4.0,2.0,-1.0,7.0,0,0.0,none
+Monthly_Salary,5250.0,7500.0,2250.0,1875.0,10875.0,0,0.0,none
+Work_Hours_Per_Week,37.0,53.0,16.0,13.0,77.0,0,0.0,none
+Projects_Handled,12.0,37.0,25.0,-25.5,74.5,0,0.0,none
+Overtime_Hours,7.0,22.0,15.0,-15.5,44.5,0,0.0,none
+Sick_Days,3.0,11.0,8.0,-9.0,23.0,0,0.0,none
+Remote_Work_Frequency,25.0,75.0,50.0,-50.0,150.0,0,0.0,none
+Team_Size,5.0,15.0,10.0,-10.0,30.0,0,0.0,none
+Training_Hours,25.0,75.0,50.0,-50.0,150.0,0,0.0,none
+Promotions,0.0,2.0,2.0,-3.0,5.0,0,0.0,none
+Employee_Satisfaction_Score,2.01,3.99,1.9800000000000004,-0.9600000000000009,6.960000000000001,0,0.0,none

@@ -1,0 +1,24 @@
+feature,category,count,percentage
+Department,Operations,9037,11.296249999999999
+Department,Marketing,8969,11.21125
+Department,Sales,8936,11.17
+Department,Customer Support,8927,11.158750000000001
+Department,Finance,8895,11.118749999999999
+Department,IT,8892,11.115
+Department,Legal,8855,11.06875
+Department,HR,8749,10.93625
+Department,Engineering,8740,10.925
+Gender,Male,38537,48.17125
+Gender,Female,38303,47.87875
+Gender,Other,3160,3.95
+Job_Title,Specialist,11617,14.52125
+Job_Title,Consultant,11454,14.317499999999999
+Job_Title,Technician,11435,14.29375
+Job_Title,Manager,11425,14.28125
+Job_Title,Analyst,11372,14.215
+Job_Title,Engineer,11349,14.186250000000001
+Job_Title,Developer,11348,14.185
+Education_Level,Bachelor,40080,50.1
+Education_Level,High School,23942,29.927500000000002
+Education_Level,Master,11915,14.89375
+Education_Level,PhD,4063,5.07875
