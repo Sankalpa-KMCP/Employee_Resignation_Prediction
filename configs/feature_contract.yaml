@@ -1,2 +1,597 @@
-# Configuration placeholder.
-# Parameters will be specified during the corresponding project stage.
+# ============================================================
+# SHARED FEATURE CONTRACT
+# Employee Resignation Prediction Project
+# ============================================================
+#
+# Purpose:
+# Define the single authoritative feature policy used by all
+# six headline models and the shared baseline workflow.
+#
+# This file defines WHICH columns may be used and their roles.
+# It does NOT define one universal preprocessing pipeline.
+#
+# All model-specific transformations must be fitted only on
+# the applicable training data inside cross-validation.
+# ============================================================
+
+contract:
+  name: employee_resignation_primary_feature_contract
+  version: "1.0.0"
+  status: frozen
+  project_context_version: "4.3.0"
+
+  purpose: >
+    Define the approved target, predictors, excluded fields,
+    sensitive attributes, semantic feature types, and shared
+    leakage-prevention rules for all primary modelling workflows.
+
+
+# ============================================================
+# DATASET IDENTITY
+# ============================================================
+
+dataset:
+  filename: Extended_Employee_Performance_and_Productivity_Data.csv
+
+  path: data/raw/Extended_Employee_Performance_and_Productivity_Data.csv
+
+  sha256: "2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb"
+
+  expected_rows: 100000
+  expected_columns: 20
+
+
+# ============================================================
+# SPLIT REGISTRY
+# ============================================================
+
+split_registry:
+  path: data/processed/split_registry.csv
+
+  sha256: "87edc10ac38f2435c49beddbf412f9de293e3e0622558b27ffbdf31fadd7ea41"
+
+  development_rows: 80000
+  formal_holdout_rows: 20000
+
+  cv_folds: 5
+
+  rules:
+    - All models must use the exact saved development and holdout assignments.
+    - All models must use the exact saved five cross-validation folds.
+    - Individual members must not generate private train/test splits or CV folds.
+    - The formal holdout must not influence preprocessing, tuning, early stopping, calibration selection, threshold selection, feature selection, or model selection.
+
+
+# ============================================================
+# TARGET
+# ============================================================
+
+target:
+  column: Resigned
+
+  task: binary_classification
+
+  positive_class: true
+  negative_class: false
+
+  mapping:
+    false: 0
+    true: 1
+
+  use_as_predictor: false
+
+
+# ============================================================
+# RECORD-TRACKING FIELD
+# ============================================================
+
+identifier:
+  column: Employee_ID
+
+  role: record_identifier
+
+  use_as_predictor: false
+
+  allowed_uses:
+    - split_registry_alignment
+    - prediction_traceability
+    - row_parity_validation
+    - deterministic_tie_breaking_if_required
+
+  prohibited_uses:
+    - model_feature
+    - derived_predictive_feature
+
+
+# ============================================================
+# EXCLUDED RAW FIELDS
+# ============================================================
+
+excluded_features:
+
+  - column: Employee_ID
+    reason: >
+      Unique record identifier. Retained only for traceability
+      and split/prediction alignment.
+
+  - column: Hire_Date
+    reason: >
+      Raw date is strongly redundant with Years_At_Company and
+      contains construction-like regularities. It is retained for
+      auditing but excluded from all primary models.
+
+  - column: Resigned
+    reason: >
+      Target variable. It must never appear in the predictor matrix.
+
+
+# ============================================================
+# PRIMARY CATEGORICAL PREDICTORS
+# ============================================================
+
+categorical_features:
+
+  - name: Department
+    semantic_type: nominal
+    sensitive_attribute: false
+    expected_categories:
+      - Customer Support
+      - Engineering
+      - Finance
+      - HR
+      - IT
+      - Legal
+      - Marketing
+      - Operations
+      - Sales
+
+  - name: Gender
+    semantic_type: nominal
+    sensitive_attribute: true
+    expected_categories:
+      - Female
+      - Male
+      - Other
+
+  - name: Job_Title
+    semantic_type: nominal
+    sensitive_attribute: false
+    expected_categories:
+      - Analyst
+      - Consultant
+      - Developer
+      - Engineer
+      - Manager
+      - Specialist
+      - Technician
+
+  - name: Education_Level
+    semantic_type: nominal
+    sensitive_attribute: false
+    expected_categories:
+      - High School
+      - Bachelor
+      - Master
+      - PhD
+
+
+# ============================================================
+# PRIMARY NUMERICAL / ORDINAL PREDICTORS
+# ============================================================
+
+numerical_features:
+
+  - name: Age
+    semantic_type: integer_numeric
+    sensitive_attribute: true
+
+  - name: Years_At_Company
+    semantic_type: integer_ordinal
+    sensitive_attribute: false
+
+  - name: Performance_Score
+    semantic_type: integer_ordinal
+    sensitive_attribute: false
+
+  - name: Monthly_Salary
+    semantic_type: numeric
+    sensitive_attribute: false
+    note: >
+      Salary unit/currency is unverified. Monthly_Salary is also
+      deterministically related to Job_Title and Performance_Score
+      in the audited dataset. Retain it in the primary feature set;
+      salary-removal sensitivity analysis is performed later.
+
+  - name: Work_Hours_Per_Week
+    semantic_type: integer_numeric
+    sensitive_attribute: false
+
+  - name: Projects_Handled
+    semantic_type: integer_count
+    sensitive_attribute: false
+
+  - name: Overtime_Hours
+    semantic_type: integer_numeric
+    sensitive_attribute: false
+
+  - name: Sick_Days
+    semantic_type: integer_count
+    sensitive_attribute: false
+
+  - name: Remote_Work_Frequency
+    semantic_type: numeric_ordinal
+    sensitive_attribute: false
+    note: >
+      Observed values are 0, 25, 50, 75, and 100. Treat as the
+      approved numeric/ordinal primary representation. Do not
+      invent an undocumented observation period or interpretation.
+
+  - name: Team_Size
+    semantic_type: integer_count
+    sensitive_attribute: false
+
+  - name: Training_Hours
+    semantic_type: integer_numeric
+    sensitive_attribute: false
+
+  - name: Promotions
+    semantic_type: integer_count
+    sensitive_attribute: false
+
+  - name: Employee_Satisfaction_Score
+    semantic_type: numeric
+    sensitive_attribute: false
+
+
+# ============================================================
+# PRIMARY MODEL FEATURE SET
+# ============================================================
+
+primary_model_features:
+
+  # Categorical predictors
+  - Department
+  - Gender
+  - Job_Title
+  - Education_Level
+
+  # Numerical / ordinal predictors
+  - Age
+  - Years_At_Company
+  - Performance_Score
+  - Monthly_Salary
+  - Work_Hours_Per_Week
+  - Projects_Handled
+  - Overtime_Hours
+  - Sick_Days
+  - Remote_Work_Frequency
+  - Team_Size
+  - Training_Hours
+  - Promotions
+  - Employee_Satisfaction_Score
+
+
+feature_counts:
+  categorical: 4
+  numerical_or_ordinal: 13
+  total_primary_predictors: 17
+
+
+# ============================================================
+# SENSITIVE ATTRIBUTES
+# ============================================================
+
+sensitive_attributes:
+
+  - Gender
+  - Age
+
+sensitive_attribute_policy:
+  primary_model:
+    include_gender: true
+    include_age: true
+
+  later_sensitivity_analysis:
+    - no_Gender
+    - no_Gender_no_Age
+
+  rules:
+    - Sensitive attributes remain available in the primary predictive experiment.
+    - Their use does not imply that the resulting model is fair or legally compliant.
+    - Subgroup behaviour must later be evaluated separately.
+    - Sensitive-feature ablations must not alter the primary shared split or folds.
+
+
+# ============================================================
+# AGE BANDS FOR LATER SUBGROUP ANALYSIS
+# ============================================================
+
+age_bands:
+
+  - label: "22-29"
+    minimum: 22
+    maximum: 29
+
+  - label: "30-39"
+    minimum: 30
+    maximum: 39
+
+  - label: "40-49"
+    minimum: 40
+    maximum: 49
+
+  - label: "50-60"
+    minimum: 50
+    maximum: 60
+
+
+# ============================================================
+# MISSING VALUES AND ROW PRESERVATION
+# ============================================================
+
+data_quality_policy:
+
+  expected_raw_missing_values: 0
+
+  row_exclusion_policy: >
+    Preserve all assigned dataset rows unless an exclusion is
+    explicitly justified, reviewed, and logged before formal
+    holdout evaluation.
+
+  outlier_policy: >
+    Do not automatically remove observations solely because they
+    are statistical outliers. Investigate values against the
+    verified dataset ranges and document any proposed treatment.
+
+  duplicate_policy: >
+    Exact duplicate rows and duplicate Employee_ID values are
+    expected to be zero. Any later mismatch must stop the workflow
+    for investigation.
+
+
+# ============================================================
+# SHARED PREPROCESSING RULES
+# ============================================================
+
+preprocessing_policy:
+
+  universal_preprocessed_dataset_allowed: false
+
+  rules:
+    - All six headline models use the same approved 17 predictor columns.
+    - Models may use different representations appropriate to their model family.
+    - Every learned transformation must be fitted only on the applicable training data.
+    - No encoder, scaler, imputer, category vocabulary, feature selector, or similar object may be fitted on the full dataset before cross-validation.
+    - No learned preprocessing object may inspect an outer validation fold during fitting.
+    - No learned preprocessing object may inspect the formal holdout during fitting.
+    - Employee_ID must never enter a predictor matrix.
+    - Raw Hire_Date must never enter a primary predictor matrix.
+    - Resigned must never enter a predictor matrix.
+    - Row identity and order must remain traceable through Employee_ID.
+    - All model outputs must preserve Employee_ID and cv_fold for comparison.
+
+
+# ============================================================
+# MODEL-SPECIFIC REPRESENTATION CONTRACT
+# ============================================================
+#
+# These are high-level adapter rules only.
+# Detailed hyperparameters belong in configs/models/*.yaml.
+# ============================================================
+
+model_representations:
+
+  ft_transformer:
+    owner: member_1
+
+    input_representation:
+      - separate_continuous_tensor
+      - separate_categorical_tensor
+
+    categorical_handling:
+      method: fold_fitted_integer_vocabulary
+      missing_code_required: true
+      unknown_code_required: true
+      embeddings: true
+
+    numerical_handling:
+      imputation_scope: training_fold_only
+      standardization_scope: training_fold_only
+
+    prohibited:
+      - one_hot_encoding_of_primary_categorical_inputs
+      - full_development_vocabulary_fitting
+      - holdout_fitted_preprocessing
+
+
+  catboost:
+    owner: member_2
+
+    input_representation:
+      - pandas_dataframe_or_catboost_pool
+
+    categorical_handling:
+      method: native_categorical
+      preserve_string_categories: true
+
+    numerical_handling:
+      method: raw_approved_numeric_values
+
+    prohibited:
+      - unnecessary_one_hot_encoding
+      - unnecessary_standardization
+      - holdout_as_eval_set
+
+
+  xgboost:
+    owner: member_3
+
+    input_representation:
+      - fold_local_model_matrix
+
+    categorical_handling:
+      method: fold_fitted_one_hot_encoding
+      unknown_category_handling: ignore
+
+    numerical_handling:
+      method: raw_numeric_unless_model_pipeline_requires_otherwise
+      scaling_required: false
+
+    prohibited:
+      - full_dataset_encoder_fitting
+      - full_development_encoder_fitting_before_cv
+      - holdout_fitted_preprocessing
+
+
+  lightgbm:
+    owner: member_4
+
+    input_representation:
+      - dataframe_with_fold_local_category_handling
+
+    categorical_handling:
+      method: fold_local_categorical_representation
+      preserve_category_identity: true
+      unknown_category_policy: explicit
+
+    numerical_handling:
+      method: raw_approved_numeric_values
+      scaling_required: false
+
+    prohibited:
+      - full_dataset_category_mapping
+      - holdout_fitted_preprocessing
+
+
+  ebm:
+    owner: member_5
+
+    input_representation:
+      - pandas_dataframe_or_compatible_array
+
+    categorical_handling:
+      method: explicit_nominal_feature_types
+
+    numerical_handling:
+      method: explicit_continuous_feature_types
+      scaling_required: false
+
+    prohibited:
+      - unnecessary_shared_one_hot_matrix
+      - causal_interpretation_of_feature_effects
+      - holdout_fitted_preprocessing
+
+
+  tabnet:
+    owner: member_6
+
+    input_representation:
+      - neural_network_compatible_matrix
+
+    categorical_handling:
+      method: fold_fitted_integer_category_codes
+      missing_code_required: true
+      unknown_code_required: true
+
+    numerical_handling:
+      imputation_scope: training_fold_only
+      transformation_scope: training_fold_only
+
+    prohibited:
+      - full_development_category_code_fitting_before_cv
+      - holdout_fitted_preprocessing
+
+
+# ============================================================
+# OPTIONAL LOGISTIC REGRESSION BENCHMARK
+# ============================================================
+
+optional_logistic_regression:
+
+  status: optional_reference_only
+
+  categorical_handling:
+    method: one_hot_encoding
+    handle_unknown: ignore
+    fitting_scope: training_fold_only
+
+  numerical_handling:
+    method: standardization
+    fitting_scope: training_fold_only
+
+  implementation:
+    required_container: sklearn_pipeline_or_column_transformer
+
+
+# ============================================================
+# CROSS-VALIDATION / LEAKAGE CONTRACT
+# ============================================================
+
+cross_validation_contract:
+
+  development_partition_only: true
+  formal_holdout_excluded: true
+
+  n_splits: 5
+
+  rules:
+    - For each outer fold, preprocessing is fitted using only the other four training folds.
+    - The outer validation fold is transformed only with objects learned from the corresponding training folds.
+    - No category vocabulary may be learned from an outer validation fold.
+    - No scaler or imputer may be fitted using an outer validation fold.
+    - No feature-selection decision may be based on the formal holdout.
+    - No hyperparameter-selection decision may be based on the formal holdout.
+    - No early-stopping decision may use the formal holdout.
+    - No calibration or threshold-selection decision may use the formal holdout.
+
+
+# ============================================================
+# OUTPUT TRACEABILITY
+# ============================================================
+
+prediction_output_contract:
+
+  required_identity_columns:
+    - Employee_ID
+    - cv_fold
+
+  required_target_column:
+    - y_true
+
+  required_prediction_fields:
+    - model_name
+    - y_probability
+
+  rules:
+    - Every development record must receive exactly one out-of-fold probability per model.
+    - No development Employee_ID may be missing from an OOF prediction file.
+    - No development Employee_ID may appear more than once per model.
+    - Formal holdout predictions must not be generated until the final freeze gate.
+
+
+# ============================================================
+# CHANGE CONTROL
+# ============================================================
+
+change_control:
+
+  frozen_before:
+    - development_only_eda
+    - baseline_modelling
+    - six_headline_model_workstreams
+
+  modification_rule: >
+    Any substantive change to predictor inclusion, exclusions,
+    semantic types, sensitive-attribute policy, or preprocessing
+    boundaries requires a documented shared decision before formal
+    holdout access.
+
+  prohibited_silent_changes:
+    - adding_predictors
+    - removing_predictors
+    - using_Employee_ID_as_feature
+    - using_raw_Hire_Date_as_feature
+    - changing_target
+    - changing_positive_class
+    - creating_private_splits
+    - creating_universal_preprocessed_dataset
