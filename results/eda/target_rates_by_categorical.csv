@@ -1,0 +1,24 @@
+Feature,Category,Total_Count,Resigned_Count,Resignation_Rate_Pct
+Department,Customer Support,8927,875,9.8
+Department,Engineering,8740,841,9.62
+Department,Finance,8895,943,10.6
+Department,HR,8749,885,10.12
+Department,IT,8892,832,9.36
+Department,Legal,8855,923,10.42
+Department,Marketing,8969,907,10.11
+Department,Operations,9037,907,10.04
+Department,Sales,8936,895,10.02
+Gender,Female,38303,3851,10.05
+Gender,Male,38537,3850,9.99
+Gender,Other,3160,307,9.72
+Job_Title,Analyst,11372,1155,10.16
+Job_Title,Consultant,11454,1148,10.02
+Job_Title,Developer,11348,1132,9.98
+Job_Title,Engineer,11349,1116,9.83
+Job_Title,Manager,11425,1202,10.52
+Job_Title,Specialist,11617,1122,9.66
+Job_Title,Technician,11435,1133,9.91
+Education_Level,Bachelor,40080,3999,9.98
+Education_Level,High School,23942,2407,10.05
+Education_Level,Master,11915,1197,10.05
+Education_Level,PhD,4063,405,9.97
