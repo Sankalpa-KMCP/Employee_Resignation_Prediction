@@ -1,3 +1,3 @@
-model_name,role,pr_auc,accuracy,recall,interpretation
-Dummy Prior,No-skill probability / ranking reference,0.10008500561938061,0.8999,0.0,Uses only the training-fold class prior and provides no employee-level ranking signal.
-Dummy Most Frequent,Majority-class classification reference,0.1001,0.8999,0.0,Shows why high raw accuracy is misleading when the positive class is only about 10% of the development data.
+model_name,role,average_precision,roc_auc,accuracy,recall,interpretation
+Dummy Prior,No-skill probability / ranking reference,0.10008500561938061,0.4999167406657128,0.8999,0.0,Uses only the training-fold class prior and provides no employee-level ranking signal.
+Dummy Most Frequent,Majority-class classification reference,0.1001,0.5,0.8999,0.0,Shows why high raw accuracy is misleading when the positive class represents only about 10% of the development data.
