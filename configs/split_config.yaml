@@ -1,2 +1,18 @@
-# Configuration placeholder.
-# Parameters will be specified during the corresponding project stage.
+random_state: 42
+
+split:
+  development_fraction: 0.80
+  holdout_fraction: 0.20
+  stratified: true
+
+cross_validation:
+  n_splits: 5
+  stratified: true
+  shuffle: true
+
+target:
+  column: Resigned
+  positive_class: true
+
+registry:
+  path: data/processed/split_registry.csv
