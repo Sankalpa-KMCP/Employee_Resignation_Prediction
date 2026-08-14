@@ -317,12 +317,10 @@ project:
       materially exceeds the dummy baseline or no prioritization strategy exceeds random selection.
 live_state:
   status: active
-  current_phase: six-model implementation planning and shared experimental-foundation synchronization after the
-    user-approved one-model-per-member decision
-  current_milestone: commit synchronized v4.3.0 context, update repository artefacts to the six-model registry,
-    then implement the shared split/fold registry and six model-specific adapters before headline training
-  last_updated: '2026-08-07'
-  updated_by: ChatGPT following the user-approved six-model, one-model-per-member methodology decision
+  current_phase: advanced six-model adapter implementation, smoke testing, and experimental pipeline preparation
+  current_milestone: implement model adapters (M1 to M6) under row-parity and OOF-output contracts, verify tuning search spaces, and conduct environment smoke testing
+  last_updated: '2026-08-14'
+  updated_by: Repository execution agent during SDLC Stage 4 Foundation and Setup
   evidence:
   - SRC-001
   - SRC-002
@@ -341,29 +339,26 @@ live_state:
   - canonical GitHub repository URL recorded
   - 01_data_audit notebook created with reusable CSV outputs and target-distribution figure
   - project scope expanded to include resource-constrained retention-prioritization simulation
-  - CatBoost, Explainable Boosting Machine, and FT-Transformer selected as the prior three required advanced models
-    (superseded by SRC-013)
-  - DummyClassifier retained as the mandatory no-skill reference; Logistic Regression retained only as an optional
-    lightweight benchmark
+  - CatBoost, Explainable Boosting Machine, and FT-Transformer selected as the prior three required advanced models (superseded by SRC-013)
+  - DummyClassifier retained as the mandatory no-skill reference; Logistic Regression retained only as an optional lightweight benchmark
   - 'six required advanced models selected: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet'
-  - 'one headline model assigned per member: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6
-    TabNet'
-  - context v4.3.0 generated with synchronized six-model ownership, preprocessing, tuning, evaluation, artefact,
-    report, and viva rules
+  - 'one headline model assigned per member: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet'
+  - context v4.3.0 generated with synchronized six-model ownership, preprocessing, tuning, evaluation, artefact, report, and viva rules
+  - implemented and saved frozen stratified 80/20 development/formal-holdout split and 5-fold CV registry (split_registry.csv)
+  - completed development-only exploratory data analysis (03_eda.ipynb) and generated 20 canonical EDA outputs with manifest
+  - completed shared baseline modeling and OOF evaluation (04_baselines.ipynb) for Dummy Prior and Dummy Most Frequent
+  - implemented shared evaluation metric utilities (calculate_binary_metrics) and OOF validation assertions (validate_oof_predictions)
+  - established 79-item automated pytest test suite covering validation, feature contract, metrics, OOF predictions, and split registry
+  - completed repository and notebook hygiene cleanup (Prompts 1-3)
   active_next_actions:
-  - replace repository context files with synchronized v4.3.0 Markdown and Word copies
-  - update proposal slides, scripts, README, notebooks, model registry, search spaces, and environment specification
-    to the six-model registry
-  - implement and save one stratified 80/20 development/formal-holdout split and five shared outer folds before
-    any headline model training
-  - implement six model adapters plus Dummy/optional Logistic under one row-parity and OOF-output contract
-  - complete and peer-review the formal data audit and development-only EDA
-  - smoke-test CatBoost, XGBoost, LightGBM, InterpretML, PyTorch/RTDL, and pytorch-tabnet in the chosen environment
-    before formal experiments
+  - implement six model adapters (M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet) plus Dummy/optional Logistic under one row-parity and OOF-output contract
+  - update model YAML configurations in configs/models/ with frozen hyperparameter tuning search spaces
+  - smoke-test CatBoost, XGBoost, LightGBM, InterpretML (EBM), PyTorch/RTDL (FT-Transformer), and pytorch-tabnet in the project virtual environment
+  - execute five-fold stratified cross-validation and hyperparameter tuning for each headline model
+  - execute multi-model comparison, calibration analysis, sensitive-attribute fairness audit, and resource-constrained retention prioritization simulations (Notebooks 05-14)
   blockers:
   - team names and final ownership mapping are not supplied in the context
-  - real intervention costs, outcomes, replacement costs, and business value are unavailable; monetary optimization
-    claims remain blocked
+  - real intervention costs, outcomes, replacement costs, and business value are unavailable; monetary optimization claims remain blocked
   technical_work_blocked: false
 authority_hierarchy:
 - formal assignment specification, marking rubric, or official lecturer/module instruction
