@@ -1,2 +1,67 @@
-# Configuration placeholder.
-# Parameters will be specified during the corresponding project stage.
+# ============================================================
+# Model Configuration: Explainable Boosting Machine / EBM (Member 5)
+# ============================================================
+model:
+  name: "EBM"
+  model_id: "ebm"
+  member: "Member 5"
+  algorithm_family: "Generalized Additive Models with Interactions (GA2M)"
+  implementation: "interpret.glassbox.ExplainableBoostingClassifier"
+
+# ------------------------------------------------------------
+# Reproducibility & Environment
+# ------------------------------------------------------------
+reproducibility:
+  random_seed: 42
+  n_jobs: -1
+
+# ------------------------------------------------------------
+# Fixed Parameters (Baseline Defaults)
+# ------------------------------------------------------------
+fixed_params:
+  random_state: 42
+  n_jobs: -1
+
+# ------------------------------------------------------------
+# Cross-Validation Strategy
+# ------------------------------------------------------------
+validation:
+  cv_folds: 5
+  early_stopping_rounds: 50
+  validation_fraction_inner: 0.15
+
+# ------------------------------------------------------------
+# Bounded Hyperparameter Search Space
+# ------------------------------------------------------------
+search_space:
+  max_bins:
+    type: "int"
+    low: 128
+    high: 512
+    step: 64
+    default: 256
+  max_interaction_bins:
+    type: "int"
+    low: 16
+    high: 64
+    step: 16
+    default: 32
+  interactions:
+    type: "int"
+    low: 5
+    high: 25
+    step: 5
+    default: 10
+  learning_rate:
+    type: "float"
+    low: 0.01
+    high: 0.1
+    log: true
+    default: 0.04
+  min_samples_leaf:
+    type: "int"
+    low: 2
+    high: 10
+    step: 2
+    default: 4
+  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage

@@ -1,2 +1,86 @@
-# Configuration placeholder.
-# Parameters will be specified during the corresponding project stage.
+# ============================================================
+# Model Configuration: LightGBM Classifier (Member 4)
+# ============================================================
+model:
+  name: "LightGBM"
+  model_id: "lightgbm"
+  member: "Member 4"
+  algorithm_family: "Light Gradient Boosting Machine"
+  implementation: "lightgbm.LGBMClassifier"
+
+# ------------------------------------------------------------
+# Reproducibility & Environment
+# ------------------------------------------------------------
+reproducibility:
+  random_seed: 42
+  n_jobs: -1
+
+# ------------------------------------------------------------
+# Fixed Parameters (Baseline Defaults)
+# ------------------------------------------------------------
+fixed_params:
+  objective: "binary"
+  metric: "average_precision"
+  random_state: 42
+  verbosity: -1
+  force_col_wise: true
+
+# ------------------------------------------------------------
+# Cross-Validation & Early Stopping Strategy
+# ------------------------------------------------------------
+validation:
+  cv_folds: 5
+  early_stopping_rounds: 50
+  validation_fraction_inner: 0.15
+
+# ------------------------------------------------------------
+# Bounded Hyperparameter Search Space
+# ------------------------------------------------------------
+search_space:
+  n_estimators:
+    type: "int"
+    low: 200
+    high: 800
+    step: 100
+    default: 400
+  learning_rate:
+    type: "float"
+    low: 0.01
+    high: 0.2
+    log: true
+    default: 0.05
+  num_leaves:
+    type: "int"
+    low: 15
+    high: 63
+    step: 8
+    default: 31
+  max_depth:
+    type: "int"
+    low: 3
+    high: 8
+    step: 1
+    default: 6
+  subsample:
+    type: "float"
+    low: 0.6
+    high: 1.0
+    step: 0.1
+    default: 0.8
+  colsample_bytree:
+    type: "float"
+    low: 0.6
+    high: 1.0
+    step: 0.1
+    default: 0.8
+  reg_alpha:
+    type: "float"
+    low: 0.0
+    high: 5.0
+    default: 0.1
+  reg_lambda:
+    type: "float"
+    low: 1.0
+    high: 10.0
+    default: 1.0
+  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage

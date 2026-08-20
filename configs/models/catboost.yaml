@@ -1,2 +1,65 @@
-# Configuration placeholder.
-# Parameters will be specified during the corresponding project stage.
+# ============================================================
+# Model Configuration: CatBoost Classifier (Member 2)
+# ============================================================
+model:
+  name: "CatBoost"
+  model_id: "catboost"
+  member: "Member 2"
+  algorithm_family: "Gradient Boosted Decision Trees"
+  implementation: "catboost.CatBoostClassifier"
+
+# ------------------------------------------------------------
+# Reproducibility & Environment
+# ------------------------------------------------------------
+reproducibility:
+  random_seed: 42
+  thread_count: -1
+  deterministic: true
+
+# ------------------------------------------------------------
+# Fixed Parameters (Baseline Defaults)
+# ------------------------------------------------------------
+fixed_params:
+  loss_function: "Logloss"
+  eval_metric: "PRAUC"
+  random_seed: 42
+  verbose: false
+  allow_writing_files: false
+
+# ------------------------------------------------------------
+# Cross-Validation & Early Stopping Strategy
+# ------------------------------------------------------------
+validation:
+  cv_folds: 5
+  early_stopping_rounds: 50
+  validation_fraction_inner: 0.15 # Internal train-split fraction for early stopping if needed
+
+# ------------------------------------------------------------
+# Bounded Hyperparameter Search Space
+# ------------------------------------------------------------
+search_space:
+  iterations:
+    type: "int"
+    low: 300
+    high: 1000
+    step: 100
+    default: 500
+  learning_rate:
+    type: "float"
+    low: 0.01
+    high: 0.2
+    log: true
+    default: 0.05
+  depth:
+    type: "int"
+    low: 4
+    high: 8
+    step: 1
+    default: 6
+  l2_leaf_reg:
+    type: "float"
+    low: 1.0
+    high: 10.0
+    step: 1.0
+    default: 3.0
+  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage
