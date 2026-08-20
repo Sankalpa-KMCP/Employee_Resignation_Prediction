@@ -2,8 +2,8 @@
 title: "Design and Evaluation of Machine Learning Models for Employee Resignation Risk and Resource-Constrained Retention Prioritization"
 subtitle: "Canonical project specification, live state, and AI handoff memory"
 author: "IT2011 Project Group"
-date: "2026-08-07"
-version: "4.3.0"
+date: "2026-08-19"
+version: "4.4.0"
 ---
 
 # AI entry point - read this first
@@ -12,11 +12,12 @@ This package is intentionally duplicated in two synchronized formats for AI comp
 
 ```yaml
 ai_handoff_entry:
-  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md
-  companion_file: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx
-  canonical_rule: Read Markdown first. Use Word only as a synchronized fallback or navigation-friendly rendering.
-  duplicate_rule: Repeated content across the two files is one source, not independent evidence.
-  conflict_rule: If substantive content differs, follow Markdown, report the mismatch, and regenerate Word.
+  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md
+  companion_file: Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.docx (pending regeneration)
+  canonical_status: Markdown v4.4.0 is ACTIVE and CANONICAL. The companion Word rendering is pending regeneration and not currently present in the repository.
+  canonical_rule: Read Markdown as the authoritative single source of truth. Absence of the Word companion does not block technical work.
+  duplicate_rule: Repeated content across companion files is one source, not independent evidence.
+  conflict_rule: Markdown is authoritative. If substantive content differs, follow Markdown, report the mismatch, and regenerate Word.
   repository_url: https://github.com/Sankalpa-KMCP/Employee_Resignation_Prediction
   active_target: Resigned
   positive_class: true
@@ -50,7 +51,7 @@ ai_handoff_entry:
   current_methodology_change: The user-approved v4.3.0 decision requires six headline advanced models, one per member: Member 1 FT-Transformer, Member 2 CatBoost, Member 3 XGBoost, Member 4 LightGBM, Member 5 EBM, Member 6 TabNet. Dummy baselines remain mandatory; Logistic Regression remains optional.
 ```
 
-**Fast operational summary:** Build and compare six required advanced models under the same locked development/holdout rows and five outer stratified folds: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet. Each member owns one model. Use model-specific, fold-fitted preprocessing; never force all six models onto one transformed matrix. Retain two DummyClassifier strategies as mandatory no-skill references; run Logistic Regression only as an optional lightweight benchmark. Select by development evidence, not model reputation or complexity. Assess calibration before using probabilities in the retention-prioritization score. Do not claim real employee worth, causal resignation drivers, intervention success, a real monetary budget, operational readiness, legal fairness, or suitability for actual employment decisions.
+**Fast operational summary:** Build and compare six required advanced models under the same locked development/holdout rows and five outer stratified folds: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet. Each member owns one model. Use model-specific, fold-fitted preprocessing; never force all six models onto one transformed matrix. Conduct mandatory PCA (Principal Component Analysis) dimensionality-reduction analysis on the 13 approved numerical predictors with scree/variance plots, component loadings inspection, and a required PCA demonstration benchmark using Logistic Regression (comparing StandardScaler -> LogisticRegression vs StandardScaler -> PCA(>=95% variance) -> LogisticRegression). Broader standalone Logistic Regression exploration remains optional; Logistic Regression is not a seventh headline model. Headline tree/additive/deep models retain their approved non-PCA representations. Retain two DummyClassifier strategies as mandatory no-skill references. Select by development evidence, not model reputation or complexity. Assess calibration before using probabilities in the retention-prioritization score. Do not claim real employee worth, causal resignation drivers, intervention success, a real monetary budget, operational readiness, legal fairness, or suitability for actual employment decisions.
 
 # Document map
 
@@ -90,7 +91,7 @@ This file is the persistent AI-first project memory for **Design and Evaluation 
 ## 0.2 Canonical-source rule
 
 1. This Markdown file is the canonical source of truth for project context.
-2. The Word file named `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx` is a synchronized companion generated from this content.
+2. The Word file named `Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md` is a synchronized companion generated from this content.
 3. If Markdown and Word differ substantively, use the Markdown version and regenerate the Word companion.
 4. Code, notebooks, results, reports, and slides must not silently override a **DECIDED** item in this file. A change must be logged first.
 5. The assigned CSV is identified by filename and SHA-256. Never substitute a similarly named dataset without an explicit, logged decision and checksum update.
@@ -225,13 +226,12 @@ This acknowledgement is a parsing check, not a request for the user to repeat de
 ```yaml
 document_control:
   context_schema_version: '4.3'
-  project_context_version: 4.3.0
-  synchronization_id: ERPC-20260807-V4.3.0
-  generated_at: 2026-08-07 Asia/Colombo
-  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md
-  word_companion_file: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx
-  substantive_content_rule: Both files contain the same project information. Markdown is canonical; Word is a synchronized
-    rendering/fallback.
+  project_context_version: 4.4.0
+  synchronization_id: ERPC-20260819-V4.4.0
+  generated_at: 2026-08-19 Asia/Colombo
+  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md
+  word_companion_file: Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.docx (pending regeneration)
+  substantive_content_rule: Markdown is canonical and ACTIVE. The Word companion is pending regeneration and not currently present in the repository.
   duplicate_input_rule: When both files are supplied, read Markdown first, treat repeated text as one source, and
     do not reconcile formatting-only differences.
   stable_context_sections:
@@ -285,6 +285,7 @@ project:
     required_components:
     - immutable raw-data preservation and checksum/schema validation
     - reproducible preprocessing and exploratory data analysis
+    - mandatory PCA dimensionality-reduction analysis on standardized approved numerical predictors (variance ratios, scree/projection plots, loadings) and a required PCA demonstration benchmark via Logistic Regression (StandardScaler -> LogisticRegression vs StandardScaler -> PCA(>=95% variance) -> LogisticRegression)
     - shared split/fold registry and model-specific preprocessing adapters
     - DummyClassifier non-learning baselines and an optional Logistic Regression reference benchmark
     - FT-Transformer advanced deep tabular pipeline using fold-local numerical normalization, categorical integer
@@ -319,8 +320,8 @@ live_state:
   status: active
   current_phase: advanced six-model adapter implementation, smoke testing, and experimental pipeline preparation
   current_milestone: implement model adapters (M1 to M6) under row-parity and OOF-output contracts, verify tuning search spaces, and conduct environment smoke testing
-  last_updated: '2026-08-14'
-  updated_by: Repository execution agent during SDLC Stage 4 Foundation and Setup
+  last_updated: '2026-08-19'
+  updated_by: Repository execution agent during SDLC Stage 4 Foundation verification and v4.3.1 synchronization
   evidence:
   - SRC-001
   - SRC-002
@@ -348,14 +349,15 @@ live_state:
   - completed development-only exploratory data analysis (03_eda.ipynb) and generated 20 canonical EDA outputs with manifest
   - completed shared baseline modeling and OOF evaluation (04_baselines.ipynb) for Dummy Prior and Dummy Most Frequent
   - implemented shared evaluation metric utilities (calculate_binary_metrics) and OOF validation assertions (validate_oof_predictions)
-  - established 79-item automated pytest test suite covering validation, feature contract, metrics, OOF predictions, and split registry
+  - established 92-item automated pytest test suite covering validation, feature contract, metrics, OOF predictions, and split registry
   - completed repository and notebook hygiene cleanup (Prompts 1-3)
   active_next_actions:
-  - implement six model adapters (M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet) plus Dummy/optional Logistic under one row-parity and OOF-output contract
+  - implement dedicated PCA analysis notebook (04a_pca_analysis.ipynb) generating variance/loadings tables and scree/projection figures in results/pca/
+  - implement six model adapters (M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet) plus Dummy/optional Logistic (with PCA benchmark comparison) under one row-parity contract in src/models/
   - update model YAML configurations in configs/models/ with frozen hyperparameter tuning search spaces
   - smoke-test CatBoost, XGBoost, LightGBM, InterpretML (EBM), PyTorch/RTDL (FT-Transformer), and pytorch-tabnet in the project virtual environment
-  - execute five-fold stratified cross-validation and hyperparameter tuning for each headline model
-  - execute multi-model comparison, calibration analysis, sensitive-attribute fairness audit, and resource-constrained retention prioritization simulations (Notebooks 05-14)
+  - execute five-fold stratified cross-validation and hyperparameter tuning for each headline model (Notebooks 05 to 10)
+  - execute multi-model comparison, calibration analysis, sensitive-attribute fairness audit, and resource-constrained retention prioritization simulations (Notebooks 11 to 14)
   blockers:
   - team names and final ownership mapping are not supplied in the context
   - real intervention costs, outcomes, replacement costs, and business value are unavailable; monetary optimization claims remain blocked
@@ -430,6 +432,11 @@ source_files:
   statement: 'Use six required advanced models with one headline model per member: Member 1 FT-Transformer, Member
     2 CatBoost, Member 3 XGBoost, Member 4 LightGBM, Member 5 EBM, Member 6 TabNet. Retain DummyClassifier baselines
     and optional Logistic Regression. Keep one shared split/fold/evaluation protocol.'
+- id: SRC-014
+  name: Lecturer / Course Requirement for Dimensionality Reduction (PCA)
+  date: '2026-08-19'
+  authority: module lecturer / course instruction
+  statement: 'Principal Component Analysis (PCA) dimensionality reduction must be demonstrated in the project on numerical features, including variance retention analysis, component loadings interpretation, and a PCA-augmented benchmark pipeline comparison.'
 embedded_source_policy:
   normalized_requirement_extracts_included: true
   complete_verbatim_transcripts_included: false
@@ -500,6 +507,10 @@ requirement_register:
     ownership.
   source: SRC-001
   status: VERIFIED
+- id: REQ-014
+  requirement: Demonstrate Principal Component Analysis (PCA) dimensionality reduction on the 13 approved numerical predictors, evaluate eigenvalues and cumulative explained variance, generate scree and projection plots, inspect component loadings, and execute a required PCA demonstration benchmark via Logistic Regression (StandardScaler -> LogisticRegression vs StandardScaler -> PCA(>=95% variance) -> LogisticRegression) under 5-fold CV without forcing PCA onto headline models.
+  source: SRC-014
+  status: VERIFIED requirement — TO BE IMPLEMENTED (04a_pca_analysis.ipynb planned / results/pca/ to be generated)
 dataset:
   filename: Extended_Employee_Performance_and_Productivity_Data.csv
   sha256: 2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb
@@ -680,6 +691,25 @@ audit_exposure:
     and disclose the historical exposure limitation.
   prohibited_claim: Do not call the formal holdout completely untouched from all prior exploratory modelling.
 methodology:
+  pca_protocol:
+    purpose: Mandatory course-required unsupervised dimensionality reduction, variance explanation, and linear projection analysis.
+    scope: Applied to all 13 approved numerical predictors (Age, Years_At_Company, Performance_Score, Monthly_Salary, Work_Hours_Per_Week, Projects_Handled, Overtime_Hours, Sick_Days, Remote_Work_Frequency, Team_Size, Training_Hours, Promotions, Employee_Satisfaction_Score).
+    exclusions: Employee_ID (identifier), raw Hire_Date (unparsed datetime), and Resigned (target).
+    scaling: StandardScaler fitted on development-training data only; never fitted across full dataset or formal holdout.
+    unsupervised_nature: PCA is strictly unsupervised and does not use Resigned during component computation.
+    outputs:
+    - eigenvalues and explained variance ratio per component
+    - cumulative explained variance curve
+    - scree plot and 2D PC1 vs PC2 projection
+    - component loadings matrix associating original numeric features to PCs
+    selection_rule: For the predictive PCA demonstration benchmark, retain the minimum number of principal components needed to explain at least 95% (>= 0.95) of variance in the applicable outer-training fold. For 2D visualization and interpretation only, PC1 and PC2 are used.
+    benchmark_policy:
+    - Logistic Regression is required specifically in a narrow capacity as the PCA demonstration benchmark (Pipeline A: StandardScaler -> LogisticRegression vs Pipeline B: StandardScaler -> PCA(>=95% variance) -> LogisticRegression).
+    - Broader standalone Logistic Regression experimentation remains optional.
+    - Logistic Regression is not a seventh headline model; the six headline models remain unchanged.
+    model_integration:
+    - Primary headline models (CatBoost, XGBoost, LightGBM, EBM, FT-Transformer, TabNet) retain their approved model-specific representations without PCA to preserve categorical structure and interpretability.
+    leakage_safeguards: Scaler and PCA transformations are fitted strictly on outer-training folds; formal holdout is never accessed for component selection or variance evaluation. Descriptive development-only PCA may use the full development partition only if clearly labeled descriptive, and must not leak into CV evaluation.
   split:
     development_train: 0.8
     formal_holdout: 0.2
@@ -959,7 +989,9 @@ methodology:
     fixed:
       output_dimension: 1
       loss: BCEWithLogitsLoss
-      optimizer: AdamW using model.make_parameter_groups() or the package default optimizer
+      optimizer: AdamW using model.make_parameter_groups()
+      ffn_d_hidden_multiplier: 1.3333333333333333 # 4/3 multiplier for ReGLU activation (explicit project configuration required by FTTransformerBackbone constructor)
+      residual_dropout: 0.0 # explicit project configuration (required by FTTransformerBackbone constructor)
       random_seed: 42
       maximum_epochs: 100
       early_stopping_metric: inner-validation Average Precision
@@ -1049,6 +1081,7 @@ methodology:
       objective: binary
       random_state: 42
       verbosity: -1
+      subsample_freq: 1 # required for subsample (bagging_fraction) < 1.0 to take effect
     search_space:
       n_estimators:
       - 300
@@ -1089,43 +1122,49 @@ methodology:
     method: bounded staged candidate search; no full Cartesian grid
     maximum_configurations: 10
     implementation: pytorch_tabnet.tab_model.TabNetClassifier
-    fixed:
-      seed: 42
-      max_epochs: 150
-      early_stopping_metric: inner-validation Average Precision via external evaluation/compatible custom metric
-      patience: 15
-    search_space:
-      n_d:
-      - 8
-      - 16
-      - 32
-      n_a:
-      - 8
-      - 16
-      - 32
-      n_steps:
-      - 3
-      - 5
-      - 7
-      gamma:
-      - 1.2
-      - 1.5
-      lambda_sparse:
-      - 1.0e-05
-      - 0.0001
-      - 0.001
-      optimizer_learning_rate:
-      - 0.01
-      - 0.02
-      batch_size:
-      - 1024
-      - 2048
-      virtual_batch_size:
-      - 128
-      - 256
-      weights:
-      - '0'
-      - 1 (automatic inverse-frequency balancing)
+    init_parameters:
+      fixed:
+        seed: 42
+        cat_emb_dim: 1
+      search_space:
+        n_d:
+        - 8
+        - 16
+        - 32
+        n_a:
+        - 8
+        - 16
+        - 32
+        n_steps:
+        - 3
+        - 5
+        - 7
+        gamma:
+        - 1.2
+        - 1.5
+        lambda_sparse:
+        - 1.0e-05
+        - 0.0001
+        - 0.001
+        optimizer_params:
+        - lr: 0.01
+        - lr: 0.02
+    fit_parameters:
+      fixed:
+        max_epochs: 150
+        patience: 15
+        eval_metric: ['TabNetAveragePrecision'] # custom pytorch_tabnet.metrics.Metric subclass calculating Average Precision on inner validation
+        early_stopping_metric: inner-validation Average Precision
+      search_space:
+        batch_size:
+        - 1024
+        - 2048
+        virtual_batch_size:
+        - 128
+        - 256
+        weights:
+        - 0
+        - 1
     validity_rules:
     - virtual_batch_size must divide batch_size
     - categorical vocabularies and numerical scaler are fitted on outer training only
@@ -1165,6 +1204,7 @@ fairness_protocol:
     risk model, the value proxy, or their combination and must be reported separately.
 environment_contract:
   python_target: 3.11.x
+  tested_development_environment: Python 3.14.0 (Windows x64) smoke-tested successfully; formal project target remains 3.11.x
   packages:
   - pandas
   - numpy
@@ -1207,12 +1247,12 @@ deliverables:
 - name: Viva preparation and participation
   format: oral review
   status: VERIFIED requirement
-- name: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md
+- name: Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md
   format: Markdown
   status: canonical project context
-- name: Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx
+- name: Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.docx
   format: DOCX
-  status: synchronized companion with same substantive content
+  status: companion format (pending regeneration; Markdown remains authoritative)
 fixed_decisions:
 - Primary target remains Resigned with True as the positive class.
 - 'The project has two linked stages: resignation-risk modelling and constrained retention-prioritization simulation.'
@@ -1337,7 +1377,7 @@ update_rules:
 
 **Critical limitation:** Preliminary audit-only evidence suggests the target may contain little predictive signal. Six complex models cannot create absent information. A rigorous no-signal result remains valid and must prevent operational claims.
 
-**Current phase:** Synchronize v4.3.0, then lock and save the shared split/fold registry before headline model training.
+**Current phase:** Implement PCA dimensionality-reduction analysis (`04a_pca_analysis.ipynb`), implement model adapters in `src/models/`, and populate candidate model configurations before individual headline model training.
 
 ## 2.2 Critical terminology
 
@@ -1383,19 +1423,19 @@ update_rules:
 
 ## 3.1 Current milestone
 
-**LIVE RECORD - 2026-08-07:** The active registry contains six required advanced models, one per member: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet. DummyClassifier baselines remain mandatory and Logistic Regression remains optional. The immediate milestone is to commit the synchronized v4.3.0 handoff, update repository configuration, and create the one shared split/fold registry before any headline model training.
+**LIVE RECORD - 2026-08-19:** The shared stratified 80/20 split and five-fold CV registry (`split_registry.csv`), development-only EDA (`03_eda.ipynb` with 20 canonical outputs), shared Dummy baselines (`04_baselines.ipynb`), modular evaluation utilities (`src/evaluation/`), and 92 automated tests are completed. The active registry contains six required advanced models, one per member: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet. DummyClassifier baselines remain mandatory and Logistic Regression remains optional. The immediate milestone is to execute the course-required PCA dimensionality-reduction analysis (`04a_pca_analysis.ipynb`), implement the six model adapters in `src/models/`, populate model configurations in `configs/models/`, and run environment smoke tests before executing individual model training notebooks.
 
 Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Prediction`.
 
 ## 3.2 Immediate objectives
 
-1. Replace repository context files with synchronized v4.3.0 Markdown and Word copies.
-2. Update README, slides, notebooks, report plan, `model_registry.yaml`, `search_spaces.yaml`, and the dependency specification.
-3. Implement and save one stratified 80/20 development/formal-holdout split and five saved outer folds.
-4. Implement a shared feature contract and six model-specific leakage-safe adapters.
-5. Smoke-test all six libraries/implementations and their fit, probability, serialization/reload paths.
-6. Complete formal audit and development-only EDA.
-7. Only then begin the six individually owned training/tuning workstreams.
+1. Maintain synchronized v4.3.1 Markdown context with verified API parameter signatures and modular repository structure.
+2. Implement dedicated PCA analysis notebook (`04a_pca_analysis.ipynb`) and generate canonical PCA variance, loadings, and visualization figures in `results/pca/`.
+3. Implement model adapters in `src/models/` (`catboost_model.py`, `ebm_model.py`, `ft_transformer.py`, `lightgbm_model.py`, `tabnet_model.py`, `xgboost_model.py`) conforming to the `ModelAdapter` base interface, including the PCA-augmented benchmark pipeline for optional Logistic Regression.
+3. Populate frozen parameter search spaces in `configs/models/`.
+4. Smoke-test all six model adapters with fit/predict/reload assertions under the shared 5-fold CV registry.
+5. Execute individual training/tuning notebooks (`05_m1_ft_transformer.ipynb` through `10_m6_tabnet.ipynb`).
+6. Execute multi-model comparison, calibration, fairness, and retention prioritization workflows (`11` through `14`).
 
 ## 3.3 Completed work
 
@@ -1409,7 +1449,7 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 
 ## 3.4 Work that may proceed now
 
-- commit v4.3.0 and update active-model references;
+- commit v4.3.1 and execute member model adapters;
 - complete audit/EDA and shared feature contract;
 - build and test the shared development/holdout split plus five-fold registry;
 - create model adapters and bounded search configurations;
@@ -1450,19 +1490,19 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 
 ## 3.8 Next concrete actions
 
-1. Commit v4.3.0 context files.
-2. Update model/dependency/configuration references to all six required models.
-3. Finalize the data contract and create the saved split plus five outer folds.
-4. Add row-parity and split-integrity tests.
-5. Implement minimal adapters and smoke tests for all six models.
-6. Freeze bounded search spaces before formal comparison.
-7. Generate OOF probabilities only after the shared experimental foundation passes review.
+1. Maintain canonical v4.3.1 context file.
+2. Implement the six model adapters in `src/models/` implementing the `ModelAdapter` abstract base class.
+3. Populate frozen candidate hyperparameter lists in `configs/models/`.
+4. Run adapter smoke tests across all six libraries in the project virtual environment.
+5. Execute five-fold cross-validation and hyperparameter tuning in member notebooks (`05` to `10`).
+6. Generate and save complete OOF probability predictions across all six models.
+7. Execute model comparison, calibration analysis, sensitive-attribute fairness audit, and retention prioritization simulations (`11` to `14`).
 
 # 4. Task router for AI assistants
 
 | Future request | Must read | Must verify | May generate | Must not invent |
 | --- | --- | --- | --- | --- |
-| Understand the project | Sections 0-3 and 8.1-8.10 | v4.3.0, six-model registry, individual ownership, current status | concise status-aware summary | new objectives or results |
+| Understand the project | Sections 0-3 and 8.1-8.10 | v4.3.1, six-model registry, individual ownership, current status | concise status-aware summary | new objectives or results |
 | Inspect data | Sections 5, 8.10-8.15, 8.18-8.19 | exact CSV checksum, shape, schema | audit code/tables/EDA plan | units or provenance |
 | Create shared split/folds | Sections 8.16-8.19 | seed 42, stratification, row IDs, holdout lock | split/fold registry and tests | alternate private member splits |
 | Generate FT-Transformer code | Sections 8.18-8.23 | fold-local scaler/vocabularies, inner validation, device | M1 pipeline/training/checkpoint code | holdout early stopping or attention-as-causality |
@@ -1484,8 +1524,8 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 
 | ID | Canonical filename or path | Required for | Integrity rule | Status |
 | --- | --- | --- | --- | --- |
-| CTX-MD | `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md` | All project-dependent work | Canonical; version/date must match. | VERIFIED generated |
-| CTX-DOCX | `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx` | Synchronized fallback/navigation | Regenerate from CTX-MD after substantive changes. | VERIFIED generated |
+| CTX-MD | `Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md` | All project-dependent work | Canonical; version/date must match. | VERIFIED generated |
+| CTX-DOCX | `Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md` | Synchronized fallback/navigation | Regenerate from CTX-MD after substantive changes. | PENDING REGENERATION / NOT CURRENTLY PRESENT |
 | SRC-001 | `Group Assignment Specification.pdf` or Section 9.2 extract | Requirements and marks | Original PDF remains authoritative; checksum recorded. | VERIFIED |
 | SRC-002 | `Proposal Presentation.pdf` or Section 9.3 extract | Proposal requirements | Original PDF remains authoritative; checksum recorded. | VERIFIED |
 | SRC-003 | `archive.zip` | Original assigned archive | Verify recorded SHA-256. | VERIFIED |
@@ -1506,71 +1546,93 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 Employee_Resignation_Prediction/
 ├── README.md
 ├── requirements.txt
-├── environment-lock.txt
+├── AGENTS.md
 ├── .gitignore
 ├── data/
 │   ├── raw/
 │   │   └── Extended_Employee_Performance_and_Productivity_Data.csv
 │   └── processed/
+│       └── split_registry.csv
 ├── configs/
 │   ├── split_config.yaml
-│   ├── model_registry.yaml
-│   ├── search_spaces.yaml
-│   ├── training_config.yaml
-│   └── prioritization_config.yaml
+│   ├── feature_contract.yaml
+│   └── models/
+│       ├── catboost.yaml
+│       ├── ebm.yaml
+│       ├── ft_transformer.yaml
+│       ├── lightgbm.yaml
+│       ├── tabnet.yaml
+│       └── xgboost.yaml
 ├── notebooks/
-│   ├── 01_data_audit.ipynb
-│   ├── 02_eda.ipynb
-│   ├── 03_model_comparison.ipynb
-│   └── 04_prioritization.ipynb
+│   ├── 01_data_audit.ipynb              # COMPLETED: Raw data audit and integrity verification
+│   ├── 02_create_split_registry.ipynb   # COMPLETED: Stratified 80/20 holdout and 5-fold CV generator
+│   ├── 03_eda.ipynb                     # COMPLETED: Development-only exploratory data analysis (20 outputs)
+│   ├── 04_baselines.ipynb               # COMPLETED: Dummy Prior & Dummy Most Frequent baseline OOF models
+│   ├── 04a_pca_analysis.ipynb           # [PLANNED / TO BE CREATED]: Mandatory PCA dimensionality reduction & loadings analysis
+│   ├── 11_model_comparison.ipynb        # [PLANNED]: Six-model comparison on development OOF predictions
+│   ├── 12_calibration.ipynb             # [PLANNED]: Probability calibration & reliability curves
+│   ├── 13_fairness_analysis.ipynb       # [PLANNED]: Demographic parity & subgroup disparity audit
+│   ├── 14_retention_prioritization.ipynb# [PLANNED]: Resource-constrained retention simulation
+│   └── models/                          # [PLANNED]: Individual model tuning notebooks (05 to 10)
+│       ├── 05_m1_ft_transformer.ipynb
+│       ├── 06_m2_catboost.ipynb
+│       ├── 07_m3_xgboost.ipynb
+│       ├── 08_m4_lightgbm.ipynb
+│       ├── 09_m5_ebm.ipynb
+│       └── 10_m6_tabnet.ipynb
 ├── src/
-│   ├── data_validation.py
-│   ├── split_registry.py
-│   ├── feature_contract.py
-│   ├── model_adapters.py
-│   ├── baselines.py
-│   ├── ft_transformer_model.py
-│   ├── catboost_model.py
-│   ├── xgboost_model.py
-│   ├── lightgbm_model.py
-│   ├── ebm_model.py
-│   ├── tabnet_model.py
-│   ├── torch_training.py
-│   ├── calibrate.py
-│   ├── explain.py
-│   ├── prioritize.py
-│   ├── evaluate.py
-│   └── fairness.py
-├── tests/
-│   ├── test_data_contract.py
-│   ├── test_split_registry.py
-│   ├── test_model_adapters.py
-│   ├── test_ft_transformer_vocab.py
-│   ├── test_oof_coverage.py
-│   ├── test_calibration.py
-│   ├── test_prioritization.py
-│   └── test_serialization.py
-├── models/
-│   ├── ft_transformer/
-│   ├── catboost/
-│   ├── xgboost/
-│   ├── lightgbm/
-│   ├── ebm/
-│   ├── tabnet/
-│   └── optional_logistic_regression/
-├── results/
-│   ├── predictions/
-│   ├── metrics/
-│   ├── calibration/
-│   ├── training_curves/
-│   ├── explanations/
+│   ├── __init__.py
+│   ├── data/
+│   │   ├── __init__.py
+│   │   ├── feature_contract.py
+│   │   ├── splits.py
+│   │   └── validation.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── runner.py
+│   │   ├── catboost_model.py
+│   │   ├── ebm_model.py
+│   │   ├── ft_transformer.py
+│   │   ├── lightgbm_model.py
+│   │   ├── tabnet_model.py
+│   │   └── xgboost_model.py
+│   ├── evaluation/
+│   │   ├── __init__.py
+│   │   ├── calibration.py
+│   │   ├── fairness.py
+│   │   ├── metrics.py
+│   │   ├── oof_validation.py
+│   │   └── plots.py
 │   └── prioritization/
+│       ├── __init__.py
+│       ├── ranking.py
+│       └── value_proxy.py
+├── tests/
+│   ├── test_data_validation.py
+│   ├── test_feature_contract.py
+│   ├── test_metrics.py
+│   ├── test_model_interface.py
+│   ├── test_oof_predictions.py
+│   ├── test_oof_runner.py
+│   └── test_split_registry.py
+├── models/
+├── results/
+│   ├── audit/                           # COMPLETED: Audit tables from Notebook 01
+│   ├── baselines/                       # COMPLETED: Baseline OOF prediction CSVs and metrics
+│   ├── eda/                             # COMPLETED: Canonical EDA figures (01 to 07) & manifest
+│   ├── pca/                             # [PLANNED / TO BE GENERATED]: PCA variance, loadings, and projection figures
+│   ├── models/                          # [PLANNED]: Model OOF predictions, metrics, and tuning curves
+│   ├── comparison/                      # [PLANNED]: Multi-model comparison tables and plots
+│   ├── calibration/                     # [PLANNED]: Reliability curves and Brier scores
+│   ├── fairness/                        # [PLANNED]: Subgroup disparity audit tables
+│   └── prioritization/                  # [PLANNED]: Retention simulation lift curves and ranking tables
 ├── reports/
 ├── presentations/
 └── docs/
     └── context/
-        ├── Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md
-        └── Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx
+        ├── Employee_Resignation_Prediction_AI_Project_Context_v4_3_1.md
+        └── Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.docx (pending regeneration)
 ```
 
 ## 5.4 Missing or mismatched file protocol
@@ -1639,8 +1701,8 @@ Actual intervention cost/effect evidence
 | --- | --- | --- | --- |
 | Exact assigned CSV/checksum | data-dependent work | VERIFIED available | Yes |
 | Approved six-model registry/ownership | model work division | DECIDED | Yes |
-| Shared split/fold registry | fair headline training/comparison | TO BE GENERATED | Implement next |
-| Tested CatBoost/XGBoost/LightGBM/InterpretML/PyTorch/RTDL/TabNet environment | model execution | TO BE GENERATED | Smoke-test before experiments |
+| Shared split/fold registry | fair headline training/comparison | VERIFIED available (`split_registry.csv`) | Yes |
+| Tested CatBoost/XGBoost/LightGBM/InterpretML/PyTorch/RTDL/TabNet environment | model execution | VERIFIED installed & tested | Yes |
 | Named team identities | formal accountability | PLACEHOLDER | Numbered member roles are sufficient for now |
 | Real intervention/business-value evidence | genuine optimization/causal claims | NOT AVAILABLE | No; retain simulation-only framing |
 
@@ -1671,7 +1733,7 @@ Record decision ID, date, previous value, new value, rationale, authority, affec
 
 ## 7.4 Reusable handoff instruction
 
-> Read `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md` first and treat it as canonical. The DOCX is a synchronized fallback. The six required advanced models are individually owned: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet. DummyClassifier baselines are mandatory; Logistic Regression is optional. All headline models must use identical saved development/holdout rows and outer folds but model-specific fold-local representations. Lock the formal holdout against all preprocessing design, tuning, early stopping, calibration choice, threshold choice, proxy/capacity/strategy choice, and model selection. Verify the exact CSV checksum before data work, inspect current repository files before code-dependent claims, never invent results, and update live state/AI-use/decisions/version/Word after material changes.
+> Read `Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md` first and treat it as canonical. The DOCX is a synchronized fallback. The six required advanced models are individually owned: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet. DummyClassifier baselines are mandatory; Logistic Regression is optional. All headline models must use identical saved development/holdout rows and outer folds but model-specific fold-local representations. Lock the formal holdout against all preprocessing design, tuning, early stopping, calibration choice, threshold choice, proxy/capacity/strategy choice, and model selection. Verify the exact CSV checksum before data work, inspect current repository files before code-dependent claims, never invent results, and update live state/AI-use/decisions/version/Word after material changes.
 
 # 8. Full canonical project specification
 
@@ -1679,10 +1741,10 @@ Record decision ID, date, previous value, new value, rationale, authority, affec
 
 | Field | Value | Status |
 | --- | --- | --- |
-| Context version | 4.3.0 | ACTIVE |
-| Date | 2026-08-07 | VERIFIED |
-| Canonical file | `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md` | DECIDED |
-| Word companion | `Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx` | DECIDED |
+| Context version | 4.4.0 | ACTIVE |
+| Date | 2026-08-19 | VERIFIED |
+| Canonical file | `Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md` | DECIDED |
+| Word companion | `Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md` | PENDING REGENERATION / NOT CURRENTLY PRESENT |
 | Canonical repository | `https://github.com/Sankalpa-KMCP/Employee_Resignation_Prediction` | DECIDED |
 | Current phase | Six-model implementation planning and shared split/fold synchronization | LIVE RECORD |
 | Required advanced models | FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet | DECIDED |
@@ -1926,7 +1988,7 @@ Expected raw pandas-compatible types after loading and explicit conversion:
 | `Hire_Date` | String parsed to datetime | Parse all values; raw field remains excluded from the primary feature matrix. |
 | `Resigned` | Boolean | Permit only `False` and `True`; map `True` to the positive class. |
 
-Environment contract: target Python 3.11.x. The repository must maintain a tested dependency specification (`requirements.txt`, `environment.yml`, or equivalent) and record the environment used for formal execution.
+Environment contract: formal target remains Python 3.11.x (tested development environment is Python 3.14.0 on Windows x64). The repository must maintain a tested dependency specification (`requirements.txt`, `environment.yml`, or equivalent) and record the environment used for formal execution.
 
 ## 8.12 Categories, ranges, and verified distributions
 
@@ -2157,24 +2219,26 @@ All six members receive the same development rows, outer folds, target definitio
 
 ### 8.18.1 Component responsibilities
 
-| Component | Responsibility | Required output |
+| Component / Module | Responsibility | Required output |
 | --- | --- | --- |
-| `data_validation.py` | checksum/schema/types/ranges/target checks | validation report |
-| `split_registry.py` | save/reload 80/20 split and five outer folds | row-level split/fold registry |
-| `feature_contract.py` | predictors/exclusions/types/sensitive fields | versioned feature contract |
-| `model_adapters.py` | shared adapter interface and row-parity assertions | adapter metadata |
-| `baselines.py` | Dummy and optional Logistic | OOF reference predictions |
-| `ft_transformer_model.py` | M1 FT architecture/tensor interface/training metadata | model, checkpoint, OOF probabilities |
-| `catboost_model.py` | M2 native-categorical CatBoost | model, parameters, OOF probabilities |
-| `xgboost_model.py` | M3 encoded-matrix XGBoost | model, encoder metadata, OOF probabilities |
-| `lightgbm_model.py` | M4 category-aware LightGBM | model, category metadata, OOF probabilities |
-| `ebm_model.py` | M5 explicit-type EBM and explanations | model, terms, OOF probabilities |
-| `tabnet_model.py` | M6 TabNet preprocessing/training/history | model, metadata, OOF probabilities |
-| `calibrate.py` | reliability/Brier/development-only calibration | calibration artefacts |
-| `evaluate.py` | common metrics/uncertainty/comparison | comparison tables |
-| `explain.py` | family-valid explanation methods | explanation artefacts |
-| `prioritize.py` | proxy/top-k strategies/ranking metrics | prioritization results |
-| `fairness.py` | subgroup prediction/selection audit | subgroup tables |
+| `src.data.validation` | checksum/schema/types/ranges/target checks | validation report |
+| `src.data.splits` | save/reload 80/20 split and five outer folds | row-level split/fold registry |
+| `src.data.feature_contract` | predictors/exclusions/types/sensitive fields | versioned feature contract |
+| `src.models.base` | shared adapter interface (`ModelAdapter`) and row-parity assertions | adapter metadata |
+| `src.models.runner` | cross-validation and out-of-fold execution harness | OOF predictions and fold metrics |
+| `src.models.ft_transformer` | M1 FT architecture/tensor interface/training metadata | model, checkpoint, OOF probabilities |
+| `src.models.catboost_model` | M2 native-categorical CatBoost | model, parameters, OOF probabilities |
+| `src.models.xgboost_model` | M3 encoded-matrix XGBoost | model, encoder metadata, OOF probabilities |
+| `src.models.lightgbm_model` | M4 category-aware LightGBM | model, category metadata, OOF probabilities |
+| `src.models.ebm_model` | M5 explicit-type EBM and explanations | model, terms, OOF probabilities |
+| `src.models.tabnet_model` | M6 TabNet preprocessing/training/history | model, metadata, OOF probabilities |
+| `src.evaluation.metrics` | binary classification and ranking metrics calculation | summary and fold metrics |
+| `src.evaluation.oof_validation` | validation and integrity checks on OOF predictions | validation assertions |
+| `src.evaluation.calibration` | reliability/Brier/development-only calibration | calibration curves and Brier scores |
+| `src.evaluation.fairness` | subgroup prediction/selection audit | subgroup metrics tables |
+| `src.evaluation.plots` | visualization utilities for metrics, curves, and distributions | evaluation figures |
+| `src.prioritization.ranking` | simulated capacity prioritization strategies and lift analysis | prioritization tables |
+| `src.prioritization.value_proxy` | retention-value proxy calculation and sensitivity proxies | proxy score columns |
 
 ### 8.18.2 Model-adapter contract
 
@@ -2232,6 +2296,38 @@ All adapters must output probabilities indexed by the same saved row IDs.
 
 ### 8.19.3 EDA questions and figures
 
+### 8.19.4 PCA Dimensionality Reduction Protocol
+
+To fulfill the IT2011 course requirement for unsupervised dimensionality reduction (SRC-014), the project includes a dedicated PCA investigation on numerical employee predictors:
+
+1. **Target Features:** All 13 approved numerical predictors: `Age`, `Years_At_Company`, `Performance_Score`, `Monthly_Salary`, `Work_Hours_Per_Week`, `Projects_Handled`, `Overtime_Hours`, `Sick_Days`, `Remote_Work_Frequency`, `Team_Size`, `Training_Hours`, `Promotions`, `Employee_Satisfaction_Score`. Note: These include both continuous variables and discrete count/ordinal numeric variables.
+2. **Exclusions:** `Employee_ID` (identifier), raw `Hire_Date` (unparsed string), and `Resigned` (target).
+3. **Standardization:** Input features are centered and scaled using `StandardScaler` fitted strictly on development-training data (`split_registry.csv` development partition).
+4. **Unsupervised Construction:** PCA is strictly unsupervised; components are constructed to maximize captured variance across numerical predictors without knowledge of `Resigned`.
+5. **Analytical Outputs (`results/pca/` — PLANNED / TO BE GENERATED):**
+   - **Eigenvalues and Explained Variance Ratio:** Proportion of total variance explained by each principal component (PC1 explains greatest variance, PC2 next, etc.).
+   - **Cumulative Explained Variance:** Threshold curve showing total variance captured as components are added.
+   - **Scree Plot:** Visual inspection of variance per component and "elbow" points (`figure_01_scree_plot.png`).
+   - **Component Loadings:** Correlation/weight matrix indicating the contribution of original numeric features (e.g. salary, tenure, satisfaction) to PC1, PC2, and subsequent PCs (`component_loadings.csv`).
+   - **2D PC Projection:** Scatter visualization of development records projected onto PC1 and PC2 (`figure_03_pc1_pc2_projection.png`).
+6. **Frozen Component Selection Rule:** For predictive modeling in the PCA benchmark comparison, the number of components is frozen to the **minimum number of principal components needed to explain at least 95% ($\ge 0.95$) of variance in the applicable outer-training fold**. PC1 and PC2 are used strictly for 2D visualization and interpretation, not automatically as the predictive component set.
+7. **Headline Model Protection:**
+   - **CatBoost (M2):** Primary pipeline uses native categorical features without PCA.
+   - **XGBoost (M3):** Primary pipeline uses fold-local one-hot encoding without PCA.
+   - **LightGBM (M4):** Primary pipeline uses category-aware mappings without PCA.
+   - **EBM (M5):** Primary pipeline preserves original feature names and univariate/interaction shapes for inherent interpretability without PCA.
+   - **FT-Transformer (M1):** Primary pipeline preserves numerical and categorical feature tokens without PCA.
+   - **TabNet (M6):** Primary pipeline preserves continuous scaling and categorical embeddings without PCA.
+8. **Required PCA Demonstration Benchmark via Logistic Regression:**
+   - Logistic Regression is **not** a seventh headline model; the six headline models remain unchanged.
+   - Logistic Regression is **required specifically in a narrow capacity as the PCA demonstration benchmark** comparing:
+     - Pipeline A (Standard): `StandardScaler` -> `LogisticRegression`
+     - Pipeline B (PCA-Augmented): `StandardScaler` -> `PCA(n_components_95pct)` -> `LogisticRegression`
+     evaluated under the identical 5-fold development CV registry.
+   - Any broader standalone Logistic Regression experimentation beyond this PCA demonstration remains optional.
+9. **Leakage Controls:** Scaler and PCA parameters are fitted strictly on outer-training folds; the formal 20% holdout is never accessed for component selection, variance tuning, or model evaluation. Descriptive development-only PCA may use the full development partition only if clearly labeled descriptive, and must not leak into CV evaluation.
+
+
 Minimum EDA evidence remains: target prevalence/imbalance; numerical/categorical distributions; target rates with cautious interpretation; feature redundancy/correlation; construction-like patterns; proxy-component distributions; sensitive-group representation; and clear association-versus-causation wording.
 
 ## 8.20 Model and algorithm selection
@@ -2287,7 +2383,7 @@ Maximum twelve configurations. Primary candidates: `n_estimators` 300/600/1000; 
 
 ### 8.21.6 LightGBM search — M4
 
-Maximum twelve configurations. Primary candidates: `n_estimators` 300/600/1000; `num_leaves` 15/31/63; `max_depth` -1/6/10; learning rate 0.03/0.05/0.1; `min_child_samples` 20/50/100; subsample 0.8/1.0; `colsample_bytree` 0.8/1.0; `reg_lambda` 0/1/5; class weights none/balanced. Use binary objective and seed 42. Early-stopping callbacks may only see training-inner validation.
+Maximum twelve configurations. Primary candidates: `n_estimators` 300/600/1000; `num_leaves` 15/31/63; `max_depth` -1/6/10; learning rate 0.03/0.05/0.1; `min_child_samples` 20/50/100; subsample 0.8/1.0 (with fixed `subsample_freq: 1` so bagging takes effect when subsample < 1.0); `colsample_bytree` 0.8/1.0; `reg_lambda` 0/1/5; class weights none/balanced. Use binary objective and seed 42. Early-stopping callbacks may only see training-inner validation.
 
 ### 8.21.7 EBM search — M5
 
@@ -2295,7 +2391,7 @@ Maximum ten configurations over learning rate 0.005/0.015/0.03; max leaves 2/3; 
 
 ### 8.21.8 TabNet search — M6
 
-Maximum ten staged configurations. Candidate `n_d`/`n_a` 8/16/32; steps 3/5/7; gamma 1.2/1.5; sparse penalty 1e-5/1e-4/1e-3; optimizer learning rate 0.01/0.02; batch 1024/2048; virtual batch 128/256 with divisibility; class balancing off/on. Maximum 150 epochs and patience 15. Use training-inner validation only; save training history, preprocessing/category metadata, selected epoch, seed/device, and reload artefact.
+Maximum ten staged configurations. Constructor candidate parameters: `n_d`/`n_a` 8/16/32; `n_steps` 3/5/7; `gamma` 1.2/1.5; `lambda_sparse` 1e-5/1e-4/1e-3; `optimizer_params=dict(lr=...)` 0.01/0.02; `cat_idxs`/`cat_dims` from fold training. Fit-time candidate parameters: `batch_size` 1024/2048; `virtual_batch_size` 128/256 with divisibility; `weights` 0 or 1 (automatic inverse-frequency balancing); `max_epochs` 150; `patience` 15. Early stopping on training-inner validation MUST use Average Precision / PR-AUC via a custom `pytorch_tabnet.metrics.Metric` class (e.g. `TabNetAveragePrecision` wrapping `sklearn.metrics.average_precision_score`), not default ROC-AUC. Save training history, preprocessing/category metadata, selected epoch, seed/device, and reload artefact.
 
 ### 8.21.9 Threshold, calibration, proxy, and capacity selection
 
@@ -2562,18 +2658,20 @@ All members must understand the dataset, shared split/folds, leakage controls, P
 
 Use milestone dependencies rather than exact administrative dates.
 
-| Milestone | Completion evidence |
-| --- | --- |
-| M1 Six-model decision synchronized | v4.3.0 MD/DOCX and repository commit |
-| M2 Audit/EDA complete | fresh-kernel outputs and peer review |
-| M3 Shared split/folds + feature contract complete | saved registry and passing integrity tests |
-| M4 Six minimal models smoke-tested | fit/predict/reload evidence for FT, CatBoost, XGBoost, LightGBM, EBM, TabNet |
-| M5 Search spaces frozen | configuration commit |
-| M6 Six-model OOF comparison complete | complete predictions and common metrics |
-| M7 Model/calibration frozen | decision record |
-| M8 Formal holdout evaluated once | access record and saved outputs |
-| M9 Prioritization/fairness complete | strategy and subgroup tables |
-| M10 Report/presentation/viva ready | final QA checklist |
+| Milestone | Completion evidence | Status |
+| --- | --- | --- |
+| M1 Six-model decision synchronized | v4.3.0/v4.4.0 MD/DOCX and repository commit | COMPLETED |
+| M2 Audit/EDA complete | fresh-kernel outputs and 20 EDA figures/tables (`01_data_audit.ipynb`, `03_eda.ipynb`) | COMPLETED |
+| M3 Shared split/folds + feature contract complete | saved registry (`split_registry.csv`), feature contract, and 92 passing unit tests | COMPLETED |
+| M4 Shared Dummy baselines evaluated | OOF predictions and baseline summary metrics (`04_baselines.ipynb`) | COMPLETED |
+| M4a PCA dimensionality-reduction analysis complete | variance/loadings tables and scree/projection figures in `results/pca/` (`04a_pca_analysis.ipynb`) | REQUIRED — TO BE IMPLEMENTED |
+| M5 Six model adapters implemented & smoke-tested | fit/predict/reload evidence in `src/models/` for FT, CatBoost, XGBoost, LightGBM, EBM, TabNet | ACTIVE NEXT MILESTONE |
+| M6 Search spaces frozen in configs | configuration files populated in `configs/models/` | IN PROGRESS |
+| M7 Six-model CV & tuning complete | complete OOF predictions and member notebooks (`05` to `10`) | PENDING |
+| M8 Model comparison & calibration complete | multi-model comparison, calibration analysis (`11_model_comparison.ipynb`, `12_calibration.ipynb`) | PENDING |
+| M9 Prioritization & fairness audit complete | simulated retention strategy and subgroup analysis (`13_fairness_analysis.ipynb`, `14_retention_prioritization.ipynb`) | PENDING |
+| M10 Formal holdout evaluated once | post-freeze holdout corroboration and saved outputs | NOT PERMITTED BEFORE FREEZE |
+| M11 Report/presentation/viva ready | final report <= 15 pages, 15-min proposal slides, QA checklist | PENDING |
 
 ## 8.32 Current project status
 
@@ -2583,14 +2681,19 @@ Use milestone dependencies rather than exact administrative dates.
 | Two-stage scope | DECIDED |
 | Six-model headline registry | DECIDED |
 | One model per member ownership | DECIDED |
-| Dummy baseline | DECIDED mandatory |
+| Dummy baseline | COMPLETED (`04_baselines.ipynb`) |
 | Logistic benchmark | DECIDED optional |
-| Audit notebook | IN PROGRESS / FUNCTIONAL |
-| Shared split/fold registry | TO BE GENERATED — NEXT TECHNICAL STEP |
-| Six model adapters | TO BE GENERATED |
-| Formal model results | TO BE GENERATED |
-| Formal holdout access | NOT YET PERMITTED |
-| Prioritization results | TO BE GENERATED |
+| Audit notebook | COMPLETED (`01_data_audit.ipynb`) |
+| Shared split/fold registry | COMPLETED / VERIFIED (`data/processed/split_registry.csv`) |
+| Development-only EDA | COMPLETED (`03_eda.ipynb` with 20 canonical outputs) |
+| PCA dimensionality-reduction analysis | REQUIRED — TO BE IMPLEMENTED (`04a_pca_analysis.ipynb`, `results/pca/`) |
+| Automated unit test suite | COMPLETED (92 passing tests across 7 test modules) |
+| Six model adapters | IN PROGRESS / PENDING IMPLEMENTATION (`src/models/`) |
+| Model candidate configurations | IN PROGRESS (`configs/models/`) |
+| Member modeling notebooks | TO BE GENERATED (`notebooks/models/05` to `10`) |
+| Formal model comparison & calibration | TO BE GENERATED (`notebooks/11_model_comparison.ipynb`, `12_calibration.ipynb`) |
+| Formal holdout access | NOT YET PERMITTED (Locked until model/calibration/proxy freeze) |
+| Prioritization & fairness results | TO BE GENERATED (`notebooks/13_fairness_analysis.ipynb`, `14_retention_prioritization.ipynb`) |
 | Report/presentation final artefacts | TO BE GENERATED |
 
 ## 8.33 Planned results-record templates
@@ -2740,6 +2843,8 @@ Use milestone dependencies rather than exact administrative dates.
 | AI-010 | 2026-08-06 | ChatGPT - GPT-5.6 Thinking | Recorded canonical repository, removed nonessential handoff gaps, aligned requirement IDs, corrected Word tables, and synchronized v4.1.1. | Extensive | Validated YAML, consistency searches, DOCX generation, structural and visual QA. | User approved; group owns repository maintenance. |
 | AI-011 | 2026-08-06 | ChatGPT - GPT-5.6 Thinking | Created v4.2.0 three-model / three-pair methodology (CatBoost, EBM, FT-Transformer). | Extensive | YAML/content/render QA. | Superseded by v4.3.0 for active model registry and ownership. |
 | AI-012 | 2026-08-07 | ChatGPT - GPT-5.6 Sol | Updated the handoff to six individually owned headline models; added XGBoost, LightGBM, and TabNet preprocessing/search/artefact rules; retained shared split/fold/holdout/evaluation safeguards; regenerated synchronized v4.3.0 Markdown and Word files. | Extensive | Reviewed supplied v4.2.0 files, checked current official XGBoost/LightGBM/TabNet APIs, validated machine-readable YAML and stale-reference searches, rendered/inspected Word. | User directed the six-model update; group owns implementation, testing, and academic use. |
+| AI-013 | 2026-08-19 | Antigravity AI Assistant | Conducted deep codebase/environment verification audit; corrected FT-Transformer (`ffn_d_hidden_multiplier`, `residual_dropout`) and TabNet (`optimizer_params={'lr': ...}`, `__init__` vs `.fit()`) constructor signatures; added LightGBM `subsample_freq=1` requirement; synchronized live state with completed split registry, EDA, baselines, and 92 automated tests; updated repository structure to modular subpackage layout; bumped context to v4.3.1. | Extensive | Executed runtime API tests in Python, verified dataset properties, ran 92 pytest unit tests, inspected repository artifacts, and validated Markdown content consistency. | User directed deep audit; group owns implementation and academic integrity. |
+| AI-014 | 2026-08-19 | Antigravity AI Assistant | Integrated IT2011 course-required PCA (Principal Component Analysis) dimensionality-reduction protocol; established variance retention, loadings inspection, scree/projection plots, and PCA-augmented benchmark modeling without disrupting primary headline model representations; updated notebook plan (`04a_pca_analysis.ipynb`) and results directory (`results/pca/`); bumped context to v4.4.0. | Extensive | Validated PCA methodology and leakage rules, verified non-disruptive notebook numbering, checked scikit-learn PCA pipeline compatibility, and updated machine-readable specification. | User directed course-requirement integration; group owns academic execution. |
 
 Future records must include actual tool/version if known, precise tasks, extent, verification, retained evidence, and human ownership.
 
@@ -2763,6 +2868,8 @@ Future records must include actual tool/version if known, precise tasks, extent,
 | Q-046 | 2026-08-07 | DECIDED | Individual model ownership | M1 FT; M2 CatBoost; M3 XGBoost; M4 LightGBM; M5 EBM; M6 TabNet | Explicit user decision / accepted mapping in update request | Group-approved revision before headline training |
 | Q-047 | 2026-08-07 | DECIDED | Six-model preprocessing contract | Same rows/folds; model-specific fold-local adapters; no shared full-data transformed matrix | Methodological requirement | Logged pre-holdout redesign |
 | Q-048 | 2026-08-07 | DECIDED | Six-model selection rule | Compare all six on common OOF PR-AUC plus calibration, stability, runtime, reproducibility, valid interpretation, practical equivalence | Methodological review | Logged pre-holdout change |
+| Q-049 | 2026-08-19 | DECIDED | Parameter signature and live-state synchronization | Correct FT-Transformer, TabNet, and LightGBM search specifications to match installed library APIs; update live state to reflect completed split registry, EDA, baselines, and 92 passing unit tests; update repository layout to modular subpackage tree; bump to v4.3.1 | Technical verification and runtime inspection | Higher-authority or logged change |
+| Q-050 | 2026-08-19 | DECIDED | PCA Dimensionality-Reduction Integration | Add course-required PCA dimensionality reduction on standardized numerical features (`04a_pca_analysis.ipynb`, `results/pca/`); include PCA-augmented Logistic Regression benchmark; preserve non-PCA model-specific fold-local representations for all six headline models; bump to v4.4.0 | Module lecturer / course requirement (SRC-014) | Higher-authority or logged change |
 
 ### Change log
 
@@ -2775,7 +2882,9 @@ Future records must include actual tool/version if known, precise tasks, extent,
 | 4.1.0 | 2026-08-05 | Adopted CatBoost/EBM and model-specific adapters. | More distinctive/interpretable comparison. | SUPERSEDED |
 | 4.1.1 | 2026-08-06 | Added repository and handoff cleanup. | Clean synchronized package. | SUPERSEDED |
 | 4.2.0 | 2026-08-06 | Locked CatBoost, EBM, and FT-Transformer with three two-member pairs. | Prior active methodology. | SUPERSEDED |
-| 4.3.0 | 2026-08-07 | Expanded to six required headline models with one model per member; activated XGBoost, LightGBM, and TabNet; added six-model preprocessing/search/evaluation/team/repository rules while retaining shared split/CV/holdout safeguards. | Satisfy the one-model-per-member requirement without sacrificing fair comparison or leakage control. | ACTIVE |
+| 4.3.0 | 2026-08-07 | Expanded to six required headline models with one model per member; activated XGBoost, LightGBM, and TabNet; added six-model preprocessing/search/evaluation/team/repository rules while retaining shared split/CV/holdout safeguards. | Satisfy the one-model-per-member requirement without sacrificing fair comparison or leakage control. | SUPERSEDED |
+| 4.3.1 | 2026-08-19 | Corrected FT-Transformer constructor kwargs (`ffn_d_hidden_multiplier`, `residual_dropout`) and TabNet parameter routing (`optimizer_params={'lr': ...}`, `__init__` vs `.fit()`); added LightGBM `subsample_freq=1` requirement; synchronized live state with completed `split_registry.csv`, `03_eda.ipynb` (20 outputs), `04_baselines.ipynb`, and 92 automated tests; updated repository structure to modular subpackage tree (`src/data/`, `src/models/`, `src/evaluation/`, `src/prioritization/`). | Ensure runtime code generation accuracy and synchronize persistent context with actual Stage 4 repository progress. | SUPERSEDED |
+| 4.4.0 | 2026-08-19 | Integrated IT2011 course-required PCA (Principal Component Analysis) dimensionality-reduction protocol on numerical features; added dedicated analysis workflow (`04a_pca_analysis.ipynb`), artifact directory (`results/pca/`), component loadings inspection, scree/projection plots, and a PCA-augmented Logistic Regression benchmark comparison; preserved non-PCA representations for all six headline models. | Fulfill formal course dimensionality-reduction requirement while preserving model-specific preprocessing and experimental validity. | ACTIVE |
 
 ## 8.37 Remaining identity and ownership inputs
 

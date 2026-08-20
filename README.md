@@ -10,8 +10,8 @@ The primary objective of this project is to develop and benchmark six advanced t
 
 ### Key Facts & Contract Specifications
 - **Target Variable:** `Resigned` (Boolean: `True` / `False`; positive class = `True` / `1`).
-- **Target Prevalence:** ~10.02% positive class across the 100,000-record dataset (10.01% in development).
-- **Predictor Set:** 17 strictly validated features defined in `configs/feature_contract.yaml` (numerical, ordinal, and categorical attributes).
+- **Target Prevalence:** ~10.02% positive class across the 100,000-record dataset (10.01% in development partition).
+- **Predictor Set:** 17 strictly validated features defined in `configs/feature_contract.yaml` (4 categorical, 13 numerical/ordinal attributes).
 - **Primary Performance Metric:** **Average Precision (AP / PR-AUC)**, chosen specifically for positive-class sensitivity under severe class imbalance (~10% positive prevalence). Secondary metrics include ROC-AUC, Brier Score, Balanced Accuracy, Recall, and F1.
 - **Resource Simulation:** Retention prioritization at 20% organizational intervention capacity comparing random, risk-only, value-only, and risk-times-value-proxy strategies.
 
@@ -21,41 +21,105 @@ The primary objective of this project is to develop and benchmark six advanced t
 
 ```
 Full Dataset (100,000 rows)
-├── Development Partition (80,000 rows, 80%)  <-- Used for all EDA, training, tuning & OOF evaluation
-│   ├── Fold 0 (16,000 rows)
+├── Development Partition (80,000 rows, 80%)  <-- Used for all EDA, PCA, training, tuning & OOF evaluation
 │   ├── Fold 1 (16,000 rows)
 │   ├── Fold 2 (16,000 rows)
 │   ├── Fold 3 (16,000 rows)
-│   └── Fold 4 (16,000 rows)
+│   ├── Fold 4 (16,000 rows)
+│   └── Fold 5 (16,000 rows)
 └── Formal Holdout Partition (20,000 rows, 20%)  <-- STRICTLY ISOLATED; NEVER used for training or tuning
 ```
 
 > **CRITICAL HOLDOUT ISOLATION RULE:**
-> The 20,000-row formal holdout set (`holdout_df`) is strictly isolated in `data/processed/split_registry.csv`. It must **NEVER** be used during exploratory data analysis, feature engineering, model selection, hyperparameter tuning, or threshold setting. It will be evaluated exactly once as a final post-freeze corroboration.
+> The 20,000-row formal holdout set (`holdout_df`) is strictly quarantined in `data/processed/split_registry.csv`. It must **NEVER** be accessed or used during exploratory data analysis, PCA decisions, feature engineering, model selection, hyperparameter tuning, calibration selection, or prioritization strategy design. It will be evaluated exactly once as a final post-freeze corroboration in `notebooks/15_final_holdout_evaluation.ipynb`.
 
 ### Six Headline Model Architectures
-1. **Member 1:** FT-Transformer (Deep Learning Tabular Transformer via RTDL / PyTorch)
+1. **Member 1:** FT-Transformer (Feature Tokenizer Transformer via RTDL / PyTorch)
 2. **Member 2:** CatBoost (Gradient Boosted Decision Trees with native categorical handling)
 3. **Member 3:** XGBoost (Extreme Gradient Boosting with histogram binning)
 4. **Member 4:** LightGBM (Light Gradient Boosting Machine)
 5. **Member 5:** Explainable Boosting Machine / EBM (InterpretML Generalized Additive Model with pairwise interactions)
 6. **Member 6:** TabNet (Attentive Interpretable Tabular Deep Learning via PyTorch)
 
-**Reference Baselines:**
+**Mandatory Baseline & Benchmark Models:**
 - `DummyClassifier(strategy="prior")` (No-skill probability reference)
 - `DummyClassifier(strategy="most_frequent")` (Majority-class baseline demonstrating accuracy paradox)
-- Optional `LogisticRegression` (Fold-local preprocessed linear benchmark)
+- `StandardScaler` $\rightarrow$ `LogisticRegression` (Reference linear baseline without PCA)
+- `StandardScaler` $\rightarrow$ `PCA (>=95% variance)` $\rightarrow$ `LogisticRegression` (Mandatory PCA linear benchmark; supporting analysis, not a 7th advanced model)
 
 ---
 
-## 3. Project Directory Structure
+## 3. End-to-End Workflow & Lifecycle Status
 
+```text
+01 Data Audit [COMPLETED]
+   ↓
+02 Frozen Split + CV Registry [COMPLETED]
+   ↓
+03 Exploratory Data Analysis (EDA) [COMPLETED]
+   ↓
+04 Dummy Baselines [COMPLETED]
+   ↓
+04a PCA Analysis & Linear Benchmark [CURRENT]
+    ├─ 13 Numerical/Ordinal Predictors (80,000 dev rows, holdout isolated)
+    ├─ Variance Retained: 10 PCs for 80%, 12 PCs for 90%, 12 PCs for 95%
+    ├─ Benchmark Pipeline A: StandardScaler → LogisticRegression (No PCA)
+    └─ Benchmark Pipeline B: StandardScaler → PCA (>=95% variance) → LogisticRegression
+   ↓
+05–10 Six Headline Advanced Models [PLANNED]
+    ├─ 05 Member 1: FT-Transformer
+    ├─ 06 Member 2: CatBoost
+    ├─ 07 Member 3: XGBoost
+    ├─ 08 Member 4: LightGBM
+    ├─ 09 Member 5: EBM
+    └─ 10 Member 6: TabNet
+   ↓
+11 Multi-Model Comparison & Error Analysis [PLANNED]
+   ↓
+12 Probability Calibration [PLANNED]
+   ↓
+13 Subgroup Fairness Analysis [PLANNED]
+   ↓
+14 Resource-Constrained Retention Prioritization [PLANNED]
+   ↓
+Freeze Final Predictive Pipeline [PLANNED]
+   ↓
+15 Final Holdout Evaluation & Generalization Corroboration [LOCKED]
+   ↓
+Final Academic Report + Presentation Deck + Viva [PLANNED]
 ```
+
+### Notebook Sequence & Status Matrix
+
+| Notebook | Name | Stage | Status |
+| :--- | :--- | :--- | :--- |
+| `01_data_audit.ipynb` | Raw Data Audit & Integrity | Foundations | **COMPLETED** |
+| `02_create_split_registry.ipynb` | Stratified 80/20 & 5-Fold CV Generator | Foundations | **COMPLETED** |
+| `03_eda.ipynb` | Development Exploratory Data Analysis | Foundations | **COMPLETED** |
+| `04_baselines.ipynb` | Dummy Prior & Most Frequent Baselines | Baselines | **COMPLETED** |
+| `04a_pca_analysis.ipynb` | Unsupervised PCA & Linear Benchmark | Benchmark | **CURRENT** |
+| `05_member_1/05_m1_ft_transformer.ipynb` | FT-Transformer Deep Learning Model (Member 1) | Headline Models | **PLANNED** |
+| `06_member_2/06_m2_catboost.ipynb` | CatBoost GBDT Model (Member 2) | Headline Models | **PLANNED** |
+| `07_member_3/07_m3_xgboost.ipynb` | XGBoost GBDT Model (Member 3) | Headline Models | **PLANNED** |
+| `08_member_4/08_m4_lightgbm.ipynb` | LightGBM GBDT Model (Member 4) | Headline Models | **PLANNED** |
+| `09_member_5/09_m5_ebm.ipynb` | Explainable Boosting Machine ($GA^2M$, Member 5) | Headline Models | **PLANNED** |
+| `10_member_6/10_m6_tabnet.ipynb` | TabNet Deep Learning Model (Member 6) | Headline Models | **PLANNED** |
+| `11_model_comparison.ipynb` | Multi-Model Comparison & Error Analysis | Evaluation | **PLANNED** |
+| `12_calibration.ipynb` | Probability Calibration & Reliability | Evaluation | **PLANNED** |
+| `13_fairness_analysis.ipynb` | Subgroup Fairness & Disparity Audit | Evaluation | **PLANNED** |
+| `14_retention_prioritization.ipynb` | Constrained Retention Simulation (20%) | Simulation | **PLANNED** |
+| `15_final_holdout_evaluation.ipynb` | Final Isolated Holdout Assessment | Final Corroboration | **LOCKED** |
+
+---
+
+## 4. Project Directory Structure
+
+```text
 Employee_Resignation_Prediction/
 ├── configs/
 │   ├── feature_contract.yaml            # Authoritative feature contract (17 predictors)
 │   ├── split_config.yaml                # 80/20 partition and 5-fold CV configuration
-│   └── models/                          # Model hyperparameter tuning search spaces
+│   └── models/                          # Model hyperparameter search spaces and schemas
 │       ├── catboost.yaml
 │       ├── ebm.yaml
 │       ├── ft_transformer.yaml
@@ -68,44 +132,41 @@ Employee_Resignation_Prediction/
 │   └── processed/                       # Frozen split registry
 │       └── split_registry.csv
 ├── docs/
-│   └── context/                         # Canonical project context specification (v4.3.0)
-│       ├── Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.md
-│       └── Employee_Resignation_Prediction_AI_Project_Context_v4_3_0.docx
+│   └── context/                         # Canonical project context specification
+│       ├── Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md
+│       └── Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.docx (pending regeneration)
 ├── models/                              # Serialized model checkpoint directories
-├── notebooks/                           # Numbered reproducible analysis & modeling notebooks
-│   ├── 01_data_audit.ipynb              # Raw data audit and integrity verification
-│   ├── 02_create_split_registry.ipynb   # Stratified 80/20 holdout and 5-fold CV generator
-│   ├── 03_eda.ipynb                     # Development-only exploratory data analysis
-│   ├── 04_baselines.ipynb               # Dummy Prior & Dummy Most Frequent baseline OOF models
-│   ├── 11_model_comparison.ipynb        # Six-model comparison on development OOF predictions
-│   ├── 12_calibration.ipynb             # Probability calibration & reliability curves
-│   ├── 13_fairness_analysis.ipynb       # Demographic parity & subgroup disparity audit
-│   ├── 14_retention_prioritization.ipynb# Resource-constrained retention simulation
-│   └── models/                          # Individual model tuning and OOF execution notebooks
-│       ├── 05_m1_ft_transformer.ipynb
-│       ├── 06_m2_catboost.ipynb
-│       ├── 07_m3_xgboost.ipynb
-│       ├── 08_m4_lightgbm.ipynb
-│       ├── 09_m5_ebm.ipynb
-│       └── 10_m6_tabnet.ipynb
+├── notebooks/                           # Numbered reproducible analysis & modeling notebooks (01 to 15 + 04a)
 ├── presentations/
 │   └── assets/                          # Presentation figures and assets
 ├── results/                             # Generated experimental outputs, tables, and figures
 │   ├── audit/                           # Audit tables from Notebook 01
-│   ├── baselines/                       # Baseline OOF prediction CSVs and confusion matrices
-│   ├── eda/                             # Canonical EDA figures (figure_01 to 07) & manifest
-│   └── ...
+│   ├── baselines/                       # Baseline OOF predictions and confusion matrices
+│   ├── calibration/                     # Post-calibration reliability curves and artifacts
+│   ├── comparison/                      # Multi-model comparative metrics and rankings
+│   ├── eda/                             # Canonical EDA figures and manifest
+│   ├── fairness/                        # Subgroup disparity and fairness audit tables
+│   ├── final_holdout/                   # Final isolated holdout evaluation outputs (locked)
+│   ├── models/                          # Individual model OOF prediction CSVs and fold metrics
+│   │   ├── catboost/
+│   │   ├── ebm/
+│   │   ├── ft_transformer/
+│   │   ├── lightgbm/
+│   │   ├── tabnet/
+│   │   └── xgboost/
+│   ├── pca/                             # PCA explained variance, loadings, and benchmark outputs
+│   └── prioritization/                  # Retention allocation curves and sensitivity tables
 ├── src/                                 # Shared reusable Python modules
 │   ├── data/                            # Dataset and split loading utilities
 │   ├── evaluation/                      # Metrics calculation and OOF validation assertions
-│   ├── models/                          # Model wrapper adapters (M1 to M6)
+│   ├── models/                          # Model adapter implementations (M1 to M6 + Logistic Regression)
 │   └── prioritization/                  # Retention ranking algorithms & value proxy definitions
-└── tests/                               # Automated unit & contract integrity tests
+└── tests/                               # Automated unit, contract, and leakage integrity tests
 ```
 
 ---
 
-## 4. Environment Setup & Installation
+## 5. Environment Setup & Installation
 
 ### Prerequisites
 - Python 3.10 to 3.14
@@ -131,56 +192,24 @@ pip install -r requirements.txt
 
 ---
 
-## 5. Dataset & Split Registry Verification
+## 6. Dataset & Split Registry Verification
 
 The dataset and split registry must match their exact cryptographic hashes:
 
 | File | Relative Path | Expected SHA-256 Hash |
 | :--- | :--- | :--- |
 | **Raw Dataset** | `data/raw/Extended_Employee_Performance_and_Productivity_Data.csv` | `2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb` |
-| **Split Registry** | `data/processed/split_registry.csv` | `6eefc43cbb03023ffbf45df27d53086eb2ca73a0c49a37eecb8fcf70e4277717` |
-
----
-
-## 6. Execution Workflow & Notebook Order
-
-Execute notebooks strictly in sequential order to maintain data integrity and output dependencies:
-
-1. **`notebooks/01_data_audit.ipynb`** — Verifies raw dataset integrity, absence of missing values, and column schemas.
-2. **`notebooks/02_create_split_registry.ipynb`** — Creates the frozen stratified 80/20 split and 5 development folds.
-3. **`notebooks/03_eda.ipynb`** — Conducts development-only EDA, producing 20 canonical figures and tables.
-4. **`notebooks/04_baselines.ipynb`** — Generates out-of-fold predictions and baseline interpretation metrics for Dummy models.
-5. **`notebooks/models/05_m1_ft_transformer.ipynb`** through **`10_m6_tabnet.ipynb`** — Implements hyperparameter tuning and 5-fold OOF training for each headline model.
-6. **`notebooks/11_model_comparison.ipynb`** — Multi-model performance ranking on development OOF predictions.
-7. **`notebooks/12_calibration.ipynb`** — Probability calibration analysis and Platt scaling / isotonic regression.
-8. **`notebooks/13_fairness_analysis.ipynb`** — Subgroup fairness evaluation across sensitive attributes (`Gender`, `Age`, `Overtime`).
-9. **`notebooks/14_retention_prioritization.ipynb`** — Simulated resource-constrained retention prioritization.
+| **Split Registry** | `data/processed/split_registry.csv` | `87edc10ac38f2435c49beddbf412f9de293e3e0622558b27ffbdf31fadd7ea41` |
 
 ---
 
 ## 7. Automated Test Suite
 
-The repository includes a comprehensive `pytest` test suite enforcing dataset contracts, feature types, metric implementations, out-of-fold validation integrity, and split isolation.
+The repository includes an extensive `pytest` test suite enforcing dataset contracts, feature types, metric implementations, out-of-fold validation integrity, model configurations, model adapter protocol compliance, PCA pipeline constraints, and formal holdout isolation guards.
 
 Run the test suite from the repository root:
 ```bash
 python -m pytest
 ```
 
-**Current Verified Test Status:** `79 passed (100% passing)`
-
----
-
-## 8. Current Project Status & Next Milestone
-
-- **Completed Foundations:**
-  - Raw dataset integrity audit (`01_data_audit.ipynb`).
-  - Feature contract validation (`configs/feature_contract.yaml`).
-  - Frozen split registry with 80k development / 20k holdout rows (`data/processed/split_registry.csv`).
-  - Development-only EDA with 20 canonical outputs (`03_eda.ipynb`).
-  - Shared baseline modeling with Dummy Prior & Dummy Most Frequent (`04_baselines.ipynb`).
-  - Unit and contract test suite (79 passing tests).
-  - Repository and notebook hygiene cleanup.
-- **Current Milestone (In Progress):**
-  - Implementing model adapters in `src/models/` for all six headline models (FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet) under strict row-parity and OOF-output contracts.
-  - Environment smoke testing and hyperparameter search space verification.
+**Current Verified Test Status:** `143 passed (100% passing)`
