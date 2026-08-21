@@ -1,0 +1,5 @@
+Measure,Value
+Original numerical/ordinal features,13
+Components for >=80% variance,10
+Components for >=90% variance,12
+Components for >=95% variance,12
