@@ -1,7 +1,7 @@
 """FT-Transformer Model Adapter for Employee Resignation Prediction (Member 1).
 
 Conforms to the ModelAdapter protocol using PyTorch and RTDL Feature Tokenizer
-Transformer architecture with fold-local scaling and embeddings.
+Transformer architecture with fold-local preprocessing and fold-local class weighting.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from src.models.base import ModelAdapter
 
 
 class FTTransformerAdapter:
-    """FT-Transformer model adapter with fold-local preprocessing."""
+    """FT-Transformer model adapter with fold-local preprocessing and class weighting."""
 
     def __init__(
         self,
@@ -26,8 +26,10 @@ class FTTransformerAdapter:
         params: dict[str, Any] | None = None,
         categorical_features: list[str] | None = None,
     ) -> None:
+
         self.name = name
         self.model_id = model_id
+
         self.params = params or {
             "n_blocks": 3,
             "d_block": 64,
@@ -40,18 +42,27 @@ class FTTransformerAdapter:
             "weight_decay": 1e-5,
             "seed": 42,
         }
+
         self.categorical_features = categorical_features or [
             "Department",
             "Gender",
             "Job_Title",
             "Education_Level",
         ]
+
         self._model: Any = None
         self._scaler: Any = None
+
         self._category_maps: dict[str, dict[str, int]] = {}
+
         self._feature_names: list[str] = []
         self._num_features: list[str] = []
         self._cat_cardinalities: list[int] = []
+
+        # Positive-class weight calculated independently
+        # from each outer training fold.
+        self._pos_weight: float | None = None
+
         self._fitted = False
 
     def _preprocess(
@@ -59,50 +70,93 @@ class FTTransformerAdapter:
         X: pd.DataFrame,
         fit: bool = False,
     ) -> tuple[np.ndarray | None, np.ndarray | None]:
-        """Preprocess inputs into scaled continuous matrix and categorical integer matrix."""
+        """Preprocess inputs into scaled numerical and encoded categorical matrices."""
+
         from sklearn.preprocessing import StandardScaler
 
         X_proc = X.copy()
+
         self._num_features = [
-            c for c in self._feature_names if c not in self.categorical_features
+            column
+            for column in self._feature_names
+            if column not in self.categorical_features
         ]
 
+        # --------------------------------------------------
+        # Fit preprocessing using training-fold data only
+        # --------------------------------------------------
+
         if fit:
+
             self._scaler = StandardScaler()
+
             if self._num_features:
-                self._scaler.fit(X_proc[self._num_features])
+                self._scaler.fit(
+                    X_proc[self._num_features]
+                )
 
             self._category_maps = {}
             self._cat_cardinalities = []
 
             for col in self.categorical_features:
+
                 if col in X_proc.columns:
-                    unique_vals = sorted(X_proc[col].dropna().unique())
+
+                    unique_vals = sorted(
+                        X_proc[col]
+                        .dropna()
+                        .unique()
+                    )
+
                     mapping = {
-                        val: idx
-                        for idx, val in enumerate(unique_vals)
+                        value: index
+                        for index, value
+                        in enumerate(unique_vals)
                     }
 
                     self._category_maps[col] = mapping
-                    self._cat_cardinalities.append(len(mapping))
+
+                    self._cat_cardinalities.append(
+                        len(mapping)
+                    )
+
+        # --------------------------------------------------
+        # Numerical features
+        # --------------------------------------------------
 
         x_num = None
 
-        if self._num_features and self._scaler is not None:
+        if (
+            self._num_features
+            and self._scaler is not None
+        ):
+
             x_num = (
                 self._scaler
-                .transform(X_proc[self._num_features])
+                .transform(
+                    X_proc[self._num_features]
+                )
                 .astype(np.float32)
             )
+
+        # --------------------------------------------------
+        # Categorical features
+        # --------------------------------------------------
 
         x_cat = None
 
         if self.categorical_features:
+
             cat_arrays = []
 
             for col in self.categorical_features:
+
                 if col in X_proc.columns:
-                    mapping = self._category_maps.get(col, {})
+
+                    mapping = self._category_maps.get(
+                        col,
+                        {},
+                    )
 
                     arr = (
                         X_proc[col]
@@ -115,7 +169,9 @@ class FTTransformerAdapter:
                     cat_arrays.append(arr)
 
             if cat_arrays:
-                x_cat = np.column_stack(cat_arrays)
+                x_cat = np.column_stack(
+                    cat_arrays
+                )
 
         return x_num, x_cat
 
@@ -126,22 +182,34 @@ class FTTransformerAdapter:
         epochs: int = 50,
         batch_size: int = 512,
     ) -> FTTransformerAdapter:
-        """Fit fold-local preprocessors and FT-Transformer network on training fold data."""
+        """Fit fold-local preprocessors and weighted FT-Transformer model."""
 
         try:
+
             import torch
             import torch.nn as nn
 
             from rtdl_revisiting_models import FTTransformer
-            from torch.utils.data import DataLoader, TensorDataset
+
+            from torch.utils.data import (
+                DataLoader,
+                TensorDataset,
+            )
 
         except ImportError as exc:
+
             raise ImportError(
                 "torch and rtdl-revisiting-models are required "
                 "for FTTransformerAdapter."
             ) from exc
 
-        self._feature_names = list(X.columns)
+        # --------------------------------------------------
+        # Feature setup
+        # --------------------------------------------------
+
+        self._feature_names = list(
+            X.columns
+        )
 
         x_num, x_cat = self._preprocess(
             X,
@@ -153,16 +221,102 @@ class FTTransformerAdapter:
             dtype=np.float32,
         )
 
+        # --------------------------------------------------
+        # Validate binary target
+        # --------------------------------------------------
+
+        unique_targets = set(
+            np.unique(y_arr).tolist()
+        )
+
+        if not unique_targets.issubset(
+            {0.0, 1.0}
+        ):
+
+            raise ValueError(
+                "FTTransformerAdapter requires a binary "
+                "target encoded as 0 and 1."
+            )
+
+        # --------------------------------------------------
+        # Device
+        # --------------------------------------------------
+
         device = torch.device(
             "cuda"
             if torch.cuda.is_available()
             else "cpu"
         )
 
-        # Set seed
-        torch.manual_seed(
-            self.params.get("seed", 42)
+        # --------------------------------------------------
+        # Reproducibility
+        # --------------------------------------------------
+
+        seed = self.params.get(
+            "seed",
+            42,
         )
+
+        torch.manual_seed(seed)
+
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+
+        # --------------------------------------------------
+        # Fold-local positive-class weighting
+        # --------------------------------------------------
+        #
+        # IMPORTANT:
+        # y contains ONLY the current outer training fold.
+        #
+        # Therefore the class weight is calculated without
+        # using the outer validation fold or formal holdout.
+        #
+        # Example:
+        #
+        # negatives = 57,600
+        # positives = 6,400
+        #
+        # pos_weight = 57,600 / 6,400 = 9.0
+        #
+        # This makes errors on the minority resignation class
+        # contribute more strongly to the training loss.
+        # --------------------------------------------------
+
+        positive_count = int(
+            np.sum(y_arr == 1)
+        )
+
+        negative_count = int(
+            np.sum(y_arr == 0)
+        )
+
+        if positive_count == 0:
+            raise ValueError(
+                "Cannot calculate positive-class weight because "
+                "the training fold contains no positive samples."
+            )
+
+        if negative_count == 0:
+            raise ValueError(
+                "Cannot calculate positive-class weight because "
+                "the training fold contains no negative samples."
+            )
+
+        self._pos_weight = (
+            negative_count
+            / positive_count
+        )
+
+        pos_weight_tensor = torch.tensor(
+            [self._pos_weight],
+            dtype=torch.float32,
+            device=device,
+        )
+
+        # --------------------------------------------------
+        # FT-Transformer architecture
+        # --------------------------------------------------
 
         n_cont_features = (
             x_num.shape[1]
@@ -180,45 +334,56 @@ class FTTransformerAdapter:
             n_cont_features=n_cont_features,
             cat_cardinalities=cat_cardinalities,
             d_out=1,
+
             n_blocks=self.params.get(
                 "n_blocks",
                 3,
             ),
+
             d_block=self.params.get(
                 "d_block",
                 64,
             ),
+
             attention_n_heads=self.params.get(
                 "attention_n_heads",
                 4,
             ),
+
             attention_dropout=self.params.get(
                 "attention_dropout",
                 0.1,
             ),
+
             ffn_d_hidden=self.params.get(
                 "ffn_d_hidden",
                 128,
             ),
 
             # Required by rtdl_revisiting_models 0.0.2.
-            # We already specify ffn_d_hidden directly above,
-            # so the multiplier is intentionally disabled.
+            # ffn_d_hidden is specified explicitly above.
             ffn_d_hidden_multiplier=None,
 
             ffn_dropout=self.params.get(
                 "ffn_dropout",
                 0.1,
             ),
+
             residual_dropout=self.params.get(
                 "residual_dropout",
                 0.0,
             ),
+
         ).to(device)
+
+        # --------------------------------------------------
+        # Convert training data to PyTorch tensors
+        # --------------------------------------------------
 
         tensors = []
 
         if x_num is not None:
+
             tensors.append(
                 torch.tensor(
                     x_num,
@@ -227,6 +392,7 @@ class FTTransformerAdapter:
             )
 
         if x_cat is not None:
+
             tensors.append(
                 torch.tensor(
                     x_cat,
@@ -241,7 +407,9 @@ class FTTransformerAdapter:
             ).unsqueeze(1)
         )
 
-        dataset = TensorDataset(*tensors)
+        dataset = TensorDataset(
+            *tensors
+        )
 
         loader = DataLoader(
             dataset,
@@ -249,19 +417,39 @@ class FTTransformerAdapter:
             shuffle=True,
         )
 
+        # --------------------------------------------------
+        # Optimizer
+        # --------------------------------------------------
+
         optimizer = torch.optim.AdamW(
             self._model.parameters(),
+
             lr=self.params.get(
                 "learning_rate",
                 0.001,
             ),
+
             weight_decay=self.params.get(
                 "weight_decay",
                 1e-5,
             ),
         )
 
-        criterion = nn.BCEWithLogitsLoss()
+        # --------------------------------------------------
+        # Weighted binary classification loss
+        # --------------------------------------------------
+        #
+        # Positive examples receive additional weight
+        # because resignation is the minority class.
+        # --------------------------------------------------
+
+        criterion = nn.BCEWithLogitsLoss(
+            pos_weight=pos_weight_tensor
+        )
+
+        # --------------------------------------------------
+        # Training
+        # --------------------------------------------------
 
         self._model.train()
 
@@ -271,11 +459,22 @@ class FTTransformerAdapter:
 
                 optimizer.zero_grad()
 
-                if x_num is not None and x_cat is not None:
+                if (
+                    x_num is not None
+                    and x_cat is not None
+                ):
 
-                    b_num = batch[0].to(device)
-                    b_cat = batch[1].to(device)
-                    b_y = batch[2].to(device)
+                    b_num = batch[0].to(
+                        device
+                    )
+
+                    b_cat = batch[1].to(
+                        device
+                    )
+
+                    b_y = batch[2].to(
+                        device
+                    )
 
                     out = self._model(
                         b_num,
@@ -284,8 +483,13 @@ class FTTransformerAdapter:
 
                 elif x_num is not None:
 
-                    b_num = batch[0].to(device)
-                    b_y = batch[1].to(device)
+                    b_num = batch[0].to(
+                        device
+                    )
+
+                    b_y = batch[1].to(
+                        device
+                    )
 
                     out = self._model(
                         b_num,
@@ -294,8 +498,13 @@ class FTTransformerAdapter:
 
                 else:
 
-                    b_cat = batch[0].to(device)
-                    b_y = batch[1].to(device)
+                    b_cat = batch[0].to(
+                        device
+                    )
+
+                    b_y = batch[1].to(
+                        device
+                    )
 
                     out = self._model(
                         None,
@@ -308,6 +517,7 @@ class FTTransformerAdapter:
                 )
 
                 loss.backward()
+
                 optimizer.step()
 
         self._fitted = True
@@ -319,16 +529,24 @@ class FTTransformerAdapter:
         X: pd.DataFrame,
         batch_size: int = 1024,
     ) -> np.ndarray:
-        """Predict positive class probabilities for input features."""
+        """Predict positive-class probabilities."""
 
-        if not self._fitted or self._model is None:
+        if (
+            not self._fitted
+            or self._model is None
+        ):
+
             raise RuntimeError(
-                "Adapter is not fitted. Call fit() first."
+                "Adapter is not fitted. "
+                "Call fit() first."
             )
 
         import torch
 
-        from torch.utils.data import DataLoader, TensorDataset
+        from torch.utils.data import (
+            DataLoader,
+            TensorDataset,
+        )
 
         device = torch.device(
             "cuda"
@@ -346,6 +564,7 @@ class FTTransformerAdapter:
         tensors = []
 
         if x_num is not None:
+
             tensors.append(
                 torch.tensor(
                     x_num,
@@ -354,6 +573,7 @@ class FTTransformerAdapter:
             )
 
         if x_cat is not None:
+
             tensors.append(
                 torch.tensor(
                     x_cat,
@@ -361,7 +581,9 @@ class FTTransformerAdapter:
                 )
             )
 
-        dataset = TensorDataset(*tensors)
+        dataset = TensorDataset(
+            *tensors
+        )
 
         loader = DataLoader(
             dataset,
@@ -375,10 +597,18 @@ class FTTransformerAdapter:
 
             for batch in loader:
 
-                if x_num is not None and x_cat is not None:
+                if (
+                    x_num is not None
+                    and x_cat is not None
+                ):
 
-                    b_num = batch[0].to(device)
-                    b_cat = batch[1].to(device)
+                    b_num = batch[0].to(
+                        device
+                    )
+
+                    b_cat = batch[1].to(
+                        device
+                    )
 
                     logits = self._model(
                         b_num,
@@ -387,7 +617,9 @@ class FTTransformerAdapter:
 
                 elif x_num is not None:
 
-                    b_num = batch[0].to(device)
+                    b_num = batch[0].to(
+                        device
+                    )
 
                     logits = self._model(
                         b_num,
@@ -396,7 +628,9 @@ class FTTransformerAdapter:
 
                 else:
 
-                    b_cat = batch[0].to(device)
+                    b_cat = batch[0].to(
+                        device
+                    )
 
                     logits = self._model(
                         None,
@@ -410,7 +644,9 @@ class FTTransformerAdapter:
                     .numpy()
                 )
 
-                probs_list.append(probs)
+                probs_list.append(
+                    probs
+                )
 
         return np.concatenate(
             probs_list
@@ -420,11 +656,13 @@ class FTTransformerAdapter:
         self,
         directory: Path,
     ) -> dict[str, Any]:
-        """Serialize FT-Transformer model parameters and preprocessors."""
+        """Serialize model weights and fold-fitted preprocessing."""
 
         import torch
 
-        directory = Path(directory)
+        directory = Path(
+            directory
+        )
 
         directory.mkdir(
             parents=True,
@@ -437,6 +675,7 @@ class FTTransformerAdapter:
         )
 
         if self._model is not None:
+
             torch.save(
                 self._model.state_dict(),
                 model_weights_file,
@@ -450,7 +689,7 @@ class FTTransformerAdapter:
         with open(
             preprocessor_file,
             "wb",
-        ) as f:
+        ) as file:
 
             pickle.dump(
                 {
@@ -461,18 +700,26 @@ class FTTransformerAdapter:
                     "categorical_features": self.categorical_features,
                     "feature_names": self._feature_names,
                     "num_features": self._num_features,
+
+                    # Save the fold-local positive-class weight
+                    # for reproducibility and auditability.
+                    "pos_weight": self._pos_weight,
                 },
-                f,
+                file,
             )
 
         metadata = self.get_metadata()
 
         metadata["weights_file"] = (
-            str(model_weights_file.name)
+            str(
+                model_weights_file.name
+            )
         )
 
         metadata["preprocessor_file"] = (
-            str(preprocessor_file.name)
+            str(
+                preprocessor_file.name
+            )
         )
 
         return metadata
@@ -482,13 +729,17 @@ class FTTransformerAdapter:
         cls,
         directory: Path,
     ) -> FTTransformerAdapter:
-        """Load serialized FT-Transformer adapter from disk."""
+        """Load a serialized FT-Transformer adapter."""
 
         import torch
 
-        from rtdl_revisiting_models import FTTransformer
+        from rtdl_revisiting_models import (
+            FTTransformer,
+        )
 
-        directory = Path(directory)
+        directory = Path(
+            directory
+        )
 
         preprocessor_file = (
             directory
@@ -510,10 +761,15 @@ class FTTransformerAdapter:
             with open(
                 preprocessor_file,
                 "rb",
-            ) as f:
-                state = pickle.load(f)
+            ) as file:
 
-            adapter._scaler = state["scaler"]
+                state = pickle.load(
+                    file
+                )
+
+            adapter._scaler = (
+                state["scaler"]
+            )
 
             adapter._category_maps = (
                 state["category_maps"]
@@ -523,7 +779,9 @@ class FTTransformerAdapter:
                 state["cat_cardinalities"]
             )
 
-            adapter.params = state["params"]
+            adapter.params = (
+                state["params"]
+            )
 
             adapter.categorical_features = (
                 state["categorical_features"]
@@ -535,6 +793,14 @@ class FTTransformerAdapter:
 
             adapter._num_features = (
                 state["num_features"]
+            )
+
+            # Backward compatible:
+            # older saved adapters may not contain pos_weight.
+            adapter._pos_weight = (
+                state.get(
+                    "pos_weight"
+                )
             )
 
             n_cont = len(
@@ -551,22 +817,27 @@ class FTTransformerAdapter:
                 n_cont_features=n_cont,
                 cat_cardinalities=cat_cards,
                 d_out=1,
+
                 n_blocks=adapter.params.get(
                     "n_blocks",
                     3,
                 ),
+
                 d_block=adapter.params.get(
                     "d_block",
                     64,
                 ),
+
                 attention_n_heads=adapter.params.get(
                     "attention_n_heads",
                     4,
                 ),
+
                 attention_dropout=adapter.params.get(
                     "attention_dropout",
                     0.1,
                 ),
+
                 ffn_d_hidden=adapter.params.get(
                     "ffn_d_hidden",
                     128,
@@ -579,6 +850,7 @@ class FTTransformerAdapter:
                     "ffn_dropout",
                     0.1,
                 ),
+
                 residual_dropout=adapter.params.get(
                     "residual_dropout",
                     0.0,
@@ -600,7 +872,7 @@ class FTTransformerAdapter:
     def get_metadata(
         self,
     ) -> dict[str, Any]:
-        """Return model metadata, hyperparameter settings, and feature names."""
+        """Return model metadata, hyperparameters, features, and weighting information."""
 
         return {
             "name": self.name,
@@ -609,4 +881,14 @@ class FTTransformerAdapter:
             "params": self.params,
             "categorical_features": self.categorical_features,
             "feature_names": self._feature_names,
+
+            # This value is calculated from the current
+            # training fold during fit().
+            "pos_weight": self._pos_weight,
+
+            "class_weighting": (
+                "fold_local_positive_class_weight"
+                if self._pos_weight is not None
+                else "not_yet_fitted"
+            ),
         }

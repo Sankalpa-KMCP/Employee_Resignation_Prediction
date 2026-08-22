@@ -1,0 +1,18 @@
+{
+  "model_name": "FT-Transformer",
+  "model_id": "ft_transformer",
+  "total_development_records": 80000,
+  "total_folds": 5,
+  "pooled_average_precision": 0.10113236604990233,
+  "pooled_roc_auc": 0.4988206254588283,
+  "pooled_f1": 0.0,
+  "pooled_brier_score": 0.09065136332848554,
+  "cv_mean_average_precision": 0.1020284787599121,
+  "cv_std_average_precision": 0.0023777447968936724,
+  "cv_mean_roc_auc": 0.49976931584144435,
+  "cv_std_roc_auc": 0.010585337930290257,
+  "cv_mean_f1": 0.0,
+  "cv_std_f1": 0.0,
+  "total_fit_time_seconds": 836.2917540000017,
+  "total_predict_time_seconds": 1.3042387000023155
+}
