@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve the canonical LF byte representation of frozen project inputs.
+data/raw/Extended_Employee_Performance_and_Productivity_Data.csv text eol=lf
+data/processed/split_registry.csv text eol=lf
