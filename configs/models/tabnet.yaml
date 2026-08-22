@@ -1,79 +1,192 @@
 # ============================================================
-# Model Configuration: TabNet Classifier (Member 6)
+# M6 TABNET EXPERIMENT CONTRACT
 # ============================================================
+
 model:
-  name: "TabNet"
-  model_id: "tabnet"
+  id: m6_tabnet
+  model_id: tabnet
+  name: TabNet
+  owner: member_6
   member: "Member 6"
   algorithm_family: "Attentive Interpretable Tabular Deep Learning"
   implementation: "pytorch_tabnet.tab_model.TabNetClassifier"
+  config_version: "1.0.0"
+  project_context_version: "4.4.0"
+  feature_contract_version: "1.0.0"
 
-# ------------------------------------------------------------
-# Reproducibility & Environment
-# ------------------------------------------------------------
+# Compatibility metadata used by the shared six-model configuration tests.
 reproducibility:
   seed: 42
-  device_name: "auto" # CUDA if available, else CPU
-  verbose: 0
+  device_name: auto
+  verbose: 1
 
-# ------------------------------------------------------------
-# Fixed Parameters (Baseline Defaults)
-# ------------------------------------------------------------
 fixed_params:
   seed: 42
-  verbose: 0
-  optimizer_fn: "torch.optim.Adam"
-  mask_type: "sparsemax" # or "entmax"
+  optimizer_fn: torch.optim.Adam
+  mask_type: sparsemax
+  cat_emb_dim: 2
 
-# ------------------------------------------------------------
-# Cross-Validation & Early Stopping Strategy
-# ------------------------------------------------------------
 validation:
   cv_folds: 5
-  patience: 20
+  validation_fraction_inner: 0.125
+  max_epochs: 150
+  patience: 15
   batch_size: 1024
   virtual_batch_size: 128
-  max_epochs: 100
-  validation_fraction_inner: 0.15
+  primary_metric: average_precision
 
-# ------------------------------------------------------------
-# Bounded Hyperparameter Search Space
-# ------------------------------------------------------------
+# Machine-readable summary of the bounded values expanded below as eight
+# pre-declared candidates. This is descriptive; candidates is authoritative.
 search_space:
-  n_d:
-    type: "int"
-    low: 8
-    high: 64
-    step: 8
-    default: 16
-  n_a:
-    type: "int"
-    low: 8
-    high: 64
-    step: 8
-    default: 16
-  n_steps:
-    type: "int"
-    low: 3
-    high: 7
-    step: 1
-    default: 4
-  gamma:
-    type: "float"
-    low: 1.0
-    high: 2.0
-    step: 0.2
-    default: 1.3
-  lambda_sparse:
-    type: "float"
-    low: 0.0001
-    high: 0.01
-    log: true
-    default: 0.001
-  learning_rate:
-    type: "float"
-    low: 0.005
-    high: 0.05
-    log: true
-    default: 0.02
-  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage
+  n_d: [8, 16, 32]
+  n_a: [8, 16, 32]
+  n_steps: [3, 5, 7]
+  gamma: [1.2, 1.5]
+  lambda_sparse: [0.00001, 0.0001, 0.001]
+  learning_rate: [0.01, 0.02]
+  batch_size: [1024, 2048]
+  virtual_batch_size: [128, 256]
+  class_balance: [false, true]
+
+evaluation:
+  primary_metric: average_precision
+  outer_cv_folds: 5
+  formal_holdout_allowed: false
+  threshold_selection_during_model_comparison: false
+
+preprocessing:
+  categorical_features:
+    - Department
+    - Gender
+    - Job_Title
+    - Education_Level
+  numerical_features:
+    - Age
+    - Years_At_Company
+    - Performance_Score
+    - Monthly_Salary
+    - Work_Hours_Per_Week
+    - Projects_Handled
+    - Overtime_Hours
+    - Sick_Days
+    - Remote_Work_Frequency
+    - Team_Size
+    - Training_Hours
+    - Promotions
+    - Employee_Satisfaction_Score
+  categorical_encoding: fold_fitted_integer_codes
+  missing_category_code: 0
+  unknown_category_code: 0
+  numerical_imputation: median
+  numerical_scaling: standard_scaler
+
+training:
+  random_seed: 42
+  inner_validation_fraction: 0.125
+  inner_validation_stratified: true
+  early_stopping_metric: average_precision
+  max_epochs: 150
+  patience: 15
+  num_workers: 0
+  drop_last: false
+  device_name: auto
+  mask_type: sparsemax
+  cat_emb_dim: 2
+
+# This small run validates the complete pipeline before any five-fold run.
+smoke_test:
+  candidate_id: T01
+  sample_rows: 5000
+  max_epochs: 3
+  patience: 2
+
+# Exactly eight pre-declared candidates. The formal holdout must never be used
+# to select among them. Selection is based on development OOF average precision.
+candidates:
+  - id: T01
+    n_d: 8
+    n_a: 8
+    n_steps: 3
+    gamma: 1.2
+    lambda_sparse: 0.0001
+    learning_rate: 0.02
+    batch_size: 1024
+    virtual_batch_size: 128
+    class_balance: false
+
+  - id: T02
+    n_d: 8
+    n_a: 8
+    n_steps: 3
+    gamma: 1.2
+    lambda_sparse: 0.0001
+    learning_rate: 0.02
+    batch_size: 1024
+    virtual_batch_size: 128
+    class_balance: true
+
+  - id: T03
+    n_d: 16
+    n_a: 16
+    n_steps: 3
+    gamma: 1.2
+    lambda_sparse: 0.0001
+    learning_rate: 0.02
+    batch_size: 1024
+    virtual_batch_size: 128
+    class_balance: false
+
+  - id: T04
+    n_d: 16
+    n_a: 16
+    n_steps: 5
+    gamma: 1.5
+    lambda_sparse: 0.0001
+    learning_rate: 0.02
+    batch_size: 1024
+    virtual_batch_size: 128
+    class_balance: true
+
+  - id: T05
+    n_d: 32
+    n_a: 32
+    n_steps: 3
+    gamma: 1.2
+    lambda_sparse: 0.00001
+    learning_rate: 0.01
+    batch_size: 2048
+    virtual_batch_size: 256
+    class_balance: false
+
+  - id: T06
+    n_d: 32
+    n_a: 32
+    n_steps: 5
+    gamma: 1.5
+    lambda_sparse: 0.0001
+    learning_rate: 0.01
+    batch_size: 2048
+    virtual_batch_size: 256
+    class_balance: true
+
+  - id: T07
+    n_d: 16
+    n_a: 16
+    n_steps: 7
+    gamma: 1.5
+    lambda_sparse: 0.001
+    learning_rate: 0.01
+    batch_size: 1024
+    virtual_batch_size: 128
+    class_balance: false
+
+  - id: T08
+    n_d: 32
+    n_a: 32
+    n_steps: 7
+    gamma: 1.5
+    lambda_sparse: 0.001
+    learning_rate: 0.01
+    batch_size: 2048
+    virtual_batch_size: 256
+    class_balance: true
