@@ -1,0 +1,20 @@
+{
+    "model": "FT-Transformer",
+    "experiment": "weighted_early_stopping_final",
+    "development_rows": 80000,
+    "formal_holdout_rows_used": 0,
+    "outer_cv_folds": 5,
+    "class_weighting": "inner-training positive-class weight",
+    "pos_weight_formula": "negative_count / positive_count",
+    "inner_validation_fraction": 0.15,
+    "early_stopping_metric": "PR-AUC",
+    "maximum_epochs": 100,
+    "patience": 15,
+    "learning_rate_scheduler": "ReduceLROnPlateau",
+    "best_weights_restored": true,
+    "primary_metric": "PR-AUC",
+    "pooled_pr_auc": 0.09997911344857369,
+    "pooled_roc_auc": 0.49725447661850314,
+    "elapsed_minutes": 3.9670747599999836,
+    "conclusion": "Weighted FT-Transformer with inner-validation early stopping remained approximately at no-skill performance. Further architecture tuning was stopped because controlled screening did not produce a consistent PR-AUC improvement."
+}

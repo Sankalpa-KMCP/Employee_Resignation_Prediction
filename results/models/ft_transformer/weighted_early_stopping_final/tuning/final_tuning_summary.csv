@@ -1,0 +1,7 @@
+parameter,tested,retained_value,selection_evidence
+learning_rate,"0.0001, 0.0003, 0.001",0.001,Best multi-seed mean inner PR-AUC: 10.66%
+d_block,"32, 64, 128",64.0,Highest seed-42 inner PR-AUC: 10.76%
+n_blocks,"2, 3, 4",3.0,Best multi-seed mean inner PR-AUC: 10.66%
+ffn_d_hidden,"64, 128, 256",128.0,Best multi-seed mean inner PR-AUC: 10.66%
+attention_n_heads,"2, 4, 8",4.0,Highest seed-42 inner PR-AUC: 10.76%
+ffn_dropout,"0.0, 0.1, 0.2",0.1,Highest seed-42 inner PR-AUC: 10.76%
