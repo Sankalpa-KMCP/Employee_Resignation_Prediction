@@ -1,7 +1,17 @@
 """FT-Transformer Model Adapter for Employee Resignation Prediction (Member 1).
 
-Conforms to the ModelAdapter protocol using PyTorch and RTDL Feature Tokenizer
-Transformer architecture with fold-local preprocessing and fold-local class weighting.
+Implements a leakage-safe FT-Transformer pipeline with:
+
+- fold-local numerical preprocessing
+- fold-local categorical preprocessing
+- fold-local positive-class weighting
+- stratified inner validation
+- PR-AUC-based early stopping
+- ReduceLROnPlateau learning-rate scheduling
+- best-model restoration
+
+The outer validation fold and formal holdout are never used for model fitting,
+class-weight calculation, preprocessing fitting, or early stopping.
 """
 
 from __future__ import annotations
@@ -17,7 +27,7 @@ from src.models.base import ModelAdapter
 
 
 class FTTransformerAdapter:
-    """FT-Transformer model adapter with fold-local preprocessing and class weighting."""
+    """FT-Transformer adapter with leakage-safe weighted training."""
 
     def __init__(
         self,
@@ -41,6 +51,14 @@ class FTTransformerAdapter:
             "learning_rate": 0.001,
             "weight_decay": 1e-5,
             "seed": 42,
+
+            # Training controls
+            "max_epochs": 100,
+            "patience": 15,
+            "validation_fraction_inner": 0.15,
+            "scheduler_factor": 0.5,
+            "scheduler_patience": 5,
+            "min_delta": 1e-6,
         }
 
         self.categorical_features = categorical_features or [
@@ -53,24 +71,34 @@ class FTTransformerAdapter:
         self._model: Any = None
         self._scaler: Any = None
 
-        self._category_maps: dict[str, dict[str, int]] = {}
+        self._category_maps: dict[str, dict[Any, int]] = {}
 
         self._feature_names: list[str] = []
         self._num_features: list[str] = []
         self._cat_cardinalities: list[int] = []
 
-        # Positive-class weight calculated independently
-        # from each outer training fold.
+        # Class weighting
         self._pos_weight: float | None = None
 
+        # Training diagnostics
+        self._best_epoch: int | None = None
+        self._best_inner_pr_auc: float | None = None
+        self._epochs_trained: int = 0
+        self._inner_train_size: int | None = None
+        self._inner_validation_size: int | None = None
+
         self._fitted = False
+
+    # ============================================================
+    # Preprocessing
+    # ============================================================
 
     def _preprocess(
         self,
         X: pd.DataFrame,
         fit: bool = False,
     ) -> tuple[np.ndarray | None, np.ndarray | None]:
-        """Preprocess inputs into scaled numerical and encoded categorical matrices."""
+        """Scale numerical features and encode categorical features."""
 
         from sklearn.preprocessing import StandardScaler
 
@@ -82,9 +110,9 @@ class FTTransformerAdapter:
             if column not in self.categorical_features
         ]
 
-        # --------------------------------------------------
-        # Fit preprocessing using training-fold data only
-        # --------------------------------------------------
+        # --------------------------------------------------------
+        # Fit preprocessing on training data only
+        # --------------------------------------------------------
 
         if fit:
 
@@ -100,29 +128,33 @@ class FTTransformerAdapter:
 
             for col in self.categorical_features:
 
-                if col in X_proc.columns:
+                if col not in X_proc.columns:
+                    continue
 
-                    unique_vals = sorted(
-                        X_proc[col]
-                        .dropna()
-                        .unique()
-                    )
+                unique_vals = sorted(
+                    X_proc[col]
+                    .dropna()
+                    .unique()
+                )
 
-                    mapping = {
-                        value: index
-                        for index, value
-                        in enumerate(unique_vals)
-                    }
+                # Reserve 0 for unknown / missing categories.
+                # Known categories start from 1.
+                mapping = {
+                    value: index + 1
+                    for index, value
+                    in enumerate(unique_vals)
+                }
 
-                    self._category_maps[col] = mapping
+                self._category_maps[col] = mapping
 
-                    self._cat_cardinalities.append(
-                        len(mapping)
-                    )
+                # +1 because index 0 is reserved for unknown.
+                self._cat_cardinalities.append(
+                    len(mapping) + 1
+                )
 
-        # --------------------------------------------------
-        # Numerical features
-        # --------------------------------------------------
+        # --------------------------------------------------------
+        # Numerical matrix
+        # --------------------------------------------------------
 
         x_num = None
 
@@ -139,9 +171,9 @@ class FTTransformerAdapter:
                 .astype(np.float32)
             )
 
-        # --------------------------------------------------
-        # Categorical features
-        # --------------------------------------------------
+        # --------------------------------------------------------
+        # Categorical matrix
+        # --------------------------------------------------------
 
         x_cat = None
 
@@ -151,22 +183,24 @@ class FTTransformerAdapter:
 
             for col in self.categorical_features:
 
-                if col in X_proc.columns:
+                if col not in X_proc.columns:
+                    continue
 
-                    mapping = self._category_maps.get(
-                        col,
-                        {},
-                    )
+                mapping = self._category_maps.get(
+                    col,
+                    {},
+                )
 
-                    arr = (
-                        X_proc[col]
-                        .map(mapping)
-                        .fillna(0)
-                        .values
-                        .astype(np.int64)
-                    )
+                # Unknown categories map to the reserved 0 index.
+                arr = (
+                    X_proc[col]
+                    .map(mapping)
+                    .fillna(0)
+                    .values
+                    .astype(np.int64)
+                )
 
-                    cat_arrays.append(arr)
+                cat_arrays.append(arr)
 
             if cat_arrays:
                 x_cat = np.column_stack(
@@ -175,21 +209,27 @@ class FTTransformerAdapter:
 
         return x_num, x_cat
 
+    # ============================================================
+    # Model fitting
+    # ============================================================
+
     def fit(
         self,
         X: pd.DataFrame,
         y: pd.Series | np.ndarray,
-        epochs: int = 50,
+        epochs: int | None = None,
         batch_size: int = 512,
     ) -> FTTransformerAdapter:
-        """Fit fold-local preprocessors and weighted FT-Transformer model."""
+        """Fit a weighted FT-Transformer using inner-validation early stopping."""
 
         try:
-
             import torch
             import torch.nn as nn
 
             from rtdl_revisiting_models import FTTransformer
+
+            from sklearn.metrics import average_precision_score
+            from sklearn.model_selection import train_test_split
 
             from torch.utils.data import (
                 DataLoader,
@@ -197,23 +237,18 @@ class FTTransformerAdapter:
             )
 
         except ImportError as exc:
-
             raise ImportError(
-                "torch and rtdl-revisiting-models are required "
+                "torch, scikit-learn, and "
+                "rtdl-revisiting-models are required "
                 "for FTTransformerAdapter."
             ) from exc
 
-        # --------------------------------------------------
-        # Feature setup
-        # --------------------------------------------------
+        # --------------------------------------------------------
+        # Basic setup
+        # --------------------------------------------------------
 
         self._feature_names = list(
             X.columns
-        )
-
-        x_num, x_cat = self._preprocess(
-            X,
-            fit=True,
         )
 
         y_arr = np.asarray(
@@ -221,9 +256,10 @@ class FTTransformerAdapter:
             dtype=np.float32,
         )
 
-        # --------------------------------------------------
-        # Validate binary target
-        # --------------------------------------------------
+        if len(X) != len(y_arr):
+            raise ValueError(
+                "X and y must contain the same number of rows."
+            )
 
         unique_targets = set(
             np.unique(y_arr).tolist()
@@ -232,15 +268,20 @@ class FTTransformerAdapter:
         if not unique_targets.issubset(
             {0.0, 1.0}
         ):
-
             raise ValueError(
-                "FTTransformerAdapter requires a binary "
-                "target encoded as 0 and 1."
+                "FTTransformerAdapter requires "
+                "a binary target encoded as 0 and 1."
             )
 
-        # --------------------------------------------------
+        if len(unique_targets) != 2:
+            raise ValueError(
+                "Training data must contain both "
+                "positive and negative target classes."
+            )
+
+        # --------------------------------------------------------
         # Device
-        # --------------------------------------------------
+        # --------------------------------------------------------
 
         device = torch.device(
             "cuda"
@@ -248,59 +289,182 @@ class FTTransformerAdapter:
             else "cpu"
         )
 
-        # --------------------------------------------------
+        # --------------------------------------------------------
         # Reproducibility
-        # --------------------------------------------------
+        # --------------------------------------------------------
 
-        seed = self.params.get(
-            "seed",
-            42,
+        seed = int(
+            self.params.get(
+                "seed",
+                42,
+            )
         )
 
+        np.random.seed(seed)
         torch.manual_seed(seed)
 
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(seed)
 
-        # --------------------------------------------------
-        # Fold-local positive-class weighting
-        # --------------------------------------------------
+        # --------------------------------------------------------
+        # Training configuration
+        # --------------------------------------------------------
+
+        max_epochs = int(
+            epochs
+            if epochs is not None
+            else self.params.get(
+                "max_epochs",
+                100,
+            )
+        )
+
+        patience = int(
+            self.params.get(
+                "patience",
+                15,
+            )
+        )
+
+        validation_fraction = float(
+            self.params.get(
+                "validation_fraction_inner",
+                0.15,
+            )
+        )
+
+        scheduler_factor = float(
+            self.params.get(
+                "scheduler_factor",
+                0.5,
+            )
+        )
+
+        scheduler_patience = int(
+            self.params.get(
+                "scheduler_patience",
+                5,
+            )
+        )
+
+        min_delta = float(
+            self.params.get(
+                "min_delta",
+                1e-6,
+            )
+        )
+
+        if not 0.0 < validation_fraction < 1.0:
+            raise ValueError(
+                "validation_fraction_inner must be "
+                "strictly between 0 and 1."
+            )
+
+        if max_epochs <= 0:
+            raise ValueError(
+                "max_epochs must be greater than zero."
+            )
+
+        if patience <= 0:
+            raise ValueError(
+                "patience must be greater than zero."
+            )
+
+        # --------------------------------------------------------
+        # Inner stratified split
+        # --------------------------------------------------------
         #
         # IMPORTANT:
-        # y contains ONLY the current outer training fold.
+        # X and y supplied here contain ONLY the current
+        # outer-training fold.
         #
-        # Therefore the class weight is calculated without
-        # using the outer validation fold or formal holdout.
-        #
-        # Example:
-        #
-        # negatives = 57,600
-        # positives = 6,400
-        #
-        # pos_weight = 57,600 / 6,400 = 9.0
-        #
-        # This makes errors on the minority resignation class
-        # contribute more strongly to the training loss.
-        # --------------------------------------------------
+        # The outer validation fold is not passed to fit().
+        # --------------------------------------------------------
+
+        row_indices = np.arange(
+            len(X)
+        )
+
+        (
+            inner_train_idx,
+            inner_val_idx,
+        ) = train_test_split(
+            row_indices,
+            test_size=validation_fraction,
+            random_state=seed,
+            stratify=y_arr,
+        )
+
+        X_inner_train = (
+            X.iloc[inner_train_idx]
+            .copy()
+            .reset_index(drop=True)
+        )
+
+        X_inner_val = (
+            X.iloc[inner_val_idx]
+            .copy()
+            .reset_index(drop=True)
+        )
+
+        y_inner_train = (
+            y_arr[inner_train_idx]
+            .astype(np.float32)
+        )
+
+        y_inner_val = (
+            y_arr[inner_val_idx]
+            .astype(np.float32)
+        )
+
+        self._inner_train_size = len(
+            X_inner_train
+        )
+
+        self._inner_validation_size = len(
+            X_inner_val
+        )
+
+        # --------------------------------------------------------
+        # Fit preprocessing using INNER TRAINING data only
+        # --------------------------------------------------------
+
+        x_num_train, x_cat_train = self._preprocess(
+            X_inner_train,
+            fit=True,
+        )
+
+        x_num_val, x_cat_val = self._preprocess(
+            X_inner_val,
+            fit=False,
+        )
+
+        # --------------------------------------------------------
+        # Inner-training positive-class weight
+        # --------------------------------------------------------
 
         positive_count = int(
-            np.sum(y_arr == 1)
+            np.sum(
+                y_inner_train == 1
+            )
         )
 
         negative_count = int(
-            np.sum(y_arr == 0)
+            np.sum(
+                y_inner_train == 0
+            )
         )
 
         if positive_count == 0:
             raise ValueError(
-                "Cannot calculate positive-class weight because "
-                "the training fold contains no positive samples."
+                "Inner training data contains no "
+                "positive samples."
             )
 
         if negative_count == 0:
             raise ValueError(
-                "Cannot calculate positive-class weight because "
-                "the training fold contains no negative samples."
+                "Inner training data contains no "
+                "negative samples."
             )
 
         self._pos_weight = (
@@ -314,19 +478,19 @@ class FTTransformerAdapter:
             device=device,
         )
 
-        # --------------------------------------------------
+        # --------------------------------------------------------
         # FT-Transformer architecture
-        # --------------------------------------------------
+        # --------------------------------------------------------
 
         n_cont_features = (
-            x_num.shape[1]
-            if x_num is not None
+            x_num_train.shape[1]
+            if x_num_train is not None
             else 0
         )
 
         cat_cardinalities = (
             self._cat_cardinalities
-            if x_cat is not None
+            if x_cat_train is not None
             else None
         )
 
@@ -361,7 +525,6 @@ class FTTransformerAdapter:
             ),
 
             # Required by rtdl_revisiting_models 0.0.2.
-            # ffn_d_hidden is specified explicitly above.
             ffn_d_hidden_multiplier=None,
 
             ffn_dropout=self.params.get(
@@ -376,143 +539,216 @@ class FTTransformerAdapter:
 
         ).to(device)
 
-        # --------------------------------------------------
-        # Convert training data to PyTorch tensors
-        # --------------------------------------------------
+        # --------------------------------------------------------
+        # Tensor helper
+        # --------------------------------------------------------
 
-        tensors = []
+        def make_dataset(
+            x_num: np.ndarray | None,
+            x_cat: np.ndarray | None,
+            targets: np.ndarray,
+        ) -> TensorDataset:
 
-        if x_num is not None:
+            tensors = []
+
+            if x_num is not None:
+                tensors.append(
+                    torch.tensor(
+                        x_num,
+                        dtype=torch.float32,
+                    )
+                )
+
+            if x_cat is not None:
+                tensors.append(
+                    torch.tensor(
+                        x_cat,
+                        dtype=torch.long,
+                    )
+                )
 
             tensors.append(
                 torch.tensor(
-                    x_num,
+                    targets,
                     dtype=torch.float32,
-                )
+                ).unsqueeze(1)
             )
 
-        if x_cat is not None:
-
-            tensors.append(
-                torch.tensor(
-                    x_cat,
-                    dtype=torch.long,
-                )
+            return TensorDataset(
+                *tensors
             )
 
-        tensors.append(
-            torch.tensor(
-                y_arr,
-                dtype=torch.float32,
-            ).unsqueeze(1)
+        train_dataset = make_dataset(
+            x_num_train,
+            x_cat_train,
+            y_inner_train,
         )
 
-        dataset = TensorDataset(
-            *tensors
+        val_dataset = make_dataset(
+            x_num_val,
+            x_cat_val,
+            y_inner_val,
         )
 
-        loader = DataLoader(
-            dataset,
+        train_loader = DataLoader(
+            train_dataset,
             batch_size=batch_size,
             shuffle=True,
         )
 
-        # --------------------------------------------------
+        val_loader = DataLoader(
+            val_dataset,
+            batch_size=batch_size,
+            shuffle=False,
+        )
+
+        # --------------------------------------------------------
         # Optimizer
-        # --------------------------------------------------
+        # --------------------------------------------------------
 
         optimizer = torch.optim.AdamW(
             self._model.parameters(),
 
-            lr=self.params.get(
-                "learning_rate",
-                0.001,
+            lr=float(
+                self.params.get(
+                    "learning_rate",
+                    0.001,
+                )
             ),
 
-            weight_decay=self.params.get(
-                "weight_decay",
-                1e-5,
+            weight_decay=float(
+                self.params.get(
+                    "weight_decay",
+                    1e-5,
+                )
             ),
         )
 
-        # --------------------------------------------------
+        # --------------------------------------------------------
+        # Scheduler
+        # --------------------------------------------------------
+
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="max",
+            factor=scheduler_factor,
+            patience=scheduler_patience,
+        )
+
+        # --------------------------------------------------------
         # Weighted binary classification loss
-        # --------------------------------------------------
-        #
-        # Positive examples receive additional weight
-        # because resignation is the minority class.
-        # --------------------------------------------------
+        # --------------------------------------------------------
 
         criterion = nn.BCEWithLogitsLoss(
             pos_weight=pos_weight_tensor
         )
 
-        # --------------------------------------------------
-        # Training
-        # --------------------------------------------------
+        # --------------------------------------------------------
+        # Training / validation helpers
+        # --------------------------------------------------------
 
-        self._model.train()
+        def forward_batch(
+            batch: tuple[torch.Tensor, ...],
+            has_num: bool,
+            has_cat: bool,
+        ) -> tuple[torch.Tensor, torch.Tensor]:
 
-        for _ in range(epochs):
+            if has_num and has_cat:
 
-            for batch in loader:
+                b_num = batch[0].to(
+                    device
+                )
+
+                b_cat = batch[1].to(
+                    device
+                )
+
+                b_y = batch[2].to(
+                    device
+                )
+
+                logits = self._model(
+                    b_num,
+                    b_cat,
+                )
+
+            elif has_num:
+
+                b_num = batch[0].to(
+                    device
+                )
+
+                b_y = batch[1].to(
+                    device
+                )
+
+                logits = self._model(
+                    b_num,
+                    None,
+                )
+
+            else:
+
+                b_cat = batch[0].to(
+                    device
+                )
+
+                b_y = batch[1].to(
+                    device
+                )
+
+                logits = self._model(
+                    None,
+                    b_cat,
+                )
+
+            return logits, b_y
+
+        has_num = (
+            x_num_train is not None
+        )
+
+        has_cat = (
+            x_cat_train is not None
+        )
+
+        # --------------------------------------------------------
+        # Early-stopping state
+        # --------------------------------------------------------
+
+        best_pr_auc = -np.inf
+        best_epoch = 0
+        best_state_dict = None
+
+        epochs_without_improvement = 0
+
+        # --------------------------------------------------------
+        # Training loop
+        # --------------------------------------------------------
+
+        for epoch in range(
+            1,
+            max_epochs + 1,
+        ):
+
+            # ====================================================
+            # TRAIN
+            # ====================================================
+
+            self._model.train()
+
+            for batch in train_loader:
 
                 optimizer.zero_grad()
 
-                if (
-                    x_num is not None
-                    and x_cat is not None
-                ):
-
-                    b_num = batch[0].to(
-                        device
-                    )
-
-                    b_cat = batch[1].to(
-                        device
-                    )
-
-                    b_y = batch[2].to(
-                        device
-                    )
-
-                    out = self._model(
-                        b_num,
-                        b_cat,
-                    )
-
-                elif x_num is not None:
-
-                    b_num = batch[0].to(
-                        device
-                    )
-
-                    b_y = batch[1].to(
-                        device
-                    )
-
-                    out = self._model(
-                        b_num,
-                        None,
-                    )
-
-                else:
-
-                    b_cat = batch[0].to(
-                        device
-                    )
-
-                    b_y = batch[1].to(
-                        device
-                    )
-
-                    out = self._model(
-                        None,
-                        b_cat,
-                    )
+                logits, b_y = forward_batch(
+                    batch,
+                    has_num,
+                    has_cat,
+                )
 
                 loss = criterion(
-                    out,
+                    logits,
                     b_y,
                 )
 
@@ -520,9 +756,143 @@ class FTTransformerAdapter:
 
                 optimizer.step()
 
+            # ====================================================
+            # INNER VALIDATION
+            # ====================================================
+
+            self._model.eval()
+
+            validation_probabilities = []
+            validation_targets = []
+
+            with torch.no_grad():
+
+                for batch in val_loader:
+
+                    logits, b_y = forward_batch(
+                        batch,
+                        has_num,
+                        has_cat,
+                    )
+
+                    probabilities = (
+                        torch.sigmoid(
+                            logits
+                        )
+                        .squeeze(1)
+                        .detach()
+                        .cpu()
+                        .numpy()
+                    )
+
+                    targets = (
+                        b_y
+                        .squeeze(1)
+                        .detach()
+                        .cpu()
+                        .numpy()
+                    )
+
+                    validation_probabilities.append(
+                        probabilities
+                    )
+
+                    validation_targets.append(
+                        targets
+                    )
+
+            validation_probabilities_arr = np.concatenate(
+                validation_probabilities
+            )
+
+            validation_targets_arr = np.concatenate(
+                validation_targets
+            )
+
+            inner_pr_auc = float(
+                average_precision_score(
+                    validation_targets_arr,
+                    validation_probabilities_arr,
+                )
+            )
+
+            # Scheduler monitors PR-AUC.
+            scheduler.step(
+                inner_pr_auc
+            )
+
+            # ====================================================
+            # BEST MODEL / EARLY STOPPING
+            # ====================================================
+
+            if (
+                inner_pr_auc
+                > best_pr_auc + min_delta
+            ):
+
+                best_pr_auc = (
+                    inner_pr_auc
+                )
+
+                best_epoch = epoch
+
+                # Store best weights on CPU.
+                best_state_dict = {
+                    key: value.detach()
+                    .cpu()
+                    .clone()
+
+                    for key, value
+                    in self._model.state_dict().items()
+                }
+
+                epochs_without_improvement = 0
+
+            else:
+
+                epochs_without_improvement += 1
+
+            self._epochs_trained = epoch
+
+            if (
+                epochs_without_improvement
+                >= patience
+            ):
+                break
+
+        # --------------------------------------------------------
+        # Restore best PR-AUC model
+        # --------------------------------------------------------
+
+        if best_state_dict is None:
+            raise RuntimeError(
+                "Early stopping failed to capture "
+                "a valid model state."
+            )
+
+        self._model.load_state_dict(
+            best_state_dict
+        )
+
+        self._model.to(
+            device
+        )
+
+        self._best_epoch = int(
+            best_epoch
+        )
+
+        self._best_inner_pr_auc = float(
+            best_pr_auc
+        )
+
         self._fitted = True
 
         return self
+
+    # ============================================================
+    # Probability prediction
+    # ============================================================
 
     def predict_proba(
         self,
@@ -535,7 +905,6 @@ class FTTransformerAdapter:
             not self._fitted
             or self._model is None
         ):
-
             raise RuntimeError(
                 "Adapter is not fitted. "
                 "Call fit() first."
@@ -552,6 +921,10 @@ class FTTransformerAdapter:
             "cuda"
             if torch.cuda.is_available()
             else "cpu"
+        )
+
+        self._model.to(
+            device
         )
 
         self._model.eval()
@@ -638,7 +1011,9 @@ class FTTransformerAdapter:
                     )
 
                 probs = (
-                    torch.sigmoid(logits)
+                    torch.sigmoid(
+                        logits
+                    )
                     .squeeze(1)
                     .cpu()
                     .numpy()
@@ -652,11 +1027,15 @@ class FTTransformerAdapter:
             probs_list
         ).astype(float)
 
+    # ============================================================
+    # Serialization
+    # ============================================================
+
     def save(
         self,
         directory: Path,
     ) -> dict[str, Any]:
-        """Serialize model weights and fold-fitted preprocessing."""
+        """Serialize model weights and preprocessing state."""
 
         import torch
 
@@ -701,9 +1080,25 @@ class FTTransformerAdapter:
                     "feature_names": self._feature_names,
                     "num_features": self._num_features,
 
-                    # Save the fold-local positive-class weight
-                    # for reproducibility and auditability.
                     "pos_weight": self._pos_weight,
+
+                    "best_epoch": self._best_epoch,
+
+                    "best_inner_pr_auc": (
+                        self._best_inner_pr_auc
+                    ),
+
+                    "epochs_trained": (
+                        self._epochs_trained
+                    ),
+
+                    "inner_train_size": (
+                        self._inner_train_size
+                    ),
+
+                    "inner_validation_size": (
+                        self._inner_validation_size
+                    ),
                 },
                 file,
             )
@@ -711,18 +1106,18 @@ class FTTransformerAdapter:
         metadata = self.get_metadata()
 
         metadata["weights_file"] = (
-            str(
-                model_weights_file.name
-            )
+            model_weights_file.name
         )
 
         metadata["preprocessor_file"] = (
-            str(
-                preprocessor_file.name
-            )
+            preprocessor_file.name
         )
 
         return metadata
+
+    # ============================================================
+    # Loading
+    # ============================================================
 
     @classmethod
     def load(
@@ -753,142 +1148,203 @@ class FTTransformerAdapter:
 
         adapter = cls()
 
-        if (
+        if not (
             preprocessor_file.exists()
             and model_weights_file.exists()
         ):
+            return adapter
 
-            with open(
-                preprocessor_file,
-                "rb",
-            ) as file:
+        with open(
+            preprocessor_file,
+            "rb",
+        ) as file:
 
-                state = pickle.load(
-                    file
-                )
-
-            adapter._scaler = (
-                state["scaler"]
+            state = pickle.load(
+                file
             )
 
-            adapter._category_maps = (
-                state["category_maps"]
+        adapter._scaler = (
+            state["scaler"]
+        )
+
+        adapter._category_maps = (
+            state["category_maps"]
+        )
+
+        adapter._cat_cardinalities = (
+            state["cat_cardinalities"]
+        )
+
+        adapter.params = (
+            state["params"]
+        )
+
+        adapter.categorical_features = (
+            state["categorical_features"]
+        )
+
+        adapter._feature_names = (
+            state["feature_names"]
+        )
+
+        adapter._num_features = (
+            state["num_features"]
+        )
+
+        adapter._pos_weight = (
+            state.get(
+                "pos_weight"
             )
+        )
 
-            adapter._cat_cardinalities = (
-                state["cat_cardinalities"]
+        adapter._best_epoch = (
+            state.get(
+                "best_epoch"
             )
+        )
 
-            adapter.params = (
-                state["params"]
+        adapter._best_inner_pr_auc = (
+            state.get(
+                "best_inner_pr_auc"
             )
+        )
 
-            adapter.categorical_features = (
-                state["categorical_features"]
+        adapter._epochs_trained = (
+            state.get(
+                "epochs_trained",
+                0,
             )
+        )
 
-            adapter._feature_names = (
-                state["feature_names"]
+        adapter._inner_train_size = (
+            state.get(
+                "inner_train_size"
             )
+        )
 
-            adapter._num_features = (
-                state["num_features"]
+        adapter._inner_validation_size = (
+            state.get(
+                "inner_validation_size"
             )
+        )
 
-            # Backward compatible:
-            # older saved adapters may not contain pos_weight.
-            adapter._pos_weight = (
-                state.get(
-                    "pos_weight"
-                )
+        n_cont = len(
+            adapter._num_features
+        )
+
+        cat_cards = (
+            adapter._cat_cardinalities
+            if adapter._cat_cardinalities
+            else None
+        )
+
+        model = FTTransformer(
+            n_cont_features=n_cont,
+            cat_cardinalities=cat_cards,
+            d_out=1,
+
+            n_blocks=adapter.params.get(
+                "n_blocks",
+                3,
+            ),
+
+            d_block=adapter.params.get(
+                "d_block",
+                64,
+            ),
+
+            attention_n_heads=adapter.params.get(
+                "attention_n_heads",
+                4,
+            ),
+
+            attention_dropout=adapter.params.get(
+                "attention_dropout",
+                0.1,
+            ),
+
+            ffn_d_hidden=adapter.params.get(
+                "ffn_d_hidden",
+                128,
+            ),
+
+            # Required by rtdl_revisiting_models 0.0.2.
+            ffn_d_hidden_multiplier=None,
+
+            ffn_dropout=adapter.params.get(
+                "ffn_dropout",
+                0.1,
+            ),
+
+            residual_dropout=adapter.params.get(
+                "residual_dropout",
+                0.0,
+            ),
+        )
+
+        model.load_state_dict(
+            torch.load(
+                model_weights_file,
+                map_location="cpu",
             )
+        )
 
-            n_cont = len(
-                adapter._num_features
-            )
-
-            cat_cards = (
-                adapter._cat_cardinalities
-                if adapter._cat_cardinalities
-                else None
-            )
-
-            model = FTTransformer(
-                n_cont_features=n_cont,
-                cat_cardinalities=cat_cards,
-                d_out=1,
-
-                n_blocks=adapter.params.get(
-                    "n_blocks",
-                    3,
-                ),
-
-                d_block=adapter.params.get(
-                    "d_block",
-                    64,
-                ),
-
-                attention_n_heads=adapter.params.get(
-                    "attention_n_heads",
-                    4,
-                ),
-
-                attention_dropout=adapter.params.get(
-                    "attention_dropout",
-                    0.1,
-                ),
-
-                ffn_d_hidden=adapter.params.get(
-                    "ffn_d_hidden",
-                    128,
-                ),
-
-                # Required by rtdl_revisiting_models 0.0.2.
-                ffn_d_hidden_multiplier=None,
-
-                ffn_dropout=adapter.params.get(
-                    "ffn_dropout",
-                    0.1,
-                ),
-
-                residual_dropout=adapter.params.get(
-                    "residual_dropout",
-                    0.0,
-                ),
-            )
-
-            model.load_state_dict(
-                torch.load(
-                    model_weights_file,
-                    map_location="cpu",
-                )
-            )
-
-            adapter._model = model
-            adapter._fitted = True
+        adapter._model = model
+        adapter._fitted = True
 
         return adapter
+
+    # ============================================================
+    # Metadata
+    # ============================================================
 
     def get_metadata(
         self,
     ) -> dict[str, Any]:
-        """Return model metadata, hyperparameters, features, and weighting information."""
+        """Return configuration and training diagnostics."""
 
         return {
             "name": self.name,
             "model_id": self.model_id,
             "fitted": self._fitted,
-            "params": self.params,
-            "categorical_features": self.categorical_features,
-            "feature_names": self._feature_names,
 
-            # This value is calculated from the current
-            # training fold during fit().
-            "pos_weight": self._pos_weight,
+            "params": self.params,
+
+            "categorical_features": (
+                self.categorical_features
+            ),
+
+            "feature_names": (
+                self._feature_names
+            ),
 
             "class_weighting": (
-                "fold_local_positive_class_weight"
+                "inner_training_fold_positive_class_weight"
                 if self._pos_weight is not None
                 else "not_yet_fitted"
+            ),
+
+            "pos_weight": (
+                self._pos_weight
+            ),
+
+            "best_epoch": (
+                self._best_epoch
+            ),
+
+            "best_inner_pr_auc": (
+                self._best_inner_pr_auc
+            ),
+
+            "epochs_trained": (
+                self._epochs_trained
+            ),
+
+            "inner_train_size": (
+                self._inner_train_size
+            ),
+
+            "inner_validation_size": (
+                self._inner_validation_size
             ),
         }
