@@ -199,11 +199,16 @@ celerybeat.pid
 
 
 # ============================================================
-# Cursor
+# Cursor / AI Assistants / IDE Tools
 # ============================================================
 
 .cursorignore
 .cursorindexingignore
+.cursor/
+.gemini/
+.agents/
+.antigravity/
+.copilot/
 
 
 # ============================================================
@@ -220,6 +225,10 @@ celerybeat.pid
 *.pt
 *.pth
 *.ckpt
+
+# Model artifact directories (keep directory structure with .gitkeep)
+models/*/*
+!models/*/.gitkeep
 
 
 # ============================================================
@@ -270,12 +279,14 @@ mlruns/
 .DS_Store
 .AppleDouble
 .LSOverride
+.Spotlight-V100
+.Trashes
 
 # Windows
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db
-Desktop.ini
+[Dd]esktop.ini
 $RECYCLE.BIN/
 
 # Linux
@@ -283,7 +294,7 @@ $RECYCLE.BIN/
 
 
 # ============================================================
-# Temporary / Backup Files
+# Temporary / Backup / Scratch Files
 # ============================================================
 
 *.tmp
@@ -292,6 +303,14 @@ $RECYCLE.BIN/
 *.swp
 *.swo
 *.orig
+scratch/
+tmp/
+temp/
+
+# Microsoft Office temporary / lock files
+~$*.doc*
+~$*.xls*
+~$*.ppt*
 
 
 # ============================================================
@@ -316,4 +335,4 @@ $RECYCLE.BIN/
 # IMPORTANT:
 # data/processed/split_registry.csv is intentionally version controlled.
 # It defines the frozen development/holdout partition and CV folds used
-# consistently across all model workflows.
+# consistently across all model workflows.

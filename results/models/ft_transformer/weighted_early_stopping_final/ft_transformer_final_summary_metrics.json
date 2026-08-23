@@ -13,6 +13,6 @@
     "cv_std_roc_auc": 0.0065971561882389885,
     "cv_mean_f1": 0.13551815708749912,
     "cv_std_f1": 0.07672998296823398,
-    "total_fit_time_seconds": 236.72005940000963,
-    "total_predict_time_seconds": 0.9742582000035327
+    "total_fit_time_seconds": 370.7150373000186,
+    "total_predict_time_seconds": 1.1949928000103682
 }
