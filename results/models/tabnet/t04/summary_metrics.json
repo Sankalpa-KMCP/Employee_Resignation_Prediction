@@ -1,0 +1,18 @@
+{
+  "model_name": "TabNet",
+  "model_id": "tabnet",
+  "total_development_records": 80000,
+  "total_folds": 5,
+  "pooled_average_precision": 0.10056440278094379,
+  "pooled_roc_auc": 0.4996741394440097,
+  "pooled_f1": 0.16486377781070727,
+  "pooled_brier_score": 0.24836753856577362,
+  "cv_mean_average_precision": 0.10044408913336103,
+  "cv_std_average_precision": 0.0023373341846839686,
+  "cv_mean_roc_auc": 0.4982340163112965,
+  "cv_std_roc_auc": 0.009317881999175374,
+  "cv_mean_f1": 0.16301897428280776,
+  "cv_std_f1": 0.010383858717353022,
+  "total_fit_time_seconds": 848.0186458999997,
+  "total_predict_time_seconds": 2.7655651999957627
+}
