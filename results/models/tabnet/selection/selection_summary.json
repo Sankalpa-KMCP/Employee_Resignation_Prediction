@@ -1,0 +1,15 @@
+{
+  "selection_metric": "pooled_average_precision",
+  "selected_candidate": "T01",
+  "primary_comparison_seed": 42,
+  "additional_sensitivity_seeds": [
+    7,
+    2026
+  ],
+  "seed_count": 3,
+  "mean_pooled_average_precision_across_seeds": 0.10062605229869388,
+  "std_pooled_average_precision_across_seeds": 0.0011307380359981158,
+  "min_pooled_average_precision_across_seeds": 0.09906467000162833,
+  "max_pooled_average_precision_across_seeds": 0.10170576978534263,
+  "formal_holdout_used": false
+}
