@@ -1,0 +1,28 @@
+term,importance
+Overtime_Hours & Team_Size,0.01312224094957374
+Remote_Work_Frequency & Training_Hours,0.012922350413155275
+Monthly_Salary & Sick_Days,0.012401653752936045
+Performance_Score & Projects_Handled,0.01207060035876714
+Age & Work_Hours_Per_Week,0.011897288563805822
+Monthly_Salary & Projects_Handled,0.010523366583631892
+Work_Hours_Per_Week & Remote_Work_Frequency,0.00973041568093517
+Work_Hours_Per_Week & Training_Hours,0.008772616981570827
+Years_At_Company & Work_Hours_Per_Week,0.008144698869772623
+Years_At_Company & Monthly_Salary,0.006048934091243943
+Remote_Work_Frequency,0.004677325724438777
+Department,0.004401312401373292
+Training_Hours,0.003236616401484268
+Projects_Handled,0.0023488144185453102
+Work_Hours_Per_Week,0.0022280667865719533
+Employee_Satisfaction_Score,0.002197937512647728
+Job_Title,0.0019226983680257958
+Performance_Score,0.0019124615211162485
+Sick_Days,0.001661608593330864
+Overtime_Hours,0.0015776716133952026
+Promotions,0.0011961766101317279
+Team_Size,0.0010120235046636216
+Age,0.0009614002660698746
+Gender,0.0009467241309173224
+Years_At_Company,0.0008418382861321781
+Monthly_Salary,0.0006154596460680999
+Education_Level,0.0005613986646468116
