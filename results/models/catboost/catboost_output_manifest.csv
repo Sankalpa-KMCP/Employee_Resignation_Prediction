@@ -1,0 +1,17 @@
+file_name,relative_path,size_bytes,exists
+catboost_development_model.cbm,models\catboost\catboost_development_model.cbm,732764,True
+catboost_model_metadata.json,models\catboost\catboost_model_metadata.json,1578,True
+catboost_oof_predictions.csv,results\models\catboost\catboost_oof_predictions.csv,3338592,True
+oof_predictions.csv,results\models\catboost\oof_predictions.csv,3338592,True
+catboost_fold_metrics.csv,results\models\catboost\catboost_fold_metrics.csv,754,True
+fold_metrics.csv,results\models\catboost\fold_metrics.csv,754,True
+catboost_summary_metrics.csv,results\models\catboost\catboost_summary_metrics.csv,458,True
+catboost_summary_metrics.json,results\models\catboost\catboost_summary_metrics.json,650,True
+catboost_run_metadata.json,results\models\catboost\catboost_run_metadata.json,1578,True
+catboost_confusion_matrix.csv,results\models\catboost\catboost_confusion_matrix.csv,91,True
+catboost_feature_importance.csv,results\models\catboost\catboost_feature_importance.csv,596,True
+term_importances.csv,results\models\catboost\term_importances.csv,596,True
+figure_01_catboost_feature_importance.png,results\models\catboost\figure_01_catboost_feature_importance.png,80329,True
+figure_02_catboost_precision_recall_curves.png,results\models\catboost\figure_02_catboost_precision_recall_curves.png,46604,True
+figure_03_catboost_confusion_matrix.png,results\models\catboost\figure_03_catboost_confusion_matrix.png,33377,True
+catboost_runtime_efficiency.csv,results\models\catboost\catboost_runtime_efficiency.csv,151,True

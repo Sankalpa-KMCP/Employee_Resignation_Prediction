@@ -1,0 +1,23 @@
+{
+    "model_name": "CatBoost",
+    "oof_rows": 80000,
+    "pr_auc": 0.10054953423978369,
+    "roc_auc": 0.5031857970066382,
+    "brier_score": 0.0903793729372737,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "balanced_accuracy": 0.5,
+    "accuracy": 0.8999,
+    "tn": 71992,
+    "fp": 0,
+    "fn": 8008,
+    "tp": 0,
+    "predicted_positive_rate": 0.0,
+    "cv_pr_auc_mean": 0.10088520746799765,
+    "cv_pr_auc_std": 0.0029464901942851296,
+    "cv_roc_auc_mean": 0.5031798960571554,
+    "cv_roc_auc_std": 0.008287043504348394,
+    "cv_brier_mean": 0.09037937293727372,
+    "cv_brier_std": 8.638910959535894e-05
+}

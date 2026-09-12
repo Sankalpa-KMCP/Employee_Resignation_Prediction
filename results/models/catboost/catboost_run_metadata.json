@@ -1,0 +1,60 @@
+{
+    "model_name": "CatBoost Classifier",
+    "ownership": "Member 2",
+    "parameters": {
+        "loss_function": "Logloss",
+        "eval_metric": "Logloss",
+        "iterations": 600,
+        "depth": 6,
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5,
+        "random_strength": 1,
+        "random_seed": 42,
+        "verbose": false,
+        "allow_writing_files": false
+    },
+    "categorical_features": [
+        "Department",
+        "Gender",
+        "Job_Title",
+        "Education_Level"
+    ],
+    "numerical_features": [
+        "Age",
+        "Years_At_Company",
+        "Performance_Score",
+        "Monthly_Salary",
+        "Work_Hours_Per_Week",
+        "Projects_Handled",
+        "Overtime_Hours",
+        "Sick_Days",
+        "Remote_Work_Frequency",
+        "Team_Size",
+        "Training_Hours",
+        "Promotions",
+        "Employee_Satisfaction_Score"
+    ],
+    "primary_features": [
+        "Department",
+        "Gender",
+        "Job_Title",
+        "Education_Level",
+        "Age",
+        "Years_At_Company",
+        "Performance_Score",
+        "Monthly_Salary",
+        "Work_Hours_Per_Week",
+        "Projects_Handled",
+        "Overtime_Hours",
+        "Sick_Days",
+        "Remote_Work_Frequency",
+        "Team_Size",
+        "Training_Hours",
+        "Promotions",
+        "Employee_Satisfaction_Score"
+    ],
+    "training_rows": 80000,
+    "pooled_pr_auc": 0.10054953423978369,
+    "pooled_roc_auc": 0.5031857970066382,
+    "pooled_brier_score": 0.0903793729372737
+}

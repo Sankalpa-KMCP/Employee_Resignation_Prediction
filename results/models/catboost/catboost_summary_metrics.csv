@@ -1,0 +1,2 @@
+model_name,oof_rows,pr_auc,roc_auc,brier_score,precision,recall,f1,balanced_accuracy,accuracy,tn,fp,fn,tp,predicted_positive_rate,cv_pr_auc_mean,cv_pr_auc_std,cv_roc_auc_mean,cv_roc_auc_std,cv_brier_mean,cv_brier_std
+CatBoost,80000,0.10054953423978369,0.5031857970066382,0.0903793729372737,0.0,0.0,0.0,0.5,0.8999,71992,0,8008,0,0.0,0.10088520746799765,0.0029464901942851296,0.5031798960571554,0.008287043504348394,0.09037937293727372,8.638910959535894e-05
