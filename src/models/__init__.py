@@ -2,6 +2,11 @@
 
 from src.models.base import ModelAdapter, OOFResult
 from src.models.catboost_model import CatBoostAdapter
+from src.models.config import (
+    load_model_config,
+    resolve_candidate,
+    validate_model_config,
+)
 from src.models.ebm_model import EBMAdapter
 from src.models.ft_transformer import FTTransformerAdapter
 from src.models.lightgbm_model import LightGBMAdapter
@@ -20,5 +25,8 @@ __all__ = [
     "LogisticRegressionAdapter",
     "TabNetAdapter",
     "XGBoostAdapter",
+    "load_model_config",
+    "resolve_candidate",
     "run_5fold_cv",
+    "validate_model_config",
 ]
