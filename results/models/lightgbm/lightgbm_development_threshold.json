@@ -1,0 +1,24 @@
+{
+  "candidate_id": "LGBM_C08",
+  "selection_scope": "development OOF diagnostic only",
+  "selection_metric": "f1",
+  "selected_threshold": 0.04,
+  "selected_threshold_metrics": {
+    "threshold": 0.04,
+    "precision": 0.10011129034274925,
+    "recall": 0.9997502497502497,
+    "f1": 0.18199797678991578,
+    "balanced_accuracy": 0.5000626457107733,
+    "predicted_positive_count": 79971.0,
+    "predicted_positive_rate": 0.9996375
+  },
+  "standard_threshold_0_50_metrics": {
+    "threshold": 0.5,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "balanced_accuracy": 0.5,
+    "predicted_positive_count": 0.0,
+    "predicted_positive_rate": 0.0
+  }
+}
