@@ -1,12 +1,16 @@
 # ============================================================
 # Model Configuration: CatBoost Classifier (Member 2)
+# Modernized Target Schema (v2.0.0)
 # ============================================================
 model:
-  name: "CatBoost"
+  id: "catboost"
   model_id: "catboost"
+  name: "CatBoost Classifier"
+  owner: "member_2"
   member: "Member 2"
   algorithm_family: "Gradient Boosted Decision Trees"
   implementation: "catboost.CatBoostClassifier"
+  config_version: "2.0.0"
 
 # ------------------------------------------------------------
 # Reproducibility & Environment
@@ -17,7 +21,25 @@ reproducibility:
   deterministic: true
 
 # ------------------------------------------------------------
-# Fixed Parameters (Baseline Defaults)
+# Inner-Validation & Early Stopping Policy
+# (Operates strictly within outer-training folds; outer-val is never passed)
+# ------------------------------------------------------------
+inner_validation:
+  fraction: 0.15
+  stratified: true
+  metric: "average_precision"
+  early_stopping_rounds: 50
+  refit_outer_train: true
+
+# ------------------------------------------------------------
+# Semantic Class Imbalance Strategy
+# ------------------------------------------------------------
+class_imbalance:
+  strategy: "balanced"
+  param_name: "auto_class_weights"
+
+# ------------------------------------------------------------
+# Fixed Estimator Parameters
 # ------------------------------------------------------------
 fixed_params:
   loss_function: "Logloss"
@@ -27,39 +49,80 @@ fixed_params:
   allow_writing_files: false
 
 # ------------------------------------------------------------
-# Cross-Validation & Early Stopping Strategy
+# Discrete Candidate Registry (Canonical v4.6.1 Section 8.21.4)
+# Bounded configurations: iterations 600; depth 4/6/8; lr 0.03/0.05/0.10;
+# l2 3/5/10; random_strength 0/1; auto_class_weights null/Balanced
 # ------------------------------------------------------------
-validation:
-  cv_folds: 5
-  early_stopping_rounds: 50
-  validation_fraction_inner: 0.15 # Internal train-split fraction for early stopping if needed
+candidates:
+  - id: "C01"
+    description: "Baseline unweighted (depth=6, lr=0.05, l2=3)"
+    params:
+      iterations: 600
+      depth: 6
+      learning_rate: 0.05
+      l2_leaf_reg: 3
+      auto_class_weights: null
 
-# ------------------------------------------------------------
-# Bounded Hyperparameter Search Space
-# ------------------------------------------------------------
-search_space:
-  iterations:
-    type: "int"
-    low: 300
-    high: 1000
-    step: 100
-    default: 500
-  learning_rate:
-    type: "float"
-    low: 0.01
-    high: 0.2
-    log: true
-    default: 0.05
-  depth:
-    type: "int"
-    low: 4
-    high: 8
-    step: 1
-    default: 6
-  l2_leaf_reg:
-    type: "float"
-    low: 1.0
-    high: 10.0
-    step: 1.0
-    default: 3.0
-  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage
+  - id: "C02"
+    description: "Baseline Balanced (depth=6, lr=0.05, l2=3)"
+    params:
+      iterations: 600
+      depth: 6
+      learning_rate: 0.05
+      l2_leaf_reg: 3
+      auto_class_weights: "Balanced"
+
+  - id: "C03"
+    description: "Conservative / Shallow unweighted (depth=4, lr=0.03, l2=5)"
+    params:
+      iterations: 600
+      depth: 4
+      learning_rate: 0.03
+      l2_leaf_reg: 5
+      auto_class_weights: null
+
+  - id: "C04"
+    description: "Conservative / Shallow Balanced (depth=4, lr=0.03, l2=5)"
+    params:
+      iterations: 600
+      depth: 4
+      learning_rate: 0.03
+      l2_leaf_reg: 5
+      auto_class_weights: "Balanced"
+
+  - id: "C05"
+    description: "High capacity unweighted (depth=8, lr=0.05, l2=5)"
+    params:
+      iterations: 600
+      depth: 8
+      learning_rate: 0.05
+      l2_leaf_reg: 5
+      auto_class_weights: null
+
+  - id: "C06"
+    description: "High capacity Balanced (depth=8, lr=0.05, l2=5)"
+    params:
+      iterations: 600
+      depth: 8
+      learning_rate: 0.05
+      l2_leaf_reg: 5
+      auto_class_weights: "Balanced"
+
+  - id: "C07"
+    description: "Regularized low-rate Balanced (depth=6, lr=0.03, l2=10, random_strength=1)"
+    params:
+      iterations: 600
+      depth: 6
+      learning_rate: 0.03
+      l2_leaf_reg: 10
+      random_strength: 1
+      auto_class_weights: "Balanced"
+
+  - id: "C08"
+    description: "Fast learning Balanced (depth=6, lr=0.10, l2=5)"
+    params:
+      iterations: 600
+      depth: 6
+      learning_rate: 0.10
+      l2_leaf_reg: 5
+      auto_class_weights: "Balanced"
