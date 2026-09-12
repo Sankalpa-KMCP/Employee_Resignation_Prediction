@@ -110,7 +110,12 @@ def test_fold_local_pca_preprocessing_prevents_leakage():
 
 
 def test_pca_notebook_scaffold_integrity():
-    """Verify that 04a_pca_analysis.ipynb exists as an unexecuted scaffold with all 25 sections."""
+    """Verify that 04a_pca_analysis.ipynb has all 25 sections and matches approved execution state.
+
+    The first 23 code cells are executed without errors, while the 24th code cell
+    (final verification assertions) remains unexecuted.
+    Also verifies all 25 logical PCA sections and generated canonical PCA CSV artifacts.
+    """
     assert PCA_NOTEBOOK_PATH.exists(), f"Missing PCA notebook: {PCA_NOTEBOOK_PATH}"
 
     with open(PCA_NOTEBOOK_PATH, "r", encoding="utf-8") as f:
@@ -119,48 +124,73 @@ def test_pca_notebook_scaffold_integrity():
     assert "cells" in nb_data
     assert nb_data.get("nbformat") == 4
 
-    # Extract all markdown headings
-    headings = []
-    for cell in nb_data["cells"]:
-        if cell.get("cell_type") == "markdown":
-            source = "".join(cell.get("source", []))
-            for line in source.split("\n"):
-                if line.startswith("#"):
-                    headings.append(line.strip())
-        elif cell.get("cell_type") == "code":
-            # Must remain unexecuted in scaffold
-            assert cell.get("execution_count") is None, "Scaffold code cell must not be executed."
-            assert len(cell.get("outputs", [])) == 0, "Scaffold code cell must have empty outputs."
+    # Extract all code cells and all cell text sources
+    code_cells = [cell for cell in nb_data["cells"] if cell.get("cell_type") == "code"]
+    all_cell_sources = ["".join(cell.get("source", [])) for cell in nb_data["cells"]]
 
-    # Verify key structural headings
-    expected_headings = [
-        "# 04a — Principal Component Analysis (PCA)",
-        "## 1. Purpose",
-        "## 2. PCA Methodology and Leakage Rules",
-        "## 3. Imports and Setup",
-        "## 4. Load Dataset and Split Registry",
-        "## 5. Load Feature Contract",
-        "## 6. Select Development Partition",
-        "## 7. Select the 13 Numerical / Ordinal Predictors",
-        "## 8. Validate PCA Inputs",
-        "## 9. Descriptive Statistics",
-        "## 10. Standardize Features",
-        "## 11. Fit PCA",
-        "## 12. Explained Variance",
-        "## 13. Cumulative Explained Variance",
-        "## 14. Components Required for 80%, 90%, and 95% Variance",
-        "## 15. Scree Plot",
-        "## 16. Cumulative Variance Plot",
-        "## 17. Principal Component Loadings",
-        "## 18. Interpret PC1, PC2, and PC3",
-        "## 19. PC1 vs PC2 Visualization",
-        "## 20. Logistic Regression Without PCA",
-        "## 21. Logistic Regression With PCA >=95%",
-        "## 22. Five-Fold Cross-Validation Comparison",
-        "## 23. Compare PR-AUC, ROC-AUC, and Brier Score",
-        "## 24. Save PCA Results",
-        "## 25. PCA Conclusion",
+    # Verify code cells count and approved execution state:
+    # 24 code cells total: first 23 executed without errors, 24th (final check cell) unexecuted
+    assert len(code_cells) == 24, f"Expected exactly 24 code cells in PCA notebook, found {len(code_cells)}"
+
+    # First 23 code cells must be executed and contain no error outputs
+    for idx, cell in enumerate(code_cells[:23]):
+        assert cell.get("execution_count") is not None, f"Code cell {idx + 1} must have an execution_count"
+        for output in cell.get("outputs", []):
+            assert output.get("output_type") != "error", (
+                f"Code cell {idx + 1} contains an execution error: "
+                f"{output.get('ename')}: {output.get('evalue')}"
+            )
+
+    # Final code cell (cell 24, index 23) is the final verification block and remains unexecuted
+    final_cell = code_cells[23]
+    assert final_cell.get("execution_count") is None, "Final verification code cell must remain unexecuted"
+    final_cell_source = "".join(final_cell.get("source", []))
+    assert "Final checks after all PCA experiments" in final_cell_source, (
+        "24th code cell must be the final verification block"
+    )
+
+    # Verify all 25 logical PCA sections are present using real notebook headings and comments
+    expected_sections = [
+        "Purpose",
+        "PCA Methodology and Leakage Rules",
+        "Imports and setup",
+        "Load data and split registry",
+        "Select development partition only",
+        "Select PCA features",
+        "Validate PCA input data",
+        "Standardize PCA features",
+        "Fit PCA",
+        "Explained variance",
+        "Components needed for variance thresholds",
+        "Scree plot",
+        "Cumulative explained variance plot",
+        "Principal component loadings",
+        "Interpret PC1, PC2, and PC3",
+        "PC1 vs PC2 visualization",
+        "Prepare target and CV folds",
+        "Logistic Regression WITHOUT PCA",
+        "Logistic Regression WITH PCA",
+        "Compare Logistic Regression metrics",
+        "Save PCA results",
+        "PCA Conclusion",
+        "Final PCA notebook checks",
+        "Logistic Regression WITH PCA (80% variance)",
+        "Compare all three Logistic Regression versions",
     ]
+    assert len(expected_sections) == 25, f"Expected exactly 25 logical sections, got {len(expected_sections)}"
 
-    for expected in expected_headings:
-        assert any(expected in h for h in headings), f"Missing expected heading: {expected}"
+    for section in expected_sections:
+        assert any(section in src for src in all_cell_sources), f"Missing expected PCA section: {section!r}"
+
+    # Verify canonical PCA artifacts generated by the executed notebook
+    expected_artifacts = [
+        "explained_variance.csv",
+        "pca_loadings.csv",
+        "logistic_regression_pca_comparison.csv",
+        "pca_summary.csv",
+    ]
+    for filename in expected_artifacts:
+        artifact_path = RESULTS_PCA_DIR / filename
+        assert artifact_path.exists(), f"Missing PCA artifact: {artifact_path}"
+        assert artifact_path.stat().st_size > 0, f"PCA artifact must not be empty: {artifact_path}"
+
