@@ -45,6 +45,7 @@ fixed_params:
   loss_function: "Logloss"
   eval_metric: "PRAUC"
   random_seed: 42
+  thread_count: -1
   verbose: false
   allow_writing_files: false
 

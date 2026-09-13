@@ -150,7 +150,11 @@ def run_5fold_cv(
             f"Expected exactly {len(dev_registry)} development records, found {len(dev_data)}."
         )
 
-    # Merge fold assignments from registry
+    # Merge fold assignments from registry (drop existing split columns to avoid merge collisions)
+    for col in (fold_col, partition_col):
+        if col in dev_data.columns:
+            dev_data = dev_data.drop(columns=[col])
+
     fold_mapping = dev_registry[[id_col, fold_col]].copy()
     fold_mapping[fold_col] = fold_mapping[fold_col].astype(int)
     dev_data = dev_data.merge(fold_mapping, on=id_col, validate="one_to_one")
@@ -278,6 +282,7 @@ def run_5fold_cv(
         fold_metrics["fold"] = fold_num
         fold_metrics["fit_time_seconds"] = float(fit_duration)
         fold_metrics["predict_time_seconds"] = float(pred_duration)
+        fold_metrics["pr_auc"] = fold_metrics["average_precision"]
         fold_metric_records.append(fold_metrics)
 
         # Record fold prediction dataframe
@@ -331,11 +336,14 @@ def run_5fold_cv(
         "total_development_records": len(oof_predictions),
         "total_folds": len(expected_folds_sorted),
         "pooled_average_precision": pooled_metrics["average_precision"],
+        "pooled_pr_auc": pooled_metrics["average_precision"],
         "pooled_roc_auc": pooled_metrics["roc_auc"],
         "pooled_f1": pooled_metrics["f1"],
         "pooled_brier_score": pooled_metrics["brier_score"],
         "cv_mean_average_precision": float(fold_metrics_df["average_precision"].mean()),
         "cv_std_average_precision": float(fold_metrics_df["average_precision"].std()),
+        "cv_mean_pr_auc": float(fold_metrics_df["average_precision"].mean()),
+        "cv_std_pr_auc": float(fold_metrics_df["average_precision"].std()),
         "cv_mean_roc_auc": float(fold_metrics_df["roc_auc"].mean()),
         "cv_std_roc_auc": float(fold_metrics_df["roc_auc"].std()),
         "cv_mean_f1": float(fold_metrics_df["f1"].mean()),

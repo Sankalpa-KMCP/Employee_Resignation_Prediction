@@ -1,2 +1,2 @@
-model_name,total_cv_fit_time_seconds,avg_fold_fit_time_seconds,training_throughput_records_per_sec,cv_folds_executed
-CatBoost,319.83,63.97,1000.52,5
+model_name,model_id,total_cv_fit_time_seconds,avg_fold_fit_time_seconds,training_throughput_records_per_sec,cv_folds_executed
+CatBoost Classifier,catboost,352.57,70.31,907.63,5

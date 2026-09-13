@@ -129,6 +129,8 @@ class CatBoostAdapter:
 
             # Hyperparameters from resolved config
             self.params = copy.deepcopy(dict(resolved.get("params", {})))
+            if params is not None:
+                self.params.update(params)
 
         # ---------------------------------------------------------------------
         # Case B: Initialized via Direct Parameters (Unit Test / Direct Mode)
@@ -246,6 +248,7 @@ class CatBoostAdapter:
                     cand_full = copy.deepcopy(self.params)
                     cand_full.update(cand_params)
                     cand_full.setdefault("random_seed", self.random_seed)
+                    cand_full.setdefault("thread_count", -1)
                     cand_full["early_stopping_rounds"] = self.early_stopping_rounds
                     cand_full["verbose"] = False
                     cand_full["allow_writing_files"] = False
@@ -356,6 +359,7 @@ class CatBoostAdapter:
                 refit_params["iterations"] = self.selected_tree_count_
                 refit_params.pop("early_stopping_rounds", None)
                 refit_params.setdefault("random_seed", self.random_seed)
+                refit_params.setdefault("thread_count", -1)
                 refit_params["verbose"] = False
                 refit_params["allow_writing_files"] = False
 
@@ -409,6 +413,18 @@ class CatBoostAdapter:
 
         probs = self._model.predict_proba(X_proc)[:, 1]
         return np.asarray(probs, dtype=float)
+
+    def get_feature_importance(self) -> np.ndarray:
+        """Return feature importance values computed by the underlying fitted CatBoost model.
+
+        Returns
+        -------
+        np.ndarray
+            Feature importance scores matching predictor order.
+        """
+        if not self._fitted or self._model is None:
+            raise RuntimeError("CatBoostAdapter is not fitted. Call fit() first.")
+        return np.asarray(self._model.get_feature_importance(), dtype=float)
 
     def save(self, directory: Path) -> dict[str, Any]:
         """Serialize model artifacts and metadata to directory."""
