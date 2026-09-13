@@ -1,12 +1,16 @@
 # ============================================================
 # Model Configuration: FT-Transformer (Member 1)
+# Modernized Target Schema (v2.0.0)
 # ============================================================
 model:
-  name: "FT-Transformer"
+  id: "ft_transformer"
   model_id: "ft_transformer"
+  name: "FT-Transformer"
+  owner: "member_1"
   member: "Member 1"
   algorithm_family: "Feature Tokenizer Transformer for Tabular Data"
   implementation: "rtdl_revisiting_models.FTTransformer"
+  config_version: "2.0.0"
 
 # ------------------------------------------------------------
 # Reproducibility & Environment
@@ -14,69 +18,139 @@ model:
 reproducibility:
   seed: 42
   device: "auto" # CUDA if available, else CPU
+  deterministic: true
 
 # ------------------------------------------------------------
-# Fixed Parameters (Baseline Defaults)
+# Inner-Validation & Early Stopping Policy
+# (Operates strictly within outer-training folds; outer-val is never passed)
+# ------------------------------------------------------------
+inner_validation:
+  fraction: 0.15
+  stratified: true
+  metric: "average_precision"
+  patience: 15
+  max_epochs: 100
+  refit_outer_train: true
+
+# ------------------------------------------------------------
+# Semantic Class Imbalance Strategy
+# (Top-level block describes the supported weighting mechanism;
+# individual candidates choose weighting: "none" or "dynamic_ratio")
+# ------------------------------------------------------------
+class_imbalance:
+  strategy: "dynamic_ratio"
+  param_name: "weighting"
+
+# ------------------------------------------------------------
+# Fixed Estimator Parameters (Common Defaults)
 # ------------------------------------------------------------
 fixed_params:
-  seed: 42
-  n_blocks: 3
-  d_block: 64
-  attention_n_heads: 4
-  ffn_d_hidden: 128
-  ffn_dropout: 0.1
+  optimizer: "AdamW"
+  weighting: "none"
+  weight_decay: 1.0e-5
   attention_dropout: 0.1
   residual_dropout: 0.0
-
-# ------------------------------------------------------------
-# Cross-Validation & Optimization Strategy
-# ------------------------------------------------------------
-validation:
-  cv_folds: 5
   batch_size: 512
+  seed: 42
   max_epochs: 100
   patience: 15
   lr_scheduler: "ReduceLROnPlateau"
-  validation_fraction_inner: 0.15
+  scheduler_factor: 0.5
+  scheduler_patience: 5
+  min_delta: 1.0e-6
 
 # ------------------------------------------------------------
-# Bounded Hyperparameter Search Space
+# Discrete Candidate Registry (Canonical v4.6.2 Section 8.21.3)
+# Bounded configurations: n_blocks {2, 3}; d_block {64, 128};
+# attention_n_heads {4, 8} with d_block % heads == 0;
+# learning_rate {1e-4, 1e-3}; ffn_dropout 0.1;
+# weighting: none (unweighted) OR dynamic_ratio (fold-local pos_weight)
 # ------------------------------------------------------------
-search_space:
-  n_blocks:
-    type: "int"
-    low: 2
-    high: 6
-    step: 1
-    default: 3
-  d_block:
-    type: "int"
-    low: 32
-    high: 128
-    step: 32
-    default: 64
-  attention_n_heads:
-    type: "int"
-    low: 2
-    high: 8
-    step: 2
-    default: 4
-  ffn_d_hidden_multiplier:
-    type: "float"
-    low: 1.0
-    high: 4.0
-    step: 0.5
-    default: 2.0
-  learning_rate:
-    type: "float"
-    low: 0.0001
-    high: 0.005
-    log: true
-    default: 0.001
-  weight_decay:
-    type: "float"
-    low: 1e-6
-    high: 1e-3
-    log: true
-    default: 1e-5
-  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage
+candidates:
+  - id: "FT01"
+    description: "Baseline unweighted (blocks=3, d_block=64, heads=4, lr=1e-3, unweighted)"
+    params:
+      n_blocks: 3
+      d_block: 64
+      attention_n_heads: 4
+      ffn_d_hidden: 128
+      learning_rate: 0.001
+      ffn_dropout: 0.1
+      weighting: "none"
+
+  - id: "FT02"
+    description: "Baseline Weighted (blocks=3, d_block=64, heads=4, lr=1e-3, dynamic_ratio)"
+    params:
+      n_blocks: 3
+      d_block: 64
+      attention_n_heads: 4
+      ffn_d_hidden: 128
+      learning_rate: 0.001
+      ffn_dropout: 0.1
+      weighting: "dynamic_ratio"
+
+  - id: "FT03"
+    description: "Shallower 2-block unweighted (blocks=2, d_block=64, heads=4, lr=1e-3, unweighted)"
+    params:
+      n_blocks: 2
+      d_block: 64
+      attention_n_heads: 4
+      ffn_d_hidden: 128
+      learning_rate: 0.001
+      ffn_dropout: 0.1
+      weighting: "none"
+
+  - id: "FT04"
+    description: "Shallower 2-block Weighted (blocks=2, d_block=64, heads=4, lr=1e-3, dynamic_ratio)"
+    params:
+      n_blocks: 2
+      d_block: 64
+      attention_n_heads: 4
+      ffn_d_hidden: 128
+      learning_rate: 0.001
+      ffn_dropout: 0.1
+      weighting: "dynamic_ratio"
+
+  - id: "FT05"
+    description: "Conservative LR unweighted (blocks=3, d_block=64, heads=4, lr=1e-4, unweighted)"
+    params:
+      n_blocks: 3
+      d_block: 64
+      attention_n_heads: 4
+      ffn_d_hidden: 128
+      learning_rate: 0.0001
+      ffn_dropout: 0.1
+      weighting: "none"
+
+  - id: "FT06"
+    description: "Conservative LR Weighted (blocks=3, d_block=64, heads=4, lr=1e-4, dynamic_ratio)"
+    params:
+      n_blocks: 3
+      d_block: 64
+      attention_n_heads: 4
+      ffn_d_hidden: 128
+      learning_rate: 0.0001
+      ffn_dropout: 0.1
+      weighting: "dynamic_ratio"
+
+  - id: "FT07"
+    description: "Wider 8-head unweighted (blocks=3, d_block=128, heads=8, lr=1e-3, unweighted)"
+    params:
+      n_blocks: 3
+      d_block: 128
+      attention_n_heads: 8
+      ffn_d_hidden: 256
+      learning_rate: 0.001
+      ffn_dropout: 0.1
+      weighting: "none"
+
+  - id: "FT08"
+    description: "Wider 8-head Weighted (blocks=3, d_block=128, heads=8, lr=1e-3, dynamic_ratio)"
+    params:
+      n_blocks: 3
+      d_block: 128
+      attention_n_heads: 8
+      ffn_d_hidden: 256
+      learning_rate: 0.001
+      ffn_dropout: 0.1
+      weighting: "dynamic_ratio"

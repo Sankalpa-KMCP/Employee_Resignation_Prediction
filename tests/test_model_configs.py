@@ -28,7 +28,7 @@ EXPECTED_MODELS = [
 ]
 
 # Models migrated to the modernized target schema (strict schema enforcement)
-MIGRATED_TARGET_MODELS = {"catboost"}
+MIGRATED_TARGET_MODELS = {"catboost", "ft_transformer"}
 
 # TRANSITIONAL: Legacy schema top-level keys for unmigrated configs
 LEGACY_REQUIRED_TOP_LEVEL_KEYS = [
@@ -293,3 +293,64 @@ def test_resolve_candidate_does_not_mutate_source_config(valid_target_config: di
     resolved["params"]["new_injected_key"] = "test"
 
     assert valid_target_config == original_copy, "Source config was mutated by resolve_candidate!"
+
+
+# =============================================================================
+# FT-Transformer Production Config & Candidate Tests
+# =============================================================================
+
+def test_ft_transformer_production_config_strict_validation():
+    """Verify that ft_transformer.yaml parses and passes strict schema validation."""
+    config = load_model_config("ft_transformer", strict_schema=True)
+    assert config["model"]["model_id"] == "ft_transformer"
+    assert config["model"]["config_version"] == "2.0.0"
+    assert config["inner_validation"]["fraction"] == 0.15
+    assert config["inner_validation"]["metric"] == "average_precision"
+    assert config["inner_validation"]["patience"] == 15
+    assert config["inner_validation"]["max_epochs"] == 100
+    assert config["inner_validation"]["refit_outer_train"] is True
+
+
+def test_ft_transformer_candidate_registry_integrity():
+    """Verify FT01-FT08 candidate IDs, order, architectural guards, and weighting."""
+    config = load_model_config("ft_transformer", strict_schema=True)
+    candidates = config["candidates"]
+    assert len(candidates) == 8, f"Expected exactly 8 candidates, got {len(candidates)}"
+
+    expected_ids = [f"FT{i:02d}" for i in range(1, 9)]
+    actual_ids = [c["id"] for c in candidates]
+    assert actual_ids == expected_ids, f"Candidate IDs mismatch: {actual_ids} != {expected_ids}"
+    assert len(set(actual_ids)) == len(actual_ids), "Candidate IDs must be strictly unique"
+
+    valid_weighting = {"none", "dynamic_ratio"}
+
+    for c in candidates:
+        cid = c["id"]
+        params = c["params"]
+
+        # Architectural bounds
+        assert params["n_blocks"] in {2, 3}, f"{cid} has invalid n_blocks: {params['n_blocks']}"
+        assert params["d_block"] in {64, 128, 192}, f"{cid} has invalid d_block: {params['d_block']}"
+        assert params["attention_n_heads"] in {4, 8}, f"{cid} has invalid attention_n_heads: {params['attention_n_heads']}"
+
+        # Divisibility guard
+        assert params["d_block"] % params["attention_n_heads"] == 0, (
+            f"{cid}: d_block ({params['d_block']}) must be divisible by attention_n_heads ({params['attention_n_heads']})"
+        )
+
+        # Weighting strategy
+        assert params["weighting"] in valid_weighting, (
+            f"{cid} has invalid weighting: {params['weighting']}"
+        )
+
+        # Candidate resolution via existing central API
+        resolved = resolve_candidate(config, candidate_id=cid)
+        assert resolved["candidate_id"] == cid
+        assert resolved["params"]["n_blocks"] == params["n_blocks"]
+        assert resolved["params"]["d_block"] == params["d_block"]
+        assert resolved["params"]["attention_n_heads"] == params["attention_n_heads"]
+        assert resolved["params"]["weighting"] == params["weighting"]
+        assert resolved["params"]["batch_size"] == 512
+        assert resolved["params"]["weight_decay"] == 1e-5
+        assert resolved["params"]["attention_dropout"] == 0.1
+        assert resolved["params"]["residual_dropout"] == 0.0
