@@ -2,8 +2,8 @@
 title: "Design and Evaluation of Machine Learning Models for Employee Resignation Risk and Resource-Constrained Retention Prioritization"
 subtitle: "Canonical project specification, live state, and AI handoff memory"
 author: "IT2011 Project Group"
-date: "2026-09-11"
-version: "4.6.1"
+date: "2026-09-12"
+version: "4.6.2"
 ---
 
 # AI entry point - read this first
@@ -12,8 +12,8 @@ This project context is intentionally maintained as one canonical Markdown file 
 
 ```yaml
 ai_handoff_entry:
-  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_6_1.md
-  canonical_status: Markdown v4.6.1 is ACTIVE and CANONICAL. It is the sole persistent project-context artifact.
+  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md
+  canonical_status: Markdown v4.6.2 is ACTIVE and CANONICAL. It is the sole persistent project-context artifact.
   canonical_rule: Read this Markdown file as the authoritative single source of truth for persistent project context.
   conflict_rule: If repository code, results, or secondary documentation conflict with this file, apply the authority hierarchy, report the mismatch, and update this canonical file only through the logged decision/update protocol.
   repository_url: https://github.com/Sankalpa-KMCP/Employee_Resignation_Prediction
@@ -46,7 +46,7 @@ ai_handoff_entry:
     data_dependent_work: Also require the exact assigned CSV and checksum verification.
     implementation_work: Use the canonical GitHub repository and inspect the relevant current files before making code-dependent claims.
     generated_outputs: Experiment outputs are repository artefacts created during implementation; they are not missing context inputs and must never be invented.
-  current_methodology_change: The strict nested model-selection methodology introduced and user-approved in v4.5.0 remains active in v4.6.1 for final headline-model evaluation. For every outer fold, all hyperparameter selection, class/loss-weight selection, preprocessing design, and early stopping must use only that outer fold's training partition. The outer-validation fold remains untouched until the fold-specific configuration is selected. The six headline models remain FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet. Dummy baselines remain mandatory; Logistic Regression remains required only for the PCA demonstration benchmark and otherwise optional.
+  current_methodology_change: The strict nested model-selection methodology introduced and user-approved in v4.5.0 remains active in v4.6.2 for final headline-model evaluation. For every outer fold, all hyperparameter selection, class/loss-weight selection, preprocessing design, and early stopping must use only that outer fold's training partition. The outer-validation fold remains untouched until the fold-specific configuration is selected. The six headline models remain FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet. Dummy baselines remain mandatory; Logistic Regression remains required only for the PCA demonstration benchmark and otherwise optional.
 ```
 
 **Fast operational summary:** Build and compare six required advanced models under the same locked development/holdout rows and five outer stratified folds: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, and TabNet. Each member owns one model. Use model-specific, fold-fitted preprocessing; never force all six models onto one transformed matrix. Conduct mandatory PCA (Principal Component Analysis) dimensionality-reduction analysis on the 13 approved numerical predictors with scree/variance plots, component loadings inspection, and a required PCA demonstration benchmark using Logistic Regression (comparing StandardScaler -> LogisticRegression vs StandardScaler -> PCA(>=95% variance) -> LogisticRegression). Broader standalone Logistic Regression exploration remains optional; Logistic Regression is not a seventh headline model. Headline tree/additive/deep models retain their approved non-PCA representations. Retain two DummyClassifier strategies as mandatory no-skill references. Select by development evidence, not model reputation or complexity. Assess calibration before using probabilities in the retention-prioritization score. Do not claim real employee worth, causal resignation drivers, intervention success, a real monetary budget, operational readiness, legal fairness, or suitability for actual employment decisions.
@@ -222,10 +222,10 @@ This acknowledgement is a parsing check, not a request for the user to repeat de
 ```yaml
 document_control:
   context_schema_version: '4.6'
-  project_context_version: 4.6.1
-  context_release_id: ERPC-20260911-V4.6.1
-  generated_at: 2026-09-11 Asia/Colombo
-  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_6_1.md
+  project_context_version: 4.6.2
+  context_release_id: ERPC-20260912-V4.6.2
+  generated_at: 2026-09-12 Asia/Colombo
+  canonical_file: Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md
   substantive_content_rule: This Markdown file is the sole canonical persistent project-context artifact.
   stable_context_sections:
   - '0'
@@ -339,14 +339,13 @@ live_state:
   - XGBoost development 5-fold result artifacts generated using the current fixed configuration
   - TabNet eight-candidate development evaluation completed and T01 selected with seed-sensitivity evidence
   - EBM development results exist upstream on origin/main and require local integration/verification before canonical local completion
-  - automated test suite expanded to 150 tests across 13 modules
+  - automated test suite expanded to 186 tests across 14 modules (186/186 passing)
   - single-file Markdown canonical-context policy adopted; prior mirrored-context workflow retired
   active_next_actions:
-  - update the obsolete PCA scaffold-integrity test and rerun the full suite before claiming fully green tests
-  - harmonize CatBoost, XGBoost, LightGBM, EBM, and FT-Transformer configs with the approved bounded nested-selection protocol and remove unresolved TODO search-space markers
+  - harmonize XGBoost, LightGBM, EBM, and FT-Transformer configs with the approved bounded nested-selection protocol (CatBoost v2 harmonized)
   - decide implementation placement for tree-model inner validation/early stopping without changing the methodological requirement
   - perform methodology-complete nested evaluation for FT-Transformer, XGBoost, and TabNet before treating their current CV scores as final unbiased headline estimates
-  - complete CatBoost and LightGBM formal nested evaluations
+  - complete LightGBM formal nested evaluation (CatBoost formal development evaluation is complete)
   - integrate and verify EBM upstream results, then rerun under the final protocol if required
   - execute model comparison, calibration, fairness analysis, and retention prioritization only after development-model evidence is protocol-complete
   blockers:
@@ -1238,7 +1237,7 @@ deliverables:
 - name: Viva preparation and participation
   format: oral review
   status: VERIFIED requirement
-- name: Employee_Resignation_Prediction_AI_Project_Context_v4_6_1.md
+- name: Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md
   format: Markdown
   status: canonical project context
 fixed_decisions:
@@ -1366,7 +1365,7 @@ update_rules:
 
 **Critical limitation:** Preliminary audit-only evidence suggests the target may contain little predictive signal. Six complex models cannot create absent information. A rigorous no-signal result remains valid and must prevent operational claims.
 
-**Current phase:** Harmonize the implemented model adapters/configs with the approved strict nested evaluation protocol, complete protocol-compliant headline-model evidence, then proceed to model comparison, calibration, fairness, and prioritization. PCA results are generated; FT-Transformer, XGBoost, and TabNet have current development results; CatBoost and LightGBM remain pending formal evaluation; EBM results exist upstream and require local integration/verification.
+**Current phase:** Harmonize the implemented model adapters/configs with the approved strict nested evaluation protocol, complete protocol-compliant headline-model evidence, then proceed to model comparison, calibration, fairness, and prioritization. PCA results are generated; FT-Transformer, XGBoost, and TabNet have current development results; CatBoost formal strict-nested development evaluation is complete; LightGBM remains pending formal evaluation; EBM results exist upstream and require local integration/verification.
 
 ## 2.2 Critical terminology
 
@@ -1412,14 +1411,14 @@ update_rules:
 
 ## 3.1 Current milestone
 
-**LIVE RECORD - 2026-09-11:** The canonical 100,000-row dataset, frozen 80/20 split, five fixed 16,000-row development folds, EDA, Dummy baselines, Logistic/PCA benchmark artifacts, shared metric/OOF utilities, and all model adapters are present. The current test suite contains 150 tests across 13 modules; the latest verified run is **149 passed, 1 failed**, with the remaining failure caused by an obsolete PCA scaffold-integrity assertion.
+**LIVE RECORD - 2026-09-12:** The canonical 100,000-row dataset, frozen 80/20 split, five fixed 16,000-row development folds, EDA, Dummy baselines, Logistic/PCA benchmark artifacts, shared metric/OOF utilities, and all model adapters are present. The current test suite contains 186 tests across 14 modules; the latest verified run is **186 passed (100% passing)** after hardening the PCA notebook integrity assertions.
 
 Current model evidence is mixed by maturity:
 
 - FT-Transformer: current five-fold development result artifacts exist; protocol-complete strict nested reevaluation is still required before calling the pooled score the final unbiased headline estimate.
 - XGBoost: current five-fold fixed-configuration development result artifacts exist; methodology-complete tuning/weighting/early-stopping alignment remains pending.
 - TabNet: eight declared candidates were evaluated and T01 selected; strict nested final evaluation remains required for an unbiased selected-model headline estimate.
-- CatBoost: adapter/config/scaffold exist; formal nested evaluation pending.
+- CatBoost: formal strict-nested 5-fold development evaluation complete; 80,000 development OOF predictions generated; performance is essentially at chance / no-signal baseline (pooled AP 0.099350).
 - LightGBM: adapter/config/scaffold exist; formal nested evaluation pending.
 - EBM: adapter/config exist; executed results are available upstream on `origin/main` and require local integration/verification before canonical completion.
 - Notebooks 11-14 remain scaffolds. Notebook 15 remains locked.
@@ -1430,15 +1429,14 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 
 ## 3.2 Immediate objectives
 
-1. Maintain this canonical Markdown context as v4.6.1 and keep secondary summaries such as README.md and EVALUATION_GUIDE.md aligned with verified live state.
-2. Update the obsolete PCA scaffold-integrity test, rerun `python -m pytest`, and do not claim a fully green suite until all tests pass.
-3. Finalize bounded model configurations for CatBoost, XGBoost, LightGBM, EBM, and FT-Transformer; remove unresolved TODO search-space markers only after the final nested protocol is represented exactly.
-4. Implement or orchestrate inner validation/inner tuning for CatBoost, XGBoost, and LightGBM without allowing any outer-validation fold to control training or selection.
-5. Re-evaluate FT-Transformer, XGBoost, and TabNet under strict nested selection where required so final OOF estimates are independent of model-selection decisions.
-6. Integrate and verify the upstream EBM work, then determine whether rerun is required under the final protocol.
-7. Complete CatBoost and LightGBM nested five-fold evaluations.
-8. Only after all six headline models have protocol-complete OOF evidence, execute model comparison, calibration, fairness, and retention-prioritization workflows (`11` through `14`).
-9. Keep Notebook 15 locked until model, preprocessing, calibration, threshold, proxy, capacity, and strategy choices are frozen.
+1. Maintain this canonical Markdown context as v4.6.2 and keep secondary summaries such as README.md and EVALUATION_GUIDE.md aligned with verified live state.
+2. Finalize bounded model configurations for XGBoost, LightGBM, EBM, and FT-Transformer; remove unresolved TODO search-space markers only after the final nested protocol is represented exactly (CatBoost v2 schema and C01-C08 registry finalized).
+3. Implement or orchestrate inner validation/inner tuning for XGBoost and LightGBM without allowing any outer-validation fold to control training or selection.
+4. Re-evaluate FT-Transformer, XGBoost, and TabNet under strict nested selection where required so final OOF estimates are independent of model-selection decisions.
+5. Integrate and verify the upstream EBM work, then determine whether rerun is required under the final protocol.
+6. Complete LightGBM nested five-fold evaluation (CatBoost formal development evaluation complete).
+7. Only after all six headline models have protocol-complete OOF evidence, execute model comparison, calibration, fairness, and retention-prioritization workflows (`11` through `14`).
+8. Keep Notebook 15 locked until model, preprocessing, calibration, threshold, proxy, capacity, and strategy choices are frozen.
 
 ## 3.3 Completed work
 
@@ -1458,10 +1456,9 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 ## 3.4 Work that may proceed now
 
 - synchronize and commit the verified documentation updates when ready;
-- fix the obsolete PCA scaffold-integrity test and rerun the full suite;
 - finalize bounded search spaces and implementation alignment for the strict nested protocol;
-- implement/orchestrate inner tuning and early stopping for CatBoost, XGBoost, and LightGBM without using outer-validation rows;
-- complete CatBoost and LightGBM formal nested evaluations;
+- implement/orchestrate inner tuning and early stopping for XGBoost and LightGBM without using outer-validation rows;
+- complete LightGBM formal nested evaluation (CatBoost development evaluation is complete);
 - integrate and verify the upstream EBM work;
 - rerun FT-Transformer, XGBoost, and TabNet where needed to obtain final nested OOF estimates;
 - prepare Notebook 11 model-comparison inputs only after all six headline models have protocol-complete OOF evidence.
@@ -1502,21 +1499,20 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 
 ## 3.8 Next concrete actions
 
-1. Update the obsolete PCA scaffold-integrity test and rerun `.venv\Scripts\python.exe -m pytest`; record the exact result.
-2. Finalize CatBoost, XGBoost, LightGBM, EBM, and FT-Transformer candidate spaces so configs match the approved bounded nested-selection protocol.
-3. Add or orchestrate training-only inner validation/tuning for tree models without changing the outer folds.
-4. Complete CatBoost and LightGBM nested evaluations.
-5. Integrate and verify the EBM work from `origin/main`; rerun under the final protocol if its current result is not nested-selection independent.
-6. Re-evaluate FT-Transformer, XGBoost, and TabNet under the strict nested protocol where required.
-7. Validate complete six-model OOF row parity and then execute Notebook 11.
-8. Execute calibration, fairness, and prioritization only after Notebook 11 selects the development probability source.
-9. Keep Notebook 15 locked until the complete development pipeline is frozen.
+1. Finalize XGBoost, LightGBM, EBM, and FT-Transformer candidate spaces so configs match the approved bounded nested-selection protocol.
+2. Add or orchestrate training-only inner validation/tuning for remaining tree models (XGBoost and LightGBM) without changing the outer folds.
+3. Complete LightGBM nested evaluation (CatBoost development evaluation is complete).
+4. Integrate and verify the EBM work from `origin/main`; rerun under the final protocol if its current result is not nested-selection independent.
+5. Re-evaluate FT-Transformer, XGBoost, and TabNet under the strict nested protocol where required.
+6. Validate complete six-model OOF row parity and then execute Notebook 11.
+7. Execute calibration, fairness, and prioritization only after Notebook 11 selects the development probability source.
+8. Keep Notebook 15 locked until the complete development pipeline is frozen.
 
 # 4. Task router for AI assistants
 
 | Future request | Must read | Must verify | May generate | Must not invent |
 | --- | --- | --- | --- | --- |
-| Understand the project | Sections 0-3 and 8.1-8.10 | v4.6.1, six-model registry, individual ownership, current status | concise status-aware summary | new objectives or results |
+| Understand the project | Sections 0-3 and 8.1-8.10 | v4.6.2, six-model registry, individual ownership, current status | concise status-aware summary | new objectives or results |
 | Inspect data | Sections 5, 8.10-8.15, 8.18-8.19 | exact CSV checksum, shape, schema | audit code/tables/EDA plan | units or provenance |
 | Create shared split/folds | Sections 8.16-8.19 | seed 42, stratification, row IDs, holdout lock | split/fold registry and tests | alternate private member splits |
 | Generate FT-Transformer code | Sections 8.18-8.23 | fold-local scaler/vocabularies, inner validation, device | M1 pipeline/training/checkpoint code | holdout early stopping or attention-as-causality |
@@ -1538,7 +1534,7 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 
 | ID | Canonical filename or path | Required for | Integrity rule | Status |
 | --- | --- | --- | --- | --- |
-| CTX-MD | `Employee_Resignation_Prediction_AI_Project_Context_v4_6_1.md` | All project-dependent work | Canonical; version/date must match. | VERIFIED generated |
+| CTX-MD | `Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md` | All project-dependent work | Canonical; version/date must match. | VERIFIED generated |
 | SRC-001 | `Group Assignment Specification.pdf` or Section 9.2 extract | Requirements and marks | Original PDF remains authoritative; checksum recorded. | VERIFIED |
 | SRC-002 | `Proposal Presentation.pdf` or Section 9.3 extract | Proposal requirements | Original PDF remains authoritative; checksum recorded. | VERIFIED |
 | SRC-003 | `archive.zip` | Original assigned archive | Verify recorded SHA-256. | VERIFIED |
@@ -1571,7 +1567,7 @@ Employee_Resignation_Prediction/
 │   ├── split_config.yaml
 │   ├── feature_contract.yaml
 │   └── models/
-│       ├── catboost.yaml                 # preliminary; TODO remains
+│       ├── catboost.yaml                 # schema v2.0.0; frozen C01-C08 candidate registry
 │       ├── ebm.yaml                      # preliminary; TODO remains
 │       ├── ft_transformer.yaml           # preliminary; TODO remains
 │       ├── lightgbm.yaml                 # preliminary; TODO remains
@@ -1622,7 +1618,7 @@ Employee_Resignation_Prediction/
 │       ├── __init__.py                  # placeholder
 │       ├── ranking.py                    # placeholder
 │       └── value_proxy.py                # placeholder
-├── tests/                                # 13 modules; 150 collected tests as of 2026-09-11
+├── tests/                                # 14 modules; 186 collected tests as of 2026-09-12 (186/186 passing)
 ├── models/                               # reserved model artifacts; no final frozen model family set yet
 ├── results/
 │   ├── audit/
@@ -1631,7 +1627,7 @@ Employee_Resignation_Prediction/
 │   ├── pca/
 │   ├── models/
 │   │   ├── ft_transformer/              # populated current development evidence
-│   │   ├── catboost/                    # formal results pending
+│   │   ├── catboost/                    # populated formal development nested results
 │   │   ├── xgboost/                     # populated current development evidence
 │   │   ├── lightgbm/                    # formal results pending
 │   │   ├── ebm/                         # local development results pending; upstream development results exist
@@ -1645,7 +1641,7 @@ Employee_Resignation_Prediction/
 ├── presentations/
 └── docs/
     └── context/
-        └── Employee_Resignation_Prediction_AI_Project_Context_v4_6_1.md
+        └── Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md
 ```
 
 The tree deliberately distinguishes implemented modules, placeholders, development evidence, and final frozen artefacts. File existence alone is not evidence that the corresponding workflow has been executed.
@@ -1748,7 +1744,7 @@ Record decision ID, date, previous value, new value, rationale, authority, affec
 
 ## 7.4 Reusable handoff instruction
 
-> Read `Employee_Resignation_Prediction_AI_Project_Context_v4_6_1.md` first and treat it as the sole persistent canonical project-context file. The six required advanced models are individually owned: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet. DummyClassifier baselines are mandatory; Logistic Regression is required for the PCA demonstration benchmark and otherwise optional. All headline models must use identical saved development/holdout rows and outer folds but model-specific fold-local representations. Final headline-model evaluation uses strict nested outer-CV/inner-selection; all tuning, weighting, preprocessing choices, and early stopping stay inside the corresponding outer-training partition. Lock the formal holdout against all preprocessing design, tuning, early stopping, calibration choice, threshold choice, proxy/capacity/strategy choice, and model selection. Verify the exact CSV checksum before data work, inspect current repository files before code-dependent claims, never invent results, and update live state, AI-use records, decisions, and version metadata after material changes.
+> Read `Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md` first and treat it as the sole persistent canonical project-context file. The six required advanced models are individually owned: M1 FT-Transformer, M2 CatBoost, M3 XGBoost, M4 LightGBM, M5 EBM, M6 TabNet. DummyClassifier baselines are mandatory; Logistic Regression is required for the PCA demonstration benchmark and otherwise optional. All headline models must use identical saved development/holdout rows and outer folds but model-specific fold-local representations. Final headline-model evaluation uses strict nested outer-CV/inner-selection; all tuning, weighting, preprocessing choices, and early stopping stay inside the corresponding outer-training partition. Lock the formal holdout against all preprocessing design, tuning, early stopping, calibration choice, threshold choice, proxy/capacity/strategy choice, and model selection. Verify the exact CSV checksum before data work, inspect current repository files before code-dependent claims, never invent results, and update live state, AI-use records, decisions, and version metadata after material changes.
 
 # 8. Full canonical project specification
 
@@ -1756,9 +1752,9 @@ Record decision ID, date, previous value, new value, rationale, authority, affec
 
 | Field | Value | Status |
 | --- | --- | --- |
-| Context version | 4.6.1 | ACTIVE |
-| Date | 2026-09-11 | VERIFIED |
-| Canonical file | `Employee_Resignation_Prediction_AI_Project_Context_v4_6_1.md` | DECIDED |
+| Context version | 4.6.2 | ACTIVE |
+| Date | 2026-09-12 | VERIFIED |
+| Canonical file | `Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md` | DECIDED |
 | Canonical repository | `https://github.com/Sankalpa-KMCP/Employee_Resignation_Prediction` | DECIDED |
 | Current phase | Nested-protocol harmonization and remaining headline-model completion | LIVE RECORD |
 | Required advanced models | FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet | DECIDED |
@@ -2736,11 +2732,11 @@ Use milestone dependencies rather than exact administrative dates.
 | Shared split/fold registry | COMPLETED / VERIFIED (`data/processed/split_registry.csv`) |
 | Development-only EDA | COMPLETED (`03_eda.ipynb` with canonical outputs) |
 | PCA dimensionality-reduction analysis | RESULTS GENERATED — FINAL VERIFICATION PENDING (`23/24` code cells executed; four CSV artifacts saved) |
-| Automated unit test suite | 150 COLLECTED / 149 PASSED / 1 FAILED; remaining failure is obsolete PCA scaffold-integrity expectation |
+| Automated unit test suite | 186 COLLECTED / 186 PASSED (100% passing) |
 | Model adapters | IMPLEMENTED for all six headline models plus Logistic benchmark |
-| Model candidate configurations | MIXED: TabNet discrete candidate protocol complete; FT/CatBoost/XGBoost/LightGBM/EBM configs still contain TODOs or require methodology alignment |
+| Model candidate configurations | MIXED: TabNet and CatBoost candidate protocols complete; FT/XGBoost/LightGBM/EBM configs require methodology alignment |
 | FT-Transformer | Current 5-fold development results saved; final nested-protocol headline reevaluation required |
-| CatBoost | Adapter/config/scaffold present; formal nested evaluation pending |
+| CatBoost | COMPLETED FORMAL DEVELOPMENT EVALUATION; strict nested 5-fold CV (pooled AP 0.099350; chance baseline) |
 | XGBoost | Current fixed-configuration 5-fold development results saved; final nested tuning/weighting alignment pending |
 | LightGBM | Adapter/config/scaffold present; formal nested evaluation pending |
 | EBM | Adapter/config present; executed development results available upstream on `origin/main`; local integration/verification pending; final nested-protocol status still to be verified |
@@ -2769,7 +2765,7 @@ Use milestone dependencies rather than exact administrative dates.
 | Logistic (no PCA) | Shared | 0.100270 pooled AP | | saved development benchmark | 0.499881 pooled | | required PCA comparison reference | | 0 |
 | Logistic + PCA (>=95% variance) | Shared | 0.099721 pooled AP | | saved development PCA benchmark | 0.499724 pooled | | required PCA demonstration benchmark | | 0 |
 | FT-Transformer | M1 | 0.099696 current CV mean; 0.099979 pooled AP | 0.002237 | current pre-v4.5 development run | 0.497570 CV mean; 0.497254 pooled | 0.247413 pooled | current run only; final nested reevaluation required | | 0 reported |
-| CatBoost | M2 | TO BE GENERATED | | | | | | | |
+| CatBoost | M2 | 0.100956 CV mean; 0.099350 pooled AP | 0.003008 | completed formal strict-nested development run | 0.501267 CV mean; 0.500193 pooled | 0.211764 pooled | 0.098728 precision, 0.253871 recall, 0.142168 F1 @ 0.50 | ~368s (~6.1 min) | 0 reported |
 | XGBoost | M3 | 0.103245 current CV mean; 0.102628 pooled AP | 0.003592 | current fixed-configuration development run | 0.506130 pooled | | 0.50 currently reported; final nested protocol pending | | 0 reported |
 | LightGBM | M4 | TO BE GENERATED | | | | | | | |
 | EBM | M5 | UPSTREAM RESULT EXISTS — LOCAL VERIFICATION REQUIRED | | | | | | | |
@@ -2954,7 +2950,8 @@ Future records must include actual tool/version if known, precise tasks, extent,
 | 4.5.1 | 2026-09-11 | Corrected canonical-status/version drift and prior mirrored-format filename references, Logistic/PCA benchmark wording, malformed holdout language, PCA artifact naming, EBM result-status wording, results-table completeness, and reference numbering; preserved the v4.5.0 nested methodology unchanged. | Produce a consistent patch release without changing approved methodology or verified project state. | SUPERSEDED |
 | 4.5.2 | 2026-09-11 | Final consistency patch: corrected residual active-version drift, completed Logistic/PCA wording synchronization, clarified single-file canonical-context handling, corrected stable/live section mapping, removed an XGBoost scaling inconsistency, completed the EDA subsection, expanded active source references, clarified architecture-versus-implementation status, and improved the current-results table semantics. | Eliminate remaining cross-section ambiguity without changing the approved v4.5.0 strict nested methodology or verified repository state. | SUPERSEDED |
 | 4.6.0 | 2026-09-11 | Retired the former mirrored-context workflow and established one canonical Markdown context file only; removed all active secondary-format dependencies, updated handoff/update rules, added SRC-016 and Q-052, and revalidated the complete context without changing the approved strict nested ML methodology. | Simplify the persistent handoff, eliminate synchronization risk, and match the user-approved single-file project-context policy. | SUPERSEDED |
-| 4.6.1 | 2026-09-11 | Final single-file-policy consistency patch: removed the last historical actionable wording that instructed maintenance of multiple context files, clarified legacy AI-use records as retired workflow history, tightened current maintenance wording, and reran full structural/YAML/stale-reference validation. | Prevent future assistants from reconstructing the retired secondary persistent context while preserving historical audit meaning and leaving the approved ML methodology unchanged. | ACTIVE |
+| 4.6.1 | 2026-09-11 | Final single-file-policy consistency patch: removed the last historical actionable wording that instructed maintenance of multiple context files, clarified legacy AI-use records as retired workflow history, tightened current maintenance wording, and reran full structural/YAML/stale-reference validation. | Prevent future assistants from reconstructing the retired secondary persistent context while preserving historical audit meaning and leaving the approved ML methodology unchanged. | SUPERSEDED |
+| 4.6.2 | 2026-09-12 | Canonical context patch: synchronized completed formal CatBoost strict-nested 5-fold development evaluation (pooled AP 0.099350; chance baseline); synchronized automated test suite to 186/186 passing across 14 modules; purged completed PCA test action items from active queues; preserved approved strict nested ML methodology, candidate schemas, and baseline rules unchanged. | Synchronize canonical project context with verified Step 2C repository evidence, maintain zero stale active items, and uphold Section 7.1 semantic-versioning maintenance rules without altering methodology or assignment scope. | ACTIVE |
 
 ## 8.37 Remaining identity and ownership inputs
 
