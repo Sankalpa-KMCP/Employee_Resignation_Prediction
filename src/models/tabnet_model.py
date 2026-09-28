@@ -52,6 +52,13 @@ def validate_tabnet_config(config: Mapping[str, Any]) -> None:
         raise ValueError("TabNet feature names must be unique across all 17 predictors.")
 
     training = config["training"]
+    fixed_params = config.get("fixed_params", {})
+    training_cat_emb_dim = int(training.get("cat_emb_dim", -1))
+    fixed_cat_emb_dim = int(fixed_params.get("cat_emb_dim", -1))
+    if training_cat_emb_dim != fixed_cat_emb_dim:
+        raise ValueError("TabNet fixed_params and training cat_emb_dim values must agree.")
+    if training_cat_emb_dim != 1:
+        raise ValueError("TabNet cat_emb_dim must equal the canonical value 1.")
     fraction = float(training.get("inner_validation_fraction", 0.0))
     if not 0.0 < fraction < 0.5:
         raise ValueError("inner_validation_fraction must be greater than 0 and less than 0.5.")
@@ -203,11 +210,17 @@ class TabNetAdapter:
         candidate_id: str = "T01",
         max_epochs_override: int | None = None,
         patience_override: int | None = None,
+        outer_fold: int | None = None,
     ) -> None:
         self.config = dict(config) if config is not None else load_tabnet_config()
         validate_tabnet_config(self.config)
+        self.requested_candidate_id = candidate_id
+        self.selection_mode = "auto" if candidate_id in {"auto", "tune"} else "fixed"
         self.candidate_id = candidate_id
-        self.candidate = self._find_candidate(candidate_id)
+        self.candidate = (
+            None if self.selection_mode == "auto" else self._find_candidate(candidate_id)
+        )
+        self.outer_fold = outer_fold
         training = self.config["training"]
         self.max_epochs = int(
             training["max_epochs"] if max_epochs_override is None else max_epochs_override
@@ -227,6 +240,9 @@ class TabNetAdapter:
         self.preprocessor: TabNetPreprocessor | None = None
         self.model: Any = None
         self.selected_epoch: int | None = None
+        self.best_inner_ap: float | None = None
+        self.candidate_selection_records: list[dict[str, Any]] = []
+        self.training_histories: dict[str, dict[str, list[float]]] = {}
         self.selection_history: dict[str, Any] = {}
         self.fit_summary: dict[str, Any] = {}
         self._fitted = False
@@ -244,21 +260,27 @@ class TabNetAdapter:
             numerical_features=self.numerical_features.copy(),
         )
 
-    def _build_model(self, preprocessor: TabNetPreprocessor) -> Any:
+    def _build_model(
+        self,
+        preprocessor: TabNetPreprocessor,
+        candidate: Mapping[str, Any] | None = None,
+    ) -> Any:
         torch, _, classifier = _tabnet_dependencies()
         training = self.config["training"]
-        candidate = self.candidate
+        resolved_candidate = candidate if candidate is not None else self.candidate
+        if resolved_candidate is None:
+            raise RuntimeError("A concrete TabNet candidate is required to build the model.")
         return classifier(
-            n_d=int(candidate["n_d"]),
-            n_a=int(candidate["n_a"]),
-            n_steps=int(candidate["n_steps"]),
-            gamma=float(candidate["gamma"]),
-            lambda_sparse=float(candidate["lambda_sparse"]),
+            n_d=int(resolved_candidate["n_d"]),
+            n_a=int(resolved_candidate["n_a"]),
+            n_steps=int(resolved_candidate["n_steps"]),
+            gamma=float(resolved_candidate["gamma"]),
+            lambda_sparse=float(resolved_candidate["lambda_sparse"]),
             cat_idxs=preprocessor.cat_idxs,
             cat_dims=preprocessor.cat_dims,
             cat_emb_dim=int(training["cat_emb_dim"]),
             optimizer_fn=torch.optim.Adam,
-            optimizer_params={"lr": float(candidate["learning_rate"])},
+            optimizer_params={"lr": float(resolved_candidate["learning_rate"])},
             mask_type=str(training["mask_type"]),
             seed=int(training["random_seed"]),
             device_name=str(training["device_name"]),
@@ -266,7 +288,7 @@ class TabNetAdapter:
         )
 
     def fit(self, X: pd.DataFrame, y: pd.Series | np.ndarray) -> TabNetAdapter:
-        """Select an epoch internally, then refit on all outer-training rows."""
+        """Select a candidate and epoch internally, then refit outer-training rows."""
         self._validate_training_input(X, y)
         y_array = np.asarray(y, dtype=np.int64).reshape(-1)
         training = self.config["training"]
@@ -279,51 +301,109 @@ class TabNetAdapter:
         )
 
         started = time.perf_counter()
-        selection_preprocessor = self._new_preprocessor()
-        X_inner_train = selection_preprocessor.fit_transform(X.iloc[inner_train_idx])
-        X_inner_valid = selection_preprocessor.transform(X.iloc[inner_valid_idx])
         _, metric_base, _ = _tabnet_dependencies()
         metric = _average_precision_metric(metric_base)
-        selection_model = self._build_model(selection_preprocessor)
-        fit_kwargs = self._fit_kwargs()
-        selection_model.fit(
-            X_inner_train,
-            y_array[inner_train_idx],
-            eval_set=[(X_inner_valid, y_array[inner_valid_idx])],
-            eval_name=["inner_valid"],
-            eval_metric=[metric],
-            max_epochs=self.max_epochs,
-            patience=self.patience,
-            **fit_kwargs,
+        candidate_pool = (
+            [dict(candidate) for candidate in self.config["candidates"]]
+            if self.selection_mode == "auto"
+            else [dict(self.candidate or {})]
         )
+        self.candidate_selection_records = []
+        self.training_histories = {}
 
-        best_epoch_zero_based = int(
-            getattr(selection_model, "best_epoch", self.max_epochs - 1)
-        )
-        self.selected_epoch = max(1, min(best_epoch_zero_based + 1, self.max_epochs))
-        history_object = getattr(selection_model, "history", {})
-        history_data = getattr(history_object, "history", history_object)
-        try:
-            self.selection_history = {
-                key: [float(value) for value in values]
-                for key, values in dict(history_data).items()
+        for candidate in candidate_pool:
+            candidate_id = str(candidate["id"])
+            candidate_started = time.perf_counter()
+            record: dict[str, Any] = {
+                "candidate_id": candidate_id,
+                "candidate_parameters": dict(candidate),
+                "seed": int(training["random_seed"]),
+                "class_balance": bool(candidate["class_balance"]),
+                "success": False,
             }
-        except (TypeError, ValueError):
-            self.selection_history = {}
+            try:
+                selection_preprocessor = self._new_preprocessor()
+                X_inner_train = selection_preprocessor.fit_transform(X.iloc[inner_train_idx])
+                X_inner_valid = selection_preprocessor.transform(X.iloc[inner_valid_idx])
+                selection_model = self._build_model(selection_preprocessor, candidate)
+                selection_model.fit(
+                    X_inner_train,
+                    y_array[inner_train_idx],
+                    eval_set=[(X_inner_valid, y_array[inner_valid_idx])],
+                    eval_name=["inner_valid"],
+                    eval_metric=[metric],
+                    max_epochs=self.max_epochs,
+                    patience=self.patience,
+                    **self._fit_kwargs(candidate),
+                )
+
+                best_epoch_zero_based = int(
+                    getattr(selection_model, "best_epoch", self.max_epochs - 1)
+                )
+                selected_epoch = max(
+                    1, min(best_epoch_zero_based + 1, self.max_epochs)
+                )
+                history = self._normalise_history(selection_model)
+                inner_ap = self._extract_best_inner_ap(selection_model, history)
+                self.training_histories[candidate_id] = history
+                record.update(
+                    {
+                        "success": True,
+                        "inner_average_precision": inner_ap,
+                        "best_epoch": best_epoch_zero_based,
+                        "selected_epoch": selected_epoch,
+                    }
+                )
+            except Exception as exc:  # Preserve failed candidate evidence and continue.
+                self.training_histories[candidate_id] = {}
+                record.update(
+                    {
+                        "error_type": type(exc).__name__,
+                        "error_message": str(exc),
+                    }
+                )
+            record["runtime_seconds"] = float(time.perf_counter() - candidate_started)
+            self.candidate_selection_records.append(record)
+
+        successful_records = [
+            record for record in self.candidate_selection_records if record["success"]
+        ]
+        if not successful_records:
+            failures = "; ".join(
+                f"{record['candidate_id']}: {record.get('error_message', 'unknown error')}"
+                for record in self.candidate_selection_records
+            )
+            raise RuntimeError(f"All TabNet candidate fits failed. {failures}")
+
+        winner = min(
+            successful_records,
+            key=lambda record: (
+                -float(record["inner_average_precision"]),
+                str(record["candidate_id"]),
+            ),
+        )
+        self.candidate_id = str(winner["candidate_id"])
+        self.candidate = self._find_candidate(self.candidate_id)
+        self.selected_epoch = int(winner["selected_epoch"])
+        self.best_inner_ap = float(winner["inner_average_precision"])
+        self.selection_history = self.training_histories[self.candidate_id]
 
         # Refit learned preprocessing and model parameters on every outer-training row.
+        refit_started = time.perf_counter()
         self.preprocessor = self._new_preprocessor()
         X_outer_train = self.preprocessor.fit_transform(X.reset_index(drop=True))
-        self.model = self._build_model(self.preprocessor)
+        self.model = self._build_model(self.preprocessor, self.candidate)
         self.model.fit(
             X_outer_train,
             y_array,
             max_epochs=self.selected_epoch,
             patience=0,
-            **fit_kwargs,
+            **self._fit_kwargs(self.candidate),
         )
+        refit_time = float(time.perf_counter() - refit_started)
         self._fitted = True
         self.fit_summary = {
+            "outer_fold": self.outer_fold,
             "outer_training_rows_before": int(len(X)),
             "outer_training_rows_after": int(len(X_outer_train)),
             "inner_training_rows": int(len(inner_train_idx)),
@@ -331,17 +411,57 @@ class TabNetAdapter:
             "positive_rate_outer_training": float(y_array.mean()),
             "positive_rate_inner_training": float(y_array[inner_train_idx].mean()),
             "positive_rate_inner_validation": float(y_array[inner_valid_idx].mean()),
+            "selected_candidate_id": self.candidate_id,
             "selected_epoch": self.selected_epoch,
+            "best_inner_average_precision": self.best_inner_ap,
+            "candidate_count": int(len(candidate_pool)),
+            "candidate_selection_time_seconds": float(refit_started - started),
+            "refit_time_seconds": refit_time,
             "fit_time_seconds": float(time.perf_counter() - started),
         }
         return self
 
-    def _fit_kwargs(self) -> dict[str, Any]:
+    @staticmethod
+    def _normalise_history(model: Any) -> dict[str, list[float]]:
+        history_object = getattr(model, "history", {})
+        history_data = getattr(history_object, "history", history_object)
+        try:
+            return {
+                str(key): [float(value) for value in values]
+                for key, values in dict(history_data).items()
+            }
+        except (TypeError, ValueError):
+            return {}
+
+    @staticmethod
+    def _extract_best_inner_ap(
+        model: Any, history: Mapping[str, list[float]]
+    ) -> float:
+        best_cost = getattr(model, "best_cost", None)
+        if best_cost is not None and np.isfinite(float(best_cost)):
+            return float(best_cost)
+        metric_values = [
+            float(value)
+            for key, values in history.items()
+            if "average_precision" in key.lower()
+            for value in values
+            if np.isfinite(float(value))
+        ]
+        if not metric_values:
+            raise RuntimeError("TabNet did not expose an inner-validation AP score.")
+        return float(max(metric_values))
+
+    def _fit_kwargs(
+        self, candidate: Mapping[str, Any] | None = None
+    ) -> dict[str, Any]:
         training = self.config["training"]
+        resolved_candidate = candidate if candidate is not None else self.candidate
+        if resolved_candidate is None:
+            raise RuntimeError("A concrete TabNet candidate is required for fitting.")
         return {
-            "weights": 1 if self.candidate["class_balance"] else 0,
-            "batch_size": int(self.candidate["batch_size"]),
-            "virtual_batch_size": int(self.candidate["virtual_batch_size"]),
+            "weights": 1 if resolved_candidate["class_balance"] else 0,
+            "batch_size": int(resolved_candidate["batch_size"]),
+            "virtual_batch_size": int(resolved_candidate["virtual_batch_size"]),
             "num_workers": int(training["num_workers"]),
             "drop_last": bool(training["drop_last"]),
             "compute_importance": True,
@@ -367,10 +487,17 @@ class TabNetAdapter:
         saved_model_path = Path(self.model.save_model(str(directory / "tabnet_model")))
         state = {
             "config": self.config,
+            "requested_candidate_id": self.requested_candidate_id,
+            "selection_mode": self.selection_mode,
             "candidate_id": self.candidate_id,
+            "candidate": self.candidate,
+            "outer_fold": self.outer_fold,
             "max_epochs": self.max_epochs,
             "patience": self.patience,
             "selected_epoch": self.selected_epoch,
+            "best_inner_ap": self.best_inner_ap,
+            "candidate_selection_records": self.candidate_selection_records,
+            "training_histories": self.training_histories,
             "selection_history": self.selection_history,
             "fit_summary": self.fit_summary,
             "preprocessor": self.preprocessor,
@@ -394,15 +521,24 @@ class TabNetAdapter:
         state = joblib.load(directory / "adapter_state.joblib")
         adapter = cls(
             config=state["config"],
-            candidate_id=state["candidate_id"],
+            candidate_id=state.get("requested_candidate_id", state["candidate_id"]),
             max_epochs_override=state["max_epochs"],
             patience_override=state["patience"],
+            outer_fold=state.get("outer_fold"),
         )
         _, _, classifier = _tabnet_dependencies()
         adapter.model = classifier()
         adapter.model.load_model(str(directory / state["model_filename"]))
         adapter.preprocessor = state["preprocessor"]
+        adapter.selection_mode = state.get("selection_mode", adapter.selection_mode)
+        adapter.candidate_id = state["candidate_id"]
+        adapter.candidate = state.get("candidate", adapter._find_candidate(adapter.candidate_id))
         adapter.selected_epoch = state["selected_epoch"]
+        adapter.best_inner_ap = state.get("best_inner_ap")
+        adapter.candidate_selection_records = state.get(
+            "candidate_selection_records", []
+        )
+        adapter.training_histories = state.get("training_histories", {})
         adapter.selection_history = state["selection_history"]
         adapter.fit_summary = state["fit_summary"]
         adapter._fitted = True
@@ -424,12 +560,27 @@ class TabNetAdapter:
             "name": self.name,
             "model_name": self.name,
             "model_id": self.model_id,
+            "outer_fold": self.outer_fold,
+            "selection_mode": self.selection_mode,
+            "requested_candidate_id": self.requested_candidate_id,
             "candidate_id": self.candidate_id,
+            "selected_candidate_id": self.candidate_id if self._fitted else None,
             "candidate": self.candidate,
+            "selected_candidate_parameters": self.candidate,
+            "best_inner_average_precision": self.best_inner_ap,
+            "seed": int(self.config["training"]["random_seed"]),
+            "class_balance": (
+                bool(self.candidate["class_balance"])
+                if self.candidate is not None
+                else None
+            ),
             "config_version": self.config["model"]["config_version"],
             "project_context_version": self.config["model"]["project_context_version"],
             "fitted": self._fitted,
             "selected_epoch": self.selected_epoch,
+            "candidate_selection_records": self.candidate_selection_records,
+            "training_histories": self.training_histories,
+            "selection_history": self.selection_history,
             "fit_summary": self.fit_summary,
             "preprocessing": preprocessor_metadata,
         }

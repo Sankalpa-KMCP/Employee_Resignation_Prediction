@@ -1,0 +1,19 @@
+{
+  "predictions_match": true,
+  "maximum_absolute_difference": 0.0,
+  "prediction_count": 1000,
+  "selected_candidate_id": "T01",
+  "selected_epoch": 1,
+  "configuration_version": "2.0.0",
+  "project_context_version": "4.6.2",
+  "cat_emb_dim": 1,
+  "feature_count": 17,
+  "categorical_feature_count": 4,
+  "numerical_feature_count": 13,
+  "smoke_training_rows": 4000,
+  "smoke_validation_rows": 1000,
+  "holdout_overlap": 0,
+  "formal_holdout_used": false,
+  "rtol": 1e-06,
+  "atol": 1e-07
+}

@@ -1,0 +1,13 @@
+artifact,exists,size_bytes
+results\models\tabnet\oof_predictions.csv,True,3140315
+results\models\tabnet\fold_metrics.csv,True,1303
+results\models\tabnet\summary_metrics.json,True,1039
+results\models\tabnet\fold_selection.csv,True,3172
+results\models\tabnet\candidate_selection.csv,True,14974
+results\models\tabnet\runtime_efficiency.csv,True,563
+results\models\tabnet\run_metadata.json,True,1457
+results\models\tabnet\training_histories\fold_01.json,True,14709
+results\models\tabnet\training_histories\fold_02.json,True,12869
+results\models\tabnet\training_histories\fold_03.json,True,17032
+results\models\tabnet\training_histories\fold_04.json,True,12537
+results\models\tabnet\training_histories\fold_05.json,True,15224

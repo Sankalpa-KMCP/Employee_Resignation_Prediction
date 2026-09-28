@@ -10,8 +10,8 @@ model:
   member: "Member 6"
   algorithm_family: "Attentive Interpretable Tabular Deep Learning"
   implementation: "pytorch_tabnet.tab_model.TabNetClassifier"
-  config_version: "1.0.0"
-  project_context_version: "4.4.0"
+  config_version: "2.0.0"
+  project_context_version: "4.6.2"
   feature_contract_version: "1.0.0"
 
 # Compatibility metadata used by the shared six-model configuration tests.
@@ -24,7 +24,7 @@ fixed_params:
   seed: 42
   optimizer_fn: torch.optim.Adam
   mask_type: sparsemax
-  cat_emb_dim: 2
+  cat_emb_dim: 1
 
 validation:
   cv_folds: 5
@@ -91,7 +91,7 @@ training:
   drop_last: false
   device_name: auto
   mask_type: sparsemax
-  cat_emb_dim: 2
+  cat_emb_dim: 1
 
 # This small run validates the complete pipeline before any five-fold run.
 smoke_test:
@@ -100,8 +100,9 @@ smoke_test:
   max_epochs: 3
   patience: 2
 
-# Exactly eight pre-declared candidates. The formal holdout must never be used
-# to select among them. Selection is based on development OOF average precision.
+# Exactly eight pre-declared candidates. During final strict nested evaluation,
+# every outer fold selects among them using only that fold's inner validation
+# data. Outer-validation and formal-holdout results never select a candidate.
 candidates:
   - id: T01
     n_d: 8
