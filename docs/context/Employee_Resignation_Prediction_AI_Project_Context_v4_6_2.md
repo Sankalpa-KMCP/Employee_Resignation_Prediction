@@ -314,8 +314,8 @@ live_state:
   status: active
   current_phase: methodology harmonization and remaining headline-model completion before downstream comparison
   current_milestone: align all model configs and implementations with the approved strict nested outer-CV / inner-selection protocol, complete the remaining headline-model evaluations, then unlock model comparison
-  last_updated: '2026-09-11'
-  updated_by: ChatGPT-assisted canonical-context maintenance using verified live-repository audit evidence
+  last_updated: '2026-09-28'
+  updated_by: Codex-assisted canonical-context maintenance using verified formal TabNet repository evidence
   evidence:
   - SRC-001
   - SRC-002
@@ -337,14 +337,14 @@ live_state:
   - all model adapters implemented under src/models/
   - FT-Transformer development 5-fold result artifacts generated
   - XGBoost development 5-fold result artifacts generated using the current fixed configuration
-  - TabNet eight-candidate development evaluation completed and T01 selected with seed-sensitivity evidence
+  - TabNet formal strict-nested five-fold development evaluation completed with 40 inner candidate evaluations, five outer winner refits, 80,000 OOF predictions, and zero formal-holdout use; the earlier T01 result remains historical/exploratory
   - EBM development results exist upstream on origin/main and require local integration/verification before canonical local completion
   - automated test suite expanded to 186 tests across 14 modules (186/186 passing)
   - single-file Markdown canonical-context policy adopted; prior mirrored-context workflow retired
   active_next_actions:
   - harmonize XGBoost, LightGBM, EBM, and FT-Transformer configs with the approved bounded nested-selection protocol (CatBoost v2 harmonized)
   - decide implementation placement for tree-model inner validation/early stopping without changing the methodological requirement
-  - perform methodology-complete nested evaluation for FT-Transformer, XGBoost, and TabNet before treating their current CV scores as final unbiased headline estimates
+  - perform methodology-complete nested evaluation for FT-Transformer and XGBoost before treating their current CV scores as final unbiased headline estimates; TabNet is complete
   - complete LightGBM formal nested evaluation (CatBoost formal development evaluation is complete)
   - integrate and verify EBM upstream results, then rerun under the final protocol if required
   - execute model comparison, calibration, fairness analysis, and retention prioritization only after development-model evidence is protocol-complete
@@ -1365,7 +1365,7 @@ update_rules:
 
 **Critical limitation:** Preliminary audit-only evidence suggests the target may contain little predictive signal. Six complex models cannot create absent information. A rigorous no-signal result remains valid and must prevent operational claims.
 
-**Current phase:** Harmonize the implemented model adapters/configs with the approved strict nested evaluation protocol, complete protocol-compliant headline-model evidence, then proceed to model comparison, calibration, fairness, and prioritization. PCA results are generated; FT-Transformer, XGBoost, and TabNet have current development results; CatBoost formal strict-nested development evaluation is complete; LightGBM remains pending formal evaluation; EBM results exist upstream and require local integration/verification.
+**Current phase:** Harmonize the implemented model adapters/configs with the approved strict nested evaluation protocol, complete protocol-compliant headline-model evidence, then proceed to model comparison, calibration, fairness, and prioritization. PCA results are generated; FT-Transformer and XGBoost have current pre-harmonization development results; CatBoost and TabNet formal strict-nested development evaluations are complete; LightGBM remains pending formal evaluation; EBM results exist upstream and require local integration/verification.
 
 ## 2.2 Critical terminology
 
@@ -1411,13 +1411,13 @@ update_rules:
 
 ## 3.1 Current milestone
 
-**LIVE RECORD - 2026-09-12:** The canonical 100,000-row dataset, frozen 80/20 split, five fixed 16,000-row development folds, EDA, Dummy baselines, Logistic/PCA benchmark artifacts, shared metric/OOF utilities, and all model adapters are present. The current test suite contains 186 tests across 14 modules; the latest verified run is **186 passed (100% passing)** after hardening the PCA notebook integrity assertions.
+**LIVE RECORD - 2026-09-28:** The canonical 100,000-row dataset, frozen 80/20 split, five fixed 16,000-row development folds, EDA, Dummy baselines, Logistic/PCA benchmark artifacts, shared metric/OOF utilities, and all model adapters are present. The current test suite contains 186 tests across 14 modules; the latest full-suite record remains **186 passed (100% passing)**. The TabNet-specific suite has additionally been verified at **11 passed** for the completed formal run.
 
 Current model evidence is mixed by maturity:
 
 - FT-Transformer: current five-fold development result artifacts exist; protocol-complete strict nested reevaluation is still required before calling the pooled score the final unbiased headline estimate.
 - XGBoost: current five-fold fixed-configuration development result artifacts exist; methodology-complete tuning/weighting/early-stopping alignment remains pending.
-- TabNet: eight declared candidates were evaluated and T01 selected; strict nested final evaluation remains required for an unbiased selected-model headline estimate.
+- TabNet: formal strict-nested five-fold development evaluation is complete; 40 inner candidate evaluations and five outer winner refits produced 80,000 OOF predictions (pooled AP `0.099965`, ROC-AUC `0.499317`) with zero formal-holdout use. The earlier T01 pooled result (`0.101706` AP, `0.504556` ROC-AUC) remains historical/exploratory only.
 - CatBoost: formal strict-nested 5-fold development evaluation complete; 80,000 development OOF predictions generated; performance is essentially at chance / no-signal baseline (pooled AP 0.099350).
 - LightGBM: adapter/config/scaffold exist; formal nested evaluation pending.
 - EBM: adapter/config exist; executed results are available upstream on `origin/main` and require local integration/verification before canonical completion.
@@ -1432,7 +1432,7 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 1. Maintain this canonical Markdown context as v4.6.2 and keep secondary summaries such as README.md and EVALUATION_GUIDE.md aligned with verified live state.
 2. Finalize bounded model configurations for XGBoost, LightGBM, EBM, and FT-Transformer; remove unresolved TODO search-space markers only after the final nested protocol is represented exactly (CatBoost v2 schema and C01-C08 registry finalized).
 3. Implement or orchestrate inner validation/inner tuning for XGBoost and LightGBM without allowing any outer-validation fold to control training or selection.
-4. Re-evaluate FT-Transformer, XGBoost, and TabNet under strict nested selection where required so final OOF estimates are independent of model-selection decisions.
+4. Re-evaluate FT-Transformer and XGBoost under strict nested selection where required so final OOF estimates are independent of model-selection decisions; retain the completed TabNet strict-nested result as its headline development evidence.
 5. Integrate and verify the upstream EBM work, then determine whether rerun is required under the final protocol.
 6. Complete LightGBM nested five-fold evaluation (CatBoost formal development evaluation complete).
 7. Only after all six headline models have protocol-complete OOF evidence, execute model comparison, calibration, fairness, and retention-prioritization workflows (`11` through `14`).
@@ -1448,7 +1448,8 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 - **DECIDED 2026-08-07** - Six headline models are required with one model per member: FT-Transformer, CatBoost, XGBoost, LightGBM, EBM, TabNet.
 - **COMPLETED 2026-08-07** - Context v4.3.0 synchronized the six-model methodology, individual ownership, preprocessing, tuning, evaluation, artefacts, report, and viva rules.
 - **RESULTS GENERATED / FINAL VERIFICATION PENDING** - `04a_pca_analysis.ipynb` has 23 of 24 code cells executed and all four canonical PCA CSV artifacts saved; the final verification cell remains unexecuted.
-- **DEVELOPMENT EVIDENCE AVAILABLE** - FT-Transformer, XGBoost, and TabNet have saved development result artifacts; these are not automatically the final unbiased nested-CV headline estimates.
+- **DEVELOPMENT EVIDENCE AVAILABLE** - FT-Transformer and XGBoost have saved pre-harmonization development result artifacts; these are not automatically the final unbiased nested-CV headline estimates.
+- **COMPLETED 2026-09-28** - TabNet formal strict-nested five-fold development evaluation generated 80,000 OOF predictions from 40 inner candidate evaluations and five outer winner refits; pooled AP is `0.099965`, pooled ROC-AUC is `0.499317`, and formal-holdout use is zero.
 - **UPSTREAM DEVELOPMENT EVIDENCE AVAILABLE** - EBM results exist on `origin/main` and require local integration/verification.
 - **VERIFIED 2026-09-11** - The automated suite contains 150 tests across 13 modules; latest run: 149 passed, 1 failed due to the obsolete PCA scaffold-integrity expectation.
 - **DECIDED 2026-09-11** - Final headline-model evaluation uses strict nested outer-CV / inner-selection.
@@ -1460,7 +1461,7 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 - implement/orchestrate inner tuning and early stopping for XGBoost and LightGBM without using outer-validation rows;
 - complete LightGBM formal nested evaluation (CatBoost development evaluation is complete);
 - integrate and verify the upstream EBM work;
-- rerun FT-Transformer, XGBoost, and TabNet where needed to obtain final nested OOF estimates;
+- rerun FT-Transformer and XGBoost where needed to obtain final nested OOF estimates; preserve the completed TabNet formal result;
 - prepare Notebook 11 model-comparison inputs only after all six headline models have protocol-complete OOF evidence.
 
 ## 3.5 Blocked or conditional work
@@ -1503,7 +1504,7 @@ Canonical repository: `https://github.com/Sankalpa-KMCP/Employee_Resignation_Pre
 2. Add or orchestrate training-only inner validation/tuning for remaining tree models (XGBoost and LightGBM) without changing the outer folds.
 3. Complete LightGBM nested evaluation (CatBoost development evaluation is complete).
 4. Integrate and verify the EBM work from `origin/main`; rerun under the final protocol if its current result is not nested-selection independent.
-5. Re-evaluate FT-Transformer, XGBoost, and TabNet under the strict nested protocol where required.
+5. Re-evaluate FT-Transformer and XGBoost under the strict nested protocol where required; keep the completed TabNet formal result frozen.
 6. Validate complete six-model OOF row parity and then execute Notebook 11.
 7. Execute calibration, fairness, and prioritization only after Notebook 11 selects the development probability source.
 8. Keep Notebook 15 locked until the complete development pipeline is frozen.
@@ -2712,7 +2713,7 @@ Use milestone dependencies rather than exact administrative dates.
 | M5 Model adapters implemented | adapters present for FT, CatBoost, XGBoost, LightGBM, EBM, TabNet plus Logistic benchmark | COMPLETED |
 | M6 Search spaces harmonized for strict nested evaluation | bounded configs exactly aligned with methodology and adapters | ACTIVE — PARTIAL; TODOs remain in five configs |
 | M7 Six-model protocol-complete nested evaluation | complete unbiased nested OOF evidence for all six headline models | IN PROGRESS |
-| M7a Current pre-harmonization development evidence | FT, XGBoost, TabNet local results; EBM upstream results | AVAILABLE — NOT FINAL NESTED COMPARISON EVIDENCE |
+| M7a Current pre-harmonization development evidence | FT and XGBoost local results; EBM upstream results; historical TabNet T01 evidence retained separately from its completed formal result | AVAILABLE — NOT FINAL NESTED COMPARISON EVIDENCE |
 | M8 Model comparison & calibration | `11_model_comparison.ipynb`, `12_calibration.ipynb` | PENDING |
 | M9 Fairness & prioritization | `13_fairness_analysis.ipynb`, `14_retention_prioritization.ipynb` | PENDING |
 | M10 Formal holdout evaluated once | post-freeze holdout corroboration | NOT PERMITTED BEFORE FREEZE |
@@ -2740,7 +2741,7 @@ Use milestone dependencies rather than exact administrative dates.
 | XGBoost | Current fixed-configuration 5-fold development results saved; final nested tuning/weighting alignment pending |
 | LightGBM | Adapter/config/scaffold present; formal nested evaluation pending |
 | EBM | Adapter/config present; executed development results available upstream on `origin/main`; local integration/verification pending; final nested-protocol status still to be verified |
-| TabNet | T01-T08 development evaluation complete; T01 selected; final strict nested selected-model evaluation required |
+| TabNet | COMPLETED FORMAL DEVELOPMENT EVALUATION; strict-nested 5-fold CV, 40 candidate evaluations, five outer winner refits, 80,000 OOF rows, pooled AP 0.099965, pooled ROC-AUC 0.499317, formal holdout untouched |
 | Model comparison | SCAFFOLD — NOT EXECUTED (`11_model_comparison.ipynb`) |
 | Calibration | SCAFFOLD — NOT EXECUTED (`12_calibration.ipynb`) |
 | Fairness | SCAFFOLD — NOT EXECUTED (`13_fairness_analysis.ipynb`); age-band scaffold must be aligned to canonical bands before execution |
@@ -2754,6 +2755,7 @@ Use milestone dependencies rather than exact administrative dates.
 
 | Experiment ID | Member | Model | Fold/seed | Configuration | Device | Runtime | Output path | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TABNET-STRICT-NESTED-BASE-42 | IT25100445 / M6 | TabNet | 5 outer folds / seed 42 | `tabnet.yaml` v2.0.0; T01-T08 inner selection; `cat_emb_dim=1` | CPU | 6,189.80s fit + 2.70s predict | `results/models/tabnet/` | COMPLETE; code/results snapshot `3fcbc34fd54d2aa42c37d4fbc9a0aa765a4e4ead`; holdout rows used: 0; no final 80,000-row refit |
 | TO BE GENERATED | | | | | | | | |
 
 ### 8.33.2 Cross-validation comparison
@@ -2769,7 +2771,7 @@ Use milestone dependencies rather than exact administrative dates.
 | XGBoost | M3 | 0.103245 current CV mean; 0.102628 pooled AP | 0.003592 | current fixed-configuration development run | 0.506130 pooled | | 0.50 currently reported; final nested protocol pending | | 0 reported |
 | LightGBM | M4 | TO BE GENERATED | | | | | | | |
 | EBM | M5 | UPSTREAM RESULT EXISTS — LOCAL VERIFICATION REQUIRED | | | | | | | |
-| TabNet | M6 | 0.101706 selected-candidate pooled AP (T01) | | current candidate-selection evidence; final nested selected-model estimate pending | 0.504556 pooled | | current candidate evidence | | 0 reported |
+| TabNet | M6 | 0.101700 CV mean; 0.099965 pooled AP | 0.003876 | completed formal strict-nested development run; historical T01 pooled AP 0.101706 retained separately | 0.501142 CV mean; 0.499317 pooled | 0.186177 pooled | 0.147103 F1 @ 0.50 | 6,189.80s fit + 2.70s predict | 0 reported |
 
 ### 8.33.3 Complexity and evidence comparison
 
@@ -2904,6 +2906,7 @@ Use milestone dependencies rather than exact administrative dates.
 | AI-017 | 2026-09-11 | ChatGPT - GPT-5.6 Sol | Performed the final v4.5.1-to-v4.5.2 full-document consistency pass and correction cycle. | Extensive | Rechecked active/historical version references, Logistic/PCA terminology, holdout wording, source-register coverage, stable-vs-live section mapping, feature-policy consistency, empty sections, Markdown structure, and embedded YAML parseability; repeated stale-pattern scans after fixes. | User requested a complete review-fix-review cycle; group owns final adoption and repository synchronization. |
 | AI-018 | 2026-09-11 | ChatGPT - GPT-5.6 Sol | Upgraded v4.5.2 to v4.6.0 by retiring the former mirrored-context workflow and converting the project handoff to one canonical Markdown file only, then performed full-file consistency validation. | Extensive | Removed active secondary-format dependencies, updated source/decision/change records, rechecked version/path/source terminology, validated embedded YAML and Markdown structure, and ran repeated stale-reference scans. | User explicitly directed the single-file policy; group owns final repository adoption. |
 | AI-019 | 2026-09-11 | ChatGPT - GPT-5.6 Sol | Re-audited v4.6.0 after the single-file policy change and produced v4.6.1 to remove the last legacy wording that could imply recreating a second persistent context file. | Extensive | Reparsed all YAML blocks, checked Markdown fences/tables/headings, scanned active and historical version references, verified source IDs, and searched for retired multi-file instructions and version drift. | User requested a second independent verification; group owns final repository adoption. |
+| AI-020 | 2026-09-28 | OpenAI Codex | Finalized and verified the formal TabNet strict-nested development deliverable, preserved historical T01 evidence as exploratory only, recorded immutable code/results snapshot provenance, and synchronized TabNet status across the canonical context and secondary repository guides without running the formal holdout. | Extensive | Revalidated 80,000 unique OOF rows, five 16,000-row folds, 40 candidate evaluations, five winner refits, zero holdout overlap, checksums, environment versions, artifact hashes, and 11 TabNet tests. | User explicitly directed repository finalization; group owns interpretation, academic submission, and any later holdout decision. |
 
 Future records must include actual tool/version if known, precise tasks, extent, verification, retained evidence, and human ownership.
 
@@ -2951,7 +2954,7 @@ Future records must include actual tool/version if known, precise tasks, extent,
 | 4.5.2 | 2026-09-11 | Final consistency patch: corrected residual active-version drift, completed Logistic/PCA wording synchronization, clarified single-file canonical-context handling, corrected stable/live section mapping, removed an XGBoost scaling inconsistency, completed the EDA subsection, expanded active source references, clarified architecture-versus-implementation status, and improved the current-results table semantics. | Eliminate remaining cross-section ambiguity without changing the approved v4.5.0 strict nested methodology or verified repository state. | SUPERSEDED |
 | 4.6.0 | 2026-09-11 | Retired the former mirrored-context workflow and established one canonical Markdown context file only; removed all active secondary-format dependencies, updated handoff/update rules, added SRC-016 and Q-052, and revalidated the complete context without changing the approved strict nested ML methodology. | Simplify the persistent handoff, eliminate synchronization risk, and match the user-approved single-file project-context policy. | SUPERSEDED |
 | 4.6.1 | 2026-09-11 | Final single-file-policy consistency patch: removed the last historical actionable wording that instructed maintenance of multiple context files, clarified legacy AI-use records as retired workflow history, tightened current maintenance wording, and reran full structural/YAML/stale-reference validation. | Prevent future assistants from reconstructing the retired secondary persistent context while preserving historical audit meaning and leaving the approved ML methodology unchanged. | SUPERSEDED |
-| 4.6.2 | 2026-09-12 | Canonical context patch: synchronized completed formal CatBoost strict-nested 5-fold development evaluation (pooled AP 0.099350; chance baseline); synchronized automated test suite to 186/186 passing across 14 modules; purged completed PCA test action items from active queues; preserved approved strict nested ML methodology, candidate schemas, and baseline rules unchanged. | Synchronize canonical project context with verified Step 2C repository evidence, maintain zero stale active items, and uphold Section 7.1 semantic-versioning maintenance rules without altering methodology or assignment scope. | ACTIVE |
+| 4.6.2 | 2026-09-28 | Canonical live-state patch: retained the completed formal CatBoost strict-nested result and synchronized the completed formal TabNet strict-nested 5-fold development evaluation (pooled AP 0.099965; pooled ROC-AUC 0.499317; zero holdout use), immutable run-snapshot provenance, and TabNet status/result records; preserved approved methodology, candidate schemas, and baseline rules unchanged. | Synchronize canonical project context with verified repository evidence without altering methodology or assignment scope. | ACTIVE |
 
 ## 8.37 Remaining identity and ownership inputs
 

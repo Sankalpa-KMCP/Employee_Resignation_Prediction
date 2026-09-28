@@ -5,6 +5,11 @@
   "model": "TabNet",
   "config_version": "2.0.0",
   "project_context_version": "4.6.2",
+  "formal_run_code_commit": "3fcbc34fd54d2aa42c37d4fbc9a0aa765a4e4ead",
+  "provenance_recorded_after_run": true,
+  "provenance_note": "This immutable code/results snapshot commit was created after the formal run from the unchanged validated implementation and saved outputs; this metadata-only provenance update does not claim that the commit existed before execution.",
+  "raw_dataset_sha256": "2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb",
+  "split_registry_sha256": "87edc10ac38f2435c49beddbf412f9de293e3e0622558b27ffbdf31fadd7ea41",
   "seed": 42,
   "candidate_ids": [
     "T01",
@@ -26,6 +31,7 @@
   ],
   "target": "Resigned",
   "development_rows": 80000,
+  "formal_holdout_rows": 20000,
   "outer_folds": 5,
   "outer_training_rows_per_fold": 64000,
   "outer_validation_rows_per_fold": 16000,
@@ -42,6 +48,20 @@
   "formal_holdout_rows_used_for_preprocessing_fit": 0,
   "formal_holdout_rows_used_for_candidate_selection": 0,
   "formal_holdout_rows_used_for_epoch_selection": 0,
+  "holdout_used": false,
+  "holdout_overlap": 0,
+  "resolved_device": "cpu",
+  "environment": {
+    "python": "3.12.14",
+    "python_implementation": "CPython",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "torch": "2.13.0+cpu",
+    "pytorch_tabnet": "4.1.0",
+    "numpy": "2.5.1",
+    "pandas": "3.0.5",
+    "scikit_learn": "1.9.0",
+    "torch_cuda_available": false
+  },
   "final_80000_row_model_trained": false,
   "additional_seed_runs_performed": false
 }

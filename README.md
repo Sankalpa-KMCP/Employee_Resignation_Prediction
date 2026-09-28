@@ -80,7 +80,7 @@ Model-specific preprocessing is fitted only on the appropriate development-train
     ├─ 07 XGBoost [BASIC ADAPTER/CONFIG/SCAFFOLD PRESENT — FORMAL WORKFLOW PENDING]
     ├─ 08 LightGBM [BASIC ADAPTER/CONFIG/SCAFFOLD PRESENT — FORMAL WORKFLOW PENDING]
     ├─ 09 EBM [BASIC ADAPTER/CONFIG/SCAFFOLD PRESENT — FORMAL WORKFLOW PENDING]
-    └─ 10 TabNet [ADAPTER + SMOKE TEST PRESENT — FORMAL 5-FOLD CV PENDING]
+    └─ 10 TabNet [STRICT-NESTED 5-FOLD DEVELOPMENT OOF COMPLETE — HOLDOUT UNTOUCHED]
    ↓
 11 Multi-Model Comparison & Error Analysis [SCAFFOLD — NOT EXECUTED]
    ↓
@@ -111,7 +111,7 @@ Final Academic Report + Presentation Deck + Viva [PENDING]
 | `07_member_3/07_m3_xgboost.ipynb`        | XGBoost (Member 3)                      | Headline Models     | **BASIC SCAFFOLD/ADAPTER PRESENT — FORMAL WORKFLOW PENDING** |
 | `08_member_4/08_m4_lightgbm.ipynb`       | LightGBM (Member 4)                     | Headline Models     | **BASIC SCAFFOLD/ADAPTER PRESENT — FORMAL WORKFLOW PENDING** |
 | `09_member_5/09_m5_ebm.ipynb`            | Explainable Boosting Machine (Member 5) | Headline Models     | **BASIC SCAFFOLD/ADAPTER PRESENT — FORMAL WORKFLOW PENDING** |
-| `10_member_6/10_m6_tabnet.ipynb`         | TabNet (Member 6)                       | Headline Models     | **SMOKE-TESTED — FORMAL 5-FOLD CV PENDING**                  |
+| `10_member_6/10_m6_tabnet.ipynb`         | TabNet (Member 6)                       | Headline Models     | **STRICT-NESTED 5-FOLD DEVELOPMENT OOF COMPLETE**            |
 | `11_model_comparison.ipynb`              | Multi-Model Comparison & Error Analysis | Evaluation          | **SCAFFOLD — NOT EXECUTED**                                  |
 | `12_calibration.ipynb`                   | Probability Calibration & Reliability   | Evaluation          | **SCAFFOLD — NOT EXECUTED**                                  |
 | `13_fairness_analysis.ipynb`             | Subgroup Fairness & Disparity Audit     | Evaluation          | **SCAFFOLD — NOT EXECUTED**                                  |
@@ -129,8 +129,9 @@ These are completed development-stage results only; they are **not** final holdo
 | Logistic Regression — No PCA                         |    0.100270 | 0.499881 | Completed benchmark                                  |
 | Logistic Regression — PCA 95%                        |    0.099721 | 0.499724 | Completed benchmark                                  |
 | FT-Transformer — current weighted early-stopping run |    0.099979 | 0.497254 | 5-fold OOF result available; protocol review pending |
+| TabNet — formal strict-nested development OOF        |    0.099965 | 0.499317 | Complete: 5 outer folds, 40 candidate evaluations   |
 
-The completed experiments are currently clustered around the no-skill reference. The remaining headline models must still be formally evaluated before a final conclusion about predictive signal is made.
+The formal TabNet result is also clustered around the no-skill reference. It contains 80,000 canonical OOF predictions from five 16,000-row outer folds and 40 inner candidate evaluations; the formal holdout was not used. The earlier T01 pooled result (`0.101706` AP / `0.504556` ROC-AUC) remains historical/exploratory evidence and is not the headline estimate. No final 80,000-row TabNet refit has been performed because model comparison must occur first. The remaining protocol-incomplete headline models must still be formally evaluated before a final project-wide conclusion about predictive signal is made.
 
 ---
 
@@ -154,7 +155,7 @@ Employee_Resignation_Prediction/
 │       └── split_registry.csv           # Frozen row/fold membership registry
 ├── docs/
 │   └── context/
-│       └── Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md
+│       └── Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md
 ├── models/                              # Reserved for serialized final model artefacts; currently no final checkpoints
 ├── notebooks/                           # Numbered analysis/modeling notebooks (01–15 plus 04a)
 ├── presentations/
@@ -170,7 +171,7 @@ Employee_Resignation_Prediction/
 │   │   ├── catboost/                    # Formal results pending
 │   │   ├── ebm/                         # Formal results pending
 │   │   ├── lightgbm/                    # Formal results pending
-│   │   ├── tabnet/                      # Formal results pending
+│   │   ├── tabnet/                      # Formal strict-nested development results available
 │   │   └── xgboost/                     # Formal results pending
 │   ├── comparison/                      # Pending
 │   ├── calibration/                     # Pending
@@ -252,10 +253,10 @@ The remaining failure is the existing PCA scaffold-integrity assertion, which st
 
 ## 8. Current Project State
 
-The project foundation is established: dataset auditing, frozen row/fold assignment, development EDA, dummy baselines, PCA benchmarking, shared evaluation utilities, and a full FT-Transformer development CV run are present.
+The project foundation is established: dataset auditing, frozen row/fold assignment, development EDA, dummy baselines, PCA benchmarking, shared evaluation utilities, a full FT-Transformer development CV run, and a formal strict-nested TabNet development OOF run are present.
 
-The project is **not yet complete**. The next formal work is to finalize a consistent tuning/evaluation protocol, align model configurations and implementations with that protocol, complete the remaining five headline-model experiments, perform model comparison/calibration/fairness/prioritization, freeze the final predictive pipeline, and only then run the formal holdout corroboration.
+The project is **not yet complete**. The next formal work is to align and complete the remaining protocol-incomplete headline-model experiments, perform model comparison/calibration/fairness/prioritization, freeze the final predictive pipeline, and only then run the formal holdout corroboration. The formal holdout remains untouched by TabNet.
 
 For full methodology and governance details, use:
 
-`docs/context/Employee_Resignation_Prediction_AI_Project_Context_v4_4_0.md`
+`docs/context/Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md`

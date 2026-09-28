@@ -144,9 +144,10 @@ The planned headline models are:
 6. **Member 6 — TabNet**
 
    * Attention-based tabular deep-learning architecture.
-   * Adapter and preprocessing components exist.
-   * A development smoke test has been executed.
-   * Formal five-fold CV has **not** yet been run.
+   * Adapter, fold-local preprocessing, save/reload support, and automated tests are implemented.
+   * Formal strict-nested five-fold development evaluation is complete: 40 inner candidate evaluations, five outer winner refits, and 80,000 OOF predictions.
+   * The pooled formal result is AP / PR-AUC `0.099965` and ROC-AUC `0.499317`; the formal holdout was not used.
+   * The earlier pooled T01 result (`0.101706` AP, `0.504556` ROC-AUC) is historical/exploratory evidence, not the headline estimate.
 
 ---
 
@@ -246,6 +247,22 @@ An evaluator should inspect the actual notebook, source implementation, and tuni
 
 ---
 
+## 5.1 Current Formal TabNet Result
+
+The completed TabNet strict-nested development run used the five frozen outer folds. Within each outer-training partition, T01–T08 were evaluated on a training-only inner split, the candidate and epoch were selected by inner average precision, and the winner was refitted before predicting the untouched outer-validation fold.
+
+Verified formal evidence:
+
+* **Pooled AP / PR-AUC:** `0.099965`
+* **Pooled ROC-AUC:** `0.499317`
+* **Development OOF rows:** `80,000` (`5 × 16,000`)
+* **Candidate evaluations / outer winner refits:** `40 / 5`
+* **Formal-holdout rows used:** `0`
+
+This is the TabNet headline development estimate. It indicates chance-level predictive ranking under the approved protocol; it does not authorize a final project-wide no-signal conclusion or holdout access.
+
+---
+
 ## 6. Current Predictive Evidence
 
 The experiments completed so far are clustered near the no-skill AP baseline of approximately `0.10`.
@@ -257,8 +274,7 @@ This is **not yet a final project-wide no-signal conclusion**, because:
 * CatBoost has not completed formal CV,
 * XGBoost has not completed formal CV,
 * LightGBM has not completed formal CV,
-* EBM has not completed formal CV,
-* TabNet has not completed formal CV.
+* EBM has not completed formal CV.
 
 The project's canonical methodology explicitly allows a valid no-signal outcome.
 
@@ -280,7 +296,7 @@ The purpose of the project is not to manufacture predictive performance. A rigor
 | `07_member_3/07_m3_xgboost.ipynb`        | XGBoost                                         | **BASIC SCAFFOLD / ADAPTER — FORMAL WORKFLOW PENDING** |
 | `08_member_4/08_m4_lightgbm.ipynb`       | LightGBM                                        | **BASIC SCAFFOLD / ADAPTER — FORMAL WORKFLOW PENDING** |
 | `09_member_5/09_m5_ebm.ipynb`            | EBM                                             | **BASIC SCAFFOLD / ADAPTER — FORMAL WORKFLOW PENDING** |
-| `10_member_6/10_m6_tabnet.ipynb`         | TabNet                                          | **SMOKE-TESTED — FORMAL 5-FOLD CV PENDING**            |
+| `10_member_6/10_m6_tabnet.ipynb`         | TabNet                                          | **STRICT-NESTED 5-FOLD DEVELOPMENT OOF COMPLETE**      |
 | `11_model_comparison.ipynb`              | Cross-model comparison                          | **SCAFFOLD — NOT EXECUTED**                            |
 | `12_calibration.ipynb`                   | Probability calibration                         | **SCAFFOLD — NOT EXECUTED**                            |
 | `13_fairness_analysis.ipynb`             | Subgroup fairness analysis                      | **SCAFFOLD — NOT EXECUTED**                            |
@@ -349,7 +365,7 @@ Employee_Resignation_Prediction/
 │   │   ├── catboost/        # Formal results pending
 │   │   ├── ebm/             # Formal results pending
 │   │   ├── lightgbm/        # Formal results pending
-│   │   ├── tabnet/          # Formal results pending
+│   │   ├── tabnet/          # Formal strict-nested development results available
 │   │   └── xgboost/         # Formal results pending
 │   ├── comparison/          # Pending
 │   ├── calibration/         # Pending
@@ -699,9 +715,9 @@ If all advanced models remain near the no-skill AP baseline:
 
 ---
 
-### Prompt 4 — Remaining Headline Models
+### Prompt 4 — Remaining Headline Models and TabNet Verification
 
-> Review the CatBoost, XGBoost, LightGBM, EBM, and TabNet adapters, configs, and notebooks. Determine exactly what is already implemented versus merely planned. Identify missing tuning logic, early stopping, imbalance handling, preprocessing, OOF generation, serialization, tests, and methodology alignment. Do not infer features from comments or YAML files unless the source actually implements them.
+> Review the CatBoost, XGBoost, LightGBM, and EBM adapters, configs, and notebooks to determine what is implemented versus planned. Separately verify the completed TabNet strict-nested artifacts, fold-local preprocessing, candidate/epoch selection, OOF integrity, serialization, and holdout isolation. Do not infer features from comments or YAML files unless the source actually implements them.
 
 ---
 
@@ -745,6 +761,7 @@ The project currently has a strong experimental foundation:
 * PCA / Logistic benchmark results generated,
 * reusable metric and OOF-validation utilities implemented,
 * FT-Transformer full development CV results available,
+* TabNet formal strict-nested five-fold development OOF results available,
 * model adapters/configuration scaffolding created for the remaining architectures,
 * formal holdout still locked.
 
@@ -758,7 +775,6 @@ Major remaining work includes:
 * completing XGBoost formal experiments,
 * completing LightGBM formal experiments,
 * completing EBM formal experiments,
-* completing TabNet formal five-fold CV,
 * performing model comparison,
 * performing calibration,
 * performing fairness analysis,
