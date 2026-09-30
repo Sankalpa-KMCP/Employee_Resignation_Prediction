@@ -1,0 +1,206 @@
+{
+  "result_label": "FORMAL STRICT-NESTED LIGHTGBM DEVELOPMENT OOF",
+  "model": "LightGBM",
+  "config_version": "2.0.0",
+  "candidate_registry_version": "1.0.0",
+  "candidate_ids": [
+    "LGBM_F01",
+    "LGBM_F02",
+    "LGBM_F03",
+    "LGBM_F04",
+    "LGBM_F05",
+    "LGBM_F06",
+    "LGBM_F07",
+    "LGBM_F08"
+  ],
+  "candidate_definitions": [
+    {
+      "id": "LGBM_F01",
+      "description": "Central unweighted baseline",
+      "params": {
+        "n_estimators": 600,
+        "learning_rate": 0.05,
+        "num_leaves": 31,
+        "max_depth": 6,
+        "min_child_samples": 20,
+        "subsample": 1.0,
+        "subsample_freq": 1,
+        "colsample_bytree": 1.0,
+        "reg_lambda": 1,
+        "class_weight": null
+      }
+    },
+    {
+      "id": "LGBM_F02",
+      "description": "Central balanced baseline",
+      "params": {
+        "n_estimators": 600,
+        "learning_rate": 0.05,
+        "num_leaves": 31,
+        "max_depth": 6,
+        "min_child_samples": 20,
+        "subsample": 1.0,
+        "subsample_freq": 1,
+        "colsample_bytree": 1.0,
+        "reg_lambda": 1,
+        "class_weight": "balanced"
+      }
+    },
+    {
+      "id": "LGBM_F03",
+      "description": "Conservative regularized unweighted profile",
+      "params": {
+        "n_estimators": 1000,
+        "learning_rate": 0.03,
+        "num_leaves": 15,
+        "max_depth": 6,
+        "min_child_samples": 100,
+        "subsample": 0.8,
+        "subsample_freq": 1,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 5,
+        "class_weight": null
+      }
+    },
+    {
+      "id": "LGBM_F04",
+      "description": "Conservative regularized balanced profile",
+      "params": {
+        "n_estimators": 1000,
+        "learning_rate": 0.03,
+        "num_leaves": 15,
+        "max_depth": 6,
+        "min_child_samples": 100,
+        "subsample": 0.8,
+        "subsample_freq": 1,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 5,
+        "class_weight": "balanced"
+      }
+    },
+    {
+      "id": "LGBM_F05",
+      "description": "High-capacity unweighted profile",
+      "params": {
+        "n_estimators": 600,
+        "learning_rate": 0.05,
+        "num_leaves": 63,
+        "max_depth": 10,
+        "min_child_samples": 20,
+        "subsample": 0.8,
+        "subsample_freq": 1,
+        "colsample_bytree": 1.0,
+        "reg_lambda": 1,
+        "class_weight": null
+      }
+    },
+    {
+      "id": "LGBM_F06",
+      "description": "High-capacity balanced profile",
+      "params": {
+        "n_estimators": 600,
+        "learning_rate": 0.05,
+        "num_leaves": 63,
+        "max_depth": 10,
+        "min_child_samples": 20,
+        "subsample": 0.8,
+        "subsample_freq": 1,
+        "colsample_bytree": 1.0,
+        "reg_lambda": 1,
+        "class_weight": "balanced"
+      }
+    },
+    {
+      "id": "LGBM_F07",
+      "description": "Fast-learning unrestricted-depth unweighted profile",
+      "params": {
+        "n_estimators": 300,
+        "learning_rate": 0.1,
+        "num_leaves": 31,
+        "max_depth": -1,
+        "min_child_samples": 50,
+        "subsample": 1.0,
+        "subsample_freq": 1,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 0,
+        "class_weight": null
+      }
+    },
+    {
+      "id": "LGBM_F08",
+      "description": "Fast-learning unrestricted-depth balanced profile",
+      "params": {
+        "n_estimators": 300,
+        "learning_rate": 0.1,
+        "num_leaves": 31,
+        "max_depth": -1,
+        "min_child_samples": 50,
+        "subsample": 1.0,
+        "subsample_freq": 1,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 0,
+        "class_weight": "balanced"
+      }
+    }
+  ],
+  "source_head": "e86b030d4eba9c91a170db623fdff67bfa7af089",
+  "split_registry": "data/processed/split_registry.csv",
+  "development_rows": 80000,
+  "outer_folds": 5,
+  "inner_fraction": 0.15,
+  "seed": 42,
+  "stratified": true,
+  "selection_metric": "average_precision",
+  "tie_breaker": "candidate_id_ascending",
+  "early_stopping_rounds": 50,
+  "refit_policy": "full outer training at selected best iteration without early stopping",
+  "outer_validation_role": "prediction only after candidate selection and refit",
+  "fold_winners": [
+    {
+      "outer_fold": 1,
+      "selected_candidate_id": "LGBM_F07",
+      "selected_best_iteration": 17,
+      "selected_class_weight": null,
+      "selected_inner_average_precision": 0.10970300378540344
+    },
+    {
+      "outer_fold": 2,
+      "selected_candidate_id": "LGBM_F06",
+      "selected_best_iteration": 10,
+      "selected_class_weight": "balanced",
+      "selected_inner_average_precision": 0.11034122916831271
+    },
+    {
+      "outer_fold": 3,
+      "selected_candidate_id": "LGBM_F02",
+      "selected_best_iteration": 253,
+      "selected_class_weight": "balanced",
+      "selected_inner_average_precision": 0.10734612162354415
+    },
+    {
+      "outer_fold": 4,
+      "selected_candidate_id": "LGBM_F06",
+      "selected_best_iteration": 3,
+      "selected_class_weight": "balanced",
+      "selected_inner_average_precision": 0.10612202184396022
+    },
+    {
+      "outer_fold": 5,
+      "selected_candidate_id": "LGBM_F07",
+      "selected_best_iteration": 27,
+      "selected_class_weight": null,
+      "selected_inner_average_precision": 0.10556161323703392
+    }
+  ],
+  "candidate_evaluations": 40,
+  "winner_refits": 5,
+  "total_fit_time_seconds": 68.68497350000007,
+  "total_predict_time_seconds": 0.24174419999962993,
+  "formal_holdout_used": false,
+  "formal_holdout_feature_or_target_values_loaded": false,
+  "formal_holdout_rows_used_for_modeling": 0,
+  "python_version": "3.14.7",
+  "pandas_version": "3.0.5",
+  "lightgbm_version": "4.7.0",
+  "scikit_learn_version": "1.9.0"
+}

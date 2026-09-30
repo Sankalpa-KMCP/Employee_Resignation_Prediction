@@ -1,86 +1,180 @@
 # ============================================================
 # Model Configuration: LightGBM Classifier (Member 4)
+# Formal Strict-Nested Candidate Registry (v2.0.0)
 # ============================================================
+
 model:
-  name: "LightGBM"
+  id: "m4_lightgbm"
   model_id: "lightgbm"
+  name: "LightGBM Classifier"
+  owner: "member_4"
   member: "Member 4"
   algorithm_family: "Light Gradient Boosting Machine"
   implementation: "lightgbm.LGBMClassifier"
+  config_version: "2.0.0"
+  candidate_registry_version: "1.0.0"
+  project_context_version: "4.6.2"
 
-# ------------------------------------------------------------
-# Reproducibility & Environment
-# ------------------------------------------------------------
 reproducibility:
   random_seed: 42
   n_jobs: -1
+  deterministic: true
 
-# ------------------------------------------------------------
-# Fixed Parameters (Baseline Defaults)
-# ------------------------------------------------------------
+# Candidate selection and early stopping operate only inside the outer-training
+# partition supplied to the adapter. Outer-validation rows are prediction-only.
+inner_validation:
+  fraction: 0.15
+  stratified: true
+  random_seed: 42
+  metric: "average_precision"
+  early_stopping_rounds: 50
+  all_candidates_share_split: true
+  tie_breaker: "candidate_id_ascending"
+  record_best_iteration: true
+  refit_outer_train: true
+  refit_n_estimators: "selected_best_iteration"
+  outer_validation_role: "prediction_only_after_selection_and_refit"
+
+candidate_registry:
+  version: "1.0.0"
+  maximum_candidates: 12
+  selection_mode: "evaluate_all_candidates_per_outer_fold"
+  formal_candidate_ids:
+    - "LGBM_F01"
+    - "LGBM_F02"
+    - "LGBM_F03"
+    - "LGBM_F04"
+    - "LGBM_F05"
+    - "LGBM_F06"
+    - "LGBM_F07"
+    - "LGBM_F08"
+  class_weight_values:
+    - null
+    - "balanced"
+
 fixed_params:
   objective: "binary"
   metric: "average_precision"
   random_state: 42
   verbosity: -1
   force_col_wise: true
+  n_jobs: -1
 
-# ------------------------------------------------------------
-# Cross-Validation & Early Stopping Strategy
-# ------------------------------------------------------------
-validation:
-  cv_folds: 5
-  early_stopping_rounds: 50
-  validation_fraction_inner: 0.15
+evaluation:
+  primary_metric: "average_precision"
+  outer_cv_folds: 5
+  formal_holdout_allowed: false
+  threshold_selection_during_model_comparison: false
 
-# ------------------------------------------------------------
-# Bounded Hyperparameter Search Space
-# ------------------------------------------------------------
-search_space:
-  n_estimators:
-    type: "int"
-    low: 200
-    high: 800
-    step: 100
-    default: 400
-  learning_rate:
-    type: "float"
-    low: 0.01
-    high: 0.2
-    log: true
-    default: 0.05
-  num_leaves:
-    type: "int"
-    low: 15
-    high: 63
-    step: 8
-    default: 31
-  max_depth:
-    type: "int"
-    low: 3
-    high: 8
-    step: 1
-    default: 6
-  subsample:
-    type: "float"
-    low: 0.6
-    high: 1.0
-    step: 0.1
-    default: 0.8
-  colsample_bytree:
-    type: "float"
-    low: 0.6
-    high: 1.0
-    step: 0.1
-    default: 0.8
-  reg_alpha:
-    type: "float"
-    low: 0.0
-    high: 5.0
-    default: 0.1
-  reg_lambda:
-    type: "float"
-    low: 1.0
-    high: 10.0
-    default: 1.0
-  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage
+candidates:
+  - id: "LGBM_F01"
+    description: "Central unweighted baseline"
+    params:
+      n_estimators: 600
+      learning_rate: 0.05
+      num_leaves: 31
+      max_depth: 6
+      min_child_samples: 20
+      subsample: 1.0
+      subsample_freq: 1
+      colsample_bytree: 1.0
+      reg_lambda: 1
+      class_weight: null
+
+  - id: "LGBM_F02"
+    description: "Central balanced baseline"
+    params:
+      n_estimators: 600
+      learning_rate: 0.05
+      num_leaves: 31
+      max_depth: 6
+      min_child_samples: 20
+      subsample: 1.0
+      subsample_freq: 1
+      colsample_bytree: 1.0
+      reg_lambda: 1
+      class_weight: "balanced"
+
+  - id: "LGBM_F03"
+    description: "Conservative regularized unweighted profile"
+    params:
+      n_estimators: 1000
+      learning_rate: 0.03
+      num_leaves: 15
+      max_depth: 6
+      min_child_samples: 100
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_lambda: 5
+      class_weight: null
+
+  - id: "LGBM_F04"
+    description: "Conservative regularized balanced profile"
+    params:
+      n_estimators: 1000
+      learning_rate: 0.03
+      num_leaves: 15
+      max_depth: 6
+      min_child_samples: 100
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_lambda: 5
+      class_weight: "balanced"
+
+  - id: "LGBM_F05"
+    description: "High-capacity unweighted profile"
+    params:
+      n_estimators: 600
+      learning_rate: 0.05
+      num_leaves: 63
+      max_depth: 10
+      min_child_samples: 20
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 1.0
+      reg_lambda: 1
+      class_weight: null
+
+  - id: "LGBM_F06"
+    description: "High-capacity balanced profile"
+    params:
+      n_estimators: 600
+      learning_rate: 0.05
+      num_leaves: 63
+      max_depth: 10
+      min_child_samples: 20
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 1.0
+      reg_lambda: 1
+      class_weight: "balanced"
+
+  - id: "LGBM_F07"
+    description: "Fast-learning unrestricted-depth unweighted profile"
+    params:
+      n_estimators: 300
+      learning_rate: 0.10
+      num_leaves: 31
+      max_depth: -1
+      min_child_samples: 50
+      subsample: 1.0
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_lambda: 0
+      class_weight: null
+
+  - id: "LGBM_F08"
+    description: "Fast-learning unrestricted-depth balanced profile"
+    params:
+      n_estimators: 300
+      learning_rate: 0.10
+      num_leaves: 31
+      max_depth: -1
+      min_child_samples: 50
+      subsample: 1.0
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_lambda: 0
+      class_weight: "balanced"
