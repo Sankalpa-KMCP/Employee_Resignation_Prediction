@@ -11,13 +11,11 @@ from interpret.glassbox import ExplainableBoostingClassifier
 from src.evaluation.metrics import calculate_binary_metrics
 from src.evaluation.oof_validation import validate_oof_predictions
 
-SETTINGS = [
-    dict(setting="E01", learning_rate=0.015, max_leaves=2, min_samples_leaf=10, interactions=0),
-    dict(setting="E02", learning_rate=0.03, max_leaves=2, min_samples_leaf=4, interactions=5),
-    dict(setting="E03", learning_rate=0.005, max_leaves=3, min_samples_leaf=2, interactions=10),
-]
-CANDIDATES = [dict(s, preprocessing=mode, candidate_id=s["setting"]+"_"+mode)
-              for s in SETTINGS for mode in ("raw", "standardized")]
+from src.models.config import load_model_config
+
+CONFIG = load_model_config(Path(__file__).resolve().parents[2] / "configs/models/ebm.yaml", strict_schema=True)
+CANDIDATES = [dict(c["params"], setting=c["setting"], preprocessing=c["preprocessing"], candidate_id=c["id"])
+              for c in CONFIG["candidates"]]
 
 def fit_candidate(X, y, candidate, categorical):
     X = X.copy()
@@ -29,8 +27,7 @@ def fit_candidate(X, y, candidate, categorical):
     params = {k: candidate[k] for k in ("learning_rate", "max_leaves", "min_samples_leaf", "interactions")}
     model = ExplainableBoostingClassifier(
         feature_names=list(X), feature_types=["nominal" if c in categorical else "continuous" for c in X],
-        objective="log_loss", random_state=42, n_jobs=2, max_bins=256, max_interaction_bins=32,
-        max_rounds=5000, early_stopping_rounds=100, validation_size=0.15, outer_bags=8, **params)
+        **CONFIG["fixed_params"], **params)
     model.fit(X, y)
     return model, scaler, numeric
 
@@ -44,12 +41,12 @@ def predict(fitted, X):
 def choose(records):
     # Predeclared practical equivalence margin: 0.001 absolute AP.
     best = max(r["inner_ap"] for r in records)
-    eligible = [r for r in records if r["inner_ap"] >= best - 0.001]
+    eligible = [r for r in records if r["inner_ap"] >= best - CONFIG["inner_validation"]["practical_ap_margin"]]
     return min(eligible, key=lambda r: (r["interactions"], r["max_leaves"], r["candidate_id"]))
 
 def run_experiments(root):
     root = Path(root)
-    out = root / "results/models/ebm/individual_IT25100429"
+    out = root / CONFIG["canonical_results"]["directory"]
     out.mkdir(parents=True, exist_ok=True)
     import yaml
     contract = yaml.safe_load((root / "configs/feature_contract.yaml").read_text())
@@ -73,7 +70,7 @@ def run_experiments(root):
     for fold in range(1, 6):
         train = data.loc[data.cv_fold != fold]
         valid = data.loc[data.cv_fold == fold]
-        inner_train, inner_valid = train_test_split(train, test_size=0.15, random_state=42, stratify=train.Resigned)
+        inner_train, inner_valid = train_test_split(train, test_size=CONFIG["inner_validation"]["fraction"], random_state=CONFIG["reproducibility"]["random_seed"], stratify=train.Resigned)
         decisions = []
         for candidate in CANDIDATES:
             started = time.perf_counter()
@@ -116,12 +113,42 @@ def run_experiments(root):
                         ("oof_predictions",nested),("fold_metrics",nested_fold)]:
         frame.to_csv(out / (name+".csv"), index=False)
     metadata = dict(student_id="IT25100429", varieties=6, inner_candidate_fits=30, outer_candidate_refits=30,
-                    formal_holdout_used=False, holdout_overlap=0, seed=42, practical_ap_margin=0.001,
+                    formal_holdout_used=False, holdout_overlap=0, seed=CONFIG["reproducibility"]["random_seed"], practical_ap_margin=CONFIG["inner_validation"]["practical_ap_margin"],
                     python=platform.python_version(), sklearn=sklearn.__version__, interpret=interpret.__version__,
-                    candidate_settings=CANDIDATES, primary_preprocessing="raw", final_model_frozen=False)
+                    candidate_settings=CANDIDATES, fixed_parameters=CONFIG["fixed_params"], primary_preprocessing="raw", final_model_frozen=False)
     (out / "summary_metrics.json").write_text(json.dumps(nested_metrics, indent=2))
     (out / "run_metadata.json").write_text(json.dumps(metadata, indent=2))
+    write_formal_manifest(root)
     return data, comparison, nested, nested_metrics, out
+
+def write_formal_manifest(root):
+    root = Path(root)
+    files = {name: {"path": CONFIG["canonical_results"][name],
+                   "sha256": hashlib.sha256((root / CONFIG["canonical_results"][name]).read_bytes()).hexdigest()}
+             for name in ("oof_predictions", "fold_metrics", "summary_metrics")}
+    manifest = dict(model_name="EBM", protocol="five_fold_nested_development_raw_candidates",
+                    config_sha256=hashlib.sha256((root / "configs/models/ebm.yaml").read_bytes()).hexdigest(),
+                    rows=80000, formal_holdout_used=False, files=files)
+    (root / CONFIG["canonical_results"]["manifest"]).write_text(json.dumps(manifest, indent=2))
+
+
+def load_formal_ebm_input(root):
+    """Load only manifest-bound formal EBM results; never fall back to historical files."""
+    root = Path(root)
+    config = load_model_config(root / "configs/models/ebm.yaml", strict_schema=True)
+    manifest = json.loads((root / config["canonical_results"]["manifest"]).read_text())
+    if manifest["config_sha256"] != hashlib.sha256((root / "configs/models/ebm.yaml").read_bytes()).hexdigest():
+        raise ValueError("EBM config changed since formal artifact reconciliation; verify or rerun experiments.")
+    for name, entry in manifest["files"].items():
+        if entry["path"] != config["canonical_results"][name]:
+            raise ValueError("EBM manifest does not point to the configured canonical input.")
+        if hashlib.sha256((root / entry["path"]).read_bytes()).hexdigest() != entry["sha256"]:
+            raise ValueError("EBM formal artifact checksum mismatch.")
+    predictions = pd.read_csv(root / config["canonical_results"]["oof_predictions"])
+    registry = pd.read_csv(root / "data/processed/split_registry.csv")
+    validate_oof_predictions(predictions, registry, expected_model_name="EBM")
+    return predictions, pd.read_csv(root / config["canonical_results"]["fold_metrics"]), json.loads(
+        (root / config["canonical_results"]["summary_metrics"]).read_text())
 
 if __name__ == "__main__":
     root = Path(__file__).resolve().parents[2]

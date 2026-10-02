@@ -95,3 +95,11 @@ Notebooks should orchestrate and explain the implementation rather than become a
 ## Historical documentation
 
 Documents under `docs/context/` preserve earlier project states. They may contain pre-refactor paths and older status statements. Use this README and `docs/ARCHITECTURE.md` for the current repository structure.
+
+## EBM formal input reconciliation — IT25100429
+
+The six executed varieties are now registered in `configs/models/ebm.yaml`: E01/E02/E03 with raw and standardized numerical representations. Three raw candidates participate in nested inner-AP selection; three standardized pairs are sensitivity experiments. All fixed parameters and the .001 practical AP margin match the executed experiment. The previous unexecuted search-space ranges are superseded.
+
+The group's canonical formal EBM OOF is `results/models/ebm/individual_IT25100429/oof_predictions.csv`, paired with `fold_metrics.csv` and `summary_metrics.json` in that directory. Mean fold AP .099558; pooled AP .099000; pooled ROC-AUC .495976. This is a completed nested development evaluation, not final holdout evaluation or a frozen deployment model. Earlier EBM status tables are superseded by this update.
+
+Top-level EBM outputs are historical default-only results and must not be loaded as the group's formal input. `load_formal_ebm_input` checks the configured paths, artifact manifest hashes and exact frozen development membership; it has no historical fallback. `notebooks/group/02_model_comparison.ipynb` explicitly uses this loader.

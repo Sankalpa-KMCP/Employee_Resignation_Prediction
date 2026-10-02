@@ -18,9 +18,9 @@ models:
     protocol: strict nested candidate selection
     tuning_complete: true
   EBM:
-    oof_path: results/models/ebm/oof_predictions.csv
-    protocol: fixed/default configuration 5-fold OOF; multi-candidate tuning not yet evidenced
-    tuning_complete: false
+    oof_path: results/models/ebm/individual_IT25100429/oof_predictions.csv
+    protocol: nested inner-AP selection among three raw candidates; standardized variants are sensitivity evidence
+    tuning_complete: true
   TabNet:
     oof_path: results/models/tabnet/oof_predictions.csv
     protocol: strict nested candidate selection
