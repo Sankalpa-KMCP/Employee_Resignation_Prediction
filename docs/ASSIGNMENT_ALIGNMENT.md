@@ -4,8 +4,8 @@
 |---|---|---|
 | One model per student | Six model notebooks under `notebooks/team_contributions/models/` | Evidenced |
 | Model suitability / implementation explanation | Model notebooks + configs + `src/models/` | Evidenced |
-| Hyperparameter tuning / varieties | CatBoost, XGBoost, LightGBM, TabNet have candidate-selection evidence | Partial across all six |
-| Different preprocessing / hyperparameter variants | Model-specific adapters/configs and tuning artifacts | Evidenced, except EBM final tuning and FT final strict-nested rerun |
+| Hyperparameter tuning / varieties | CatBoost, XGBoost, LightGBM, EBM, TabNet have candidate-selection evidence | Partial across all six |
+| Different preprocessing / hyperparameter variants | Model-specific adapters/configs and tuning artifacts | Evidenced, except FT final strict-nested rerun |
 | Relevant metrics | AP, ROC-AUC, Brier, threshold metrics, fold stability | Evidenced |
 | Validation method | Frozen 80/20 split and five development CV folds | Evidenced |
 | Compare six individual models | `notebooks/group/02_model_comparison.ipynb`, `results/comparison/` | Completed on development OOF |
@@ -18,6 +18,6 @@
 ## Unresolved items that must not be hidden
 
 1. Official Group ID and personal identity mapping are not present in the repository.
-2. EBM has not evidenced a genuine multi-candidate tuning run.
+2. EBM nested development results are imported from `main` and manifest-verified; a full local retraining of the 60 experimental fits has not been performed.
 3. FT-Transformer has saved controlled-screening/OOF evidence, but the final strict-nested candidate workflow has not been independently reproduced in this package.
 4. The final holdout remains intentionally untouched because no final model is frozen.

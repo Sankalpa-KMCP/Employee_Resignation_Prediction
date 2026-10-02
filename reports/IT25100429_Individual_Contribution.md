@@ -3,9 +3,9 @@
 ## Scope and demonstration
 My responsibilities are numerical standardization and the Member 5 Explainable Boosting Machine classifier. Standardization supports the model investigation; EBM is the implemented classifier satisfying the individual model requirement.
 
-Open `notebooks/member_contributions/IT25100429_Standardization.ipynb` for numerical feature selection, raw/scaled statistics, salary histograms, mathematical explanation and a training-fold-only scaler demonstration. The whole-development scaling section is descriptive, not a reusable CV transformer.
+Open `notebooks/team_contributions/preprocessing/IT25100429_Standardization.ipynb` for numerical feature selection, raw/scaled statistics, salary histograms, mathematical explanation and a training-fold-only scaler demonstration. The whole-development scaling section is descriptive, not a reusable CV transformer.
 
-Open `notebooks/09_member_5/09_m5_ebm.ipynb` for model suitability, implementation, six varieties, bounded tuning, validation rationale, metrics, parameter/preprocessing comparison, conclusions and model explanations. The helper is `src/models/ebm_experiments.py`.
+Open `notebooks/team_contributions/models/member_5_ebm/09_m5_ebm.ipynb` for model suitability, implementation, six varieties, bounded tuning, validation rationale, metrics, parameter/preprocessing comparison, conclusions and model explanations. The helper is `src/models/ebm_experiments.py`.
 
 ## Assessment evidence map
 

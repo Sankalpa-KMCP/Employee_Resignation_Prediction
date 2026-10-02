@@ -13,3 +13,7 @@ These checks ran on macOS. Native Windows execution has not yet been performed b
 The manual GitHub Actions workflow `.github/workflows/ebm-windows-portability.yml` creates a fresh checkout on `windows-latest`, enables `core.autocrlf=true` before checkout, asserts native Windows and CRLF bytes, loads the formal inputs, and runs the regression suite. It deliberately does not regenerate the manifest before loading it.
 
 After the changes are pushed to GitHub, open Actions, select **EBM Windows formal-input portability**, and choose **Run workflow** on the updated branch. Only a successful run establishes native Windows verification. The workflow has been saved locally, not dispatched.
+
+## Local branch integration verification — 2026-10-02
+
+The EBM changes were imported into `refactor/file-architecture` on Windows with Python 3.14. The 96 targeted EBM/configuration/notebook/evaluation tests passed, including CRLF loading, manifest regeneration, and rejection of altered content. The manifest-bound formal loader returned 80,000 OOF rows and five folds; the six candidate files contain 480,000 validated development-only rows in total. Four group analysis notebooks executed successfully with the canonical EBM input. Full EBM retraining and the fresh Windows GitHub Actions checkout workflow were not run during this integration.

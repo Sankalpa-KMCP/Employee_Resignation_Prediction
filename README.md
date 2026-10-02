@@ -54,7 +54,7 @@ The upgraded package contains executed development OOF evidence for all six head
 - CatBoost: five-fold OOF evaluation and multi-candidate nested tuning evidence are present.
 - XGBoost: an upgraded **8-candidate × 5-outer-fold strict nested search** is present under `results/models/xgboost/strict_nested/`.
 - LightGBM: strict-nested evaluation artifacts are present; the current adapter uses the supported `eval_set` API.
-- EBM: five-fold OOF evaluation is present for the configured defaults; a genuine multi-candidate tuning run is **not** evidenced and must not be called a tuned optimum.
+- EBM: completed nested five-fold development evaluation with three raw candidates and three standardized sensitivity variants; formal inputs are verified against their manifest under `results/models/ebm/individual_IT25100429/`.
 - TabNet: strict-nested five-fold OOF evaluation and candidate-selection evidence are present.
 - Group model comparison: completed in `notebooks/group/02_model_comparison.ipynb` and `results/comparison/`.
 - Calibration diagnostics: completed development-only in `notebooks/group/03_calibration.ipynb`.

@@ -55,7 +55,7 @@ Shared baselines include Dummy classifiers, and PCA is benchmarked with Logistic
 - **LightGBM:** strict nested candidate selection evidenced.
 - **TabNet:** strict nested candidate selection evidenced.
 - **FT-Transformer:** saved five-fold OOF results and earlier controlled screening are present, but the final strict-nested eight-candidate adapter run has not been independently reproduced in this package.
-- **EBM:** five-fold OOF evaluation exists for the configured defaults; a genuine multi-candidate tuning run is not evidenced and must not be described as a tuned optimum.
+- **EBM:** nested five-fold development evaluation is complete with three raw primary candidates and three standardized sensitivity variants. The formal input is manifest-bound in `results/models/ebm/individual_IT25100429/`.
 
 ## 5. Evaluation and Comparison
 
@@ -68,9 +68,9 @@ All six canonical development OOF files cover the same 80,000 development employ
 | FT-Transformer | 0.099979 | 0.497254 | 0.247413 | 0.099696 ± 0.002237 |
 | TabNet | 0.099965 | 0.499317 | 0.186177 | 0.101700 ± 0.003876 |
 | CatBoost | 0.099346 | 0.500155 | 0.210753 | 0.100690 ± 0.002784 |
-| EBM | 0.098543 | 0.493466 | 0.090124 | 0.098745 ± 0.001697 |
+| EBM | 0.099000 | 0.495976 | 0.090109 | 0.099558 ± 0.002073 |
 
-The development prevalence/no-skill AP is approximately **0.1001**. XGBoost is the numerical pooled-AP leader after the upgraded nested search, but its AP uplift above prevalence is only about **0.0010**. This difference is too small to support a claim of meaningful predictive usefulness, especially while FT-Transformer and EBM do not yet have equivalent final tuning evidence.
+The development prevalence/no-skill AP is approximately **0.1001**. XGBoost is the numerical pooled-AP leader after the upgraded nested search, but its AP uplift above prevalence is only about **0.0010**. This difference is too small to support a claim of meaningful predictive usefulness, especially while the final FT-Transformer strict-nested workflow remains to be independently reproduced.
 
 Calibration diagnostics are saved in `results/calibration/`. EBM has the smallest raw Brier score because its probabilities stay close to the low base rate; this is a calibration property and does not make it the strongest discriminator.
 
@@ -98,7 +98,7 @@ The most important lesson is that model sophistication cannot compensate for wea
 
 The project also demonstrates why leakage control and reproducibility matter: a high-looking score would be misleading if produced by holdout reuse, target leakage or inconsistent rows. The frozen split registry, common OOF contracts and development-only tuning help prevent those errors.
 
-Remaining limitations are explicit: FT-Transformer still requires a final strict-nested rerun in a compatible environment, EBM still requires a genuine bounded multi-candidate tuning run, and the final report identity fields must be supplied by the group. Until those points are resolved, the formal holdout should remain untouched.
+Remaining limitations are explicit: FT-Transformer still requires a final strict-nested rerun in a compatible environment, the imported EBM experimental fits have not been independently retrained locally, and the final report identity fields must be supplied by the group. Until those points are resolved, the formal holdout should remain untouched.
 
 ## 9. References
 
