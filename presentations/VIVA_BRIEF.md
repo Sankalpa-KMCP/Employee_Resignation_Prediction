@@ -8,10 +8,12 @@ We evaluated six different model families on the same frozen 80,000-row developm
 
 - FT-Transformer: saved controlled-screening and five-fold OOF evidence; final strict-nested rerun still unresolved.
 - CatBoost: strict nested candidate evidence.
-- XGBoost: eight-candidate strict nested upgrade; pooled AP ≈ 0.101115.
+- XGBoost: Member 3's current P1 one-hot eight-candidate nested run; pooled AP ≈ 0.101181. P2/P3 are sensitivity evidence.
 - LightGBM: strict nested candidate evidence; adapter API issue repaired in current source.
-- EBM: five-fold default-configuration OOF; do **not** call it tuned yet.
+- EBM: completed five-fold nested selection among three raw candidates plus standardized sensitivity pairs; pooled AP ≈ 0.099000.
 - TabNet: strict nested candidate evidence.
+
+The six members' compact preprocessing, parameter, metric and validation tables are in `reports/INDIVIDUAL_MODEL_EVIDENCE.md`. The short salary-masking results for Members 1, 2, 4 and 6 are exploratory teaching evidence, not substitutes for the full five-fold OOF results.
 
 ## Questions every member should be able to answer
 

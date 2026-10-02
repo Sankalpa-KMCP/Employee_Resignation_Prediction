@@ -10,8 +10,8 @@ models:
     protocol: strict nested candidate selection
     tuning_complete: true
   XGBoost:
-    oof_path: results/models/xgboost/strict_nested/oof_predictions.csv
-    protocol: strict nested 8-candidate selection
+    oof_path: results/models/xgboost/oof_predictions.csv
+    protocol: Member 3 primary P1 one-hot; strict nested 8-candidate selection; P2/P3 preprocessing sensitivity results are descriptive
     tuning_complete: true
   LightGBM:
     oof_path: results/models/lightgbm/strict_nested/oof_predictions.csv

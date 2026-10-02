@@ -1,0 +1,29 @@
+{
+  "role": "Exploratory preprocessing sensitivity; never select the headline experiment from these validation scores",
+  "outer_fold": 1,
+  "training_sample_rows": 5000,
+  "validation_sample_rows": 2000,
+  "training_sample_seed": 2026,
+  "validation_sample_seed": 2027,
+  "salary_mask_value_from_training_only": 6500.0,
+  "candidate_templates": {
+    "FT-Transformer": [
+      "FT01",
+      "FT02"
+    ],
+    "CatBoost": [
+      "C01",
+      "C02"
+    ],
+    "LightGBM": [
+      "LGBM_F01",
+      "LGBM_F02"
+    ],
+    "TabNet": [
+      "T01",
+      "T02"
+    ]
+  },
+  "training_cap": "FT/TabNet 5 epochs; CatBoost/LightGBM 120 trees; all shorter than formal evaluations",
+  "split": "training sample from folds 2-5; untouched validation sample from outer fold 1; no formal holdout IDs"
+}
