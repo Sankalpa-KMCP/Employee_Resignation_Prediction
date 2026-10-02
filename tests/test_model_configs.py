@@ -28,7 +28,7 @@ EXPECTED_MODELS = [
 ]
 
 # Models migrated to the modernized target schema (strict schema enforcement)
-MIGRATED_TARGET_MODELS = {"catboost", "ft_transformer", "lightgbm"}
+MIGRATED_TARGET_MODELS = {"catboost", "ft_transformer", "lightgbm", "ebm"}
 
 # TRANSITIONAL: Legacy schema top-level keys for unmigrated configs
 LEGACY_REQUIRED_TOP_LEVEL_KEYS = [

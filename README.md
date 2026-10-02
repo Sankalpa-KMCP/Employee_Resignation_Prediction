@@ -15,7 +15,7 @@ The objective of this project is to develop and benchmark six advanced tabular m
 * **Predictor Set:** 17 validated predictors defined in `configs/feature_contract.yaml` (4 categorical, 13 numerical/ordinal attributes).
 * **Primary Performance Metric:** **Average Precision (AP / PR-AUC)**. Secondary metrics include ROC-AUC, Brier Score, Balanced Accuracy, Recall, and F1.
 * **Planned Resource Simulation:** Retention prioritization at 20% organizational intervention capacity, with sensitivity analysis around the primary capacity and comparison of random, risk-only, value-only, and risk-times-value-proxy strategies.
-* **Current Evidence:** Completed development experiments so far are close to the no-skill AP baseline (~0.10). Five headline models still require formal evaluation, so this is **not yet a final no-signal conclusion**.
+* **Current Evidence:** Completed development experiments so far are close to the no-skill AP baseline (~0.10). Some headline models still require formal evaluation, so this is **not yet a final no-signal conclusion**.
 
 ---
 
@@ -79,7 +79,7 @@ Model-specific preprocessing is fitted only on the appropriate development-train
     ├─ 06 CatBoost [BASIC ADAPTER/CONFIG/SCAFFOLD PRESENT — FORMAL WORKFLOW PENDING]
     ├─ 07 XGBoost [BASIC ADAPTER/CONFIG/SCAFFOLD PRESENT — FORMAL WORKFLOW PENDING]
     ├─ 08 LightGBM [BASIC ADAPTER/CONFIG/SCAFFOLD PRESENT — FORMAL WORKFLOW PENDING]
-    ├─ 09 EBM [BASIC ADAPTER/CONFIG/SCAFFOLD PRESENT — FORMAL WORKFLOW PENDING]
+    ├─ 09 EBM [NESTED DEVELOPMENT EVALUATION COMPLETE — CANONICAL INPUT REGISTERED]
     └─ 10 TabNet [STRICT-NESTED 5-FOLD DEVELOPMENT OOF COMPLETE — HOLDOUT UNTOUCHED]
    ↓
 11 Multi-Model Comparison & Error Analysis [SCAFFOLD — NOT EXECUTED]
@@ -110,7 +110,7 @@ Final Academic Report + Presentation Deck + Viva [PENDING]
 | `06_member_2/06_m2_catboost.ipynb`       | CatBoost (Member 2)                     | Headline Models     | **BASIC SCAFFOLD/ADAPTER PRESENT — FORMAL WORKFLOW PENDING** |
 | `07_member_3/07_m3_xgboost.ipynb`        | XGBoost (Member 3)                      | Headline Models     | **BASIC SCAFFOLD/ADAPTER PRESENT — FORMAL WORKFLOW PENDING** |
 | `08_member_4/08_m4_lightgbm.ipynb`       | LightGBM (Member 4)                     | Headline Models     | **BASIC SCAFFOLD/ADAPTER PRESENT — FORMAL WORKFLOW PENDING** |
-| `09_member_5/09_m5_ebm.ipynb`            | Explainable Boosting Machine (Member 5) | Headline Models     | **BASIC SCAFFOLD/ADAPTER PRESENT — FORMAL WORKFLOW PENDING** |
+| `09_member_5/09_m5_ebm.ipynb`            | Explainable Boosting Machine (Member 5) | Headline Models     | **NESTED DEVELOPMENT EVALUATION COMPLETE** |
 | `10_member_6/10_m6_tabnet.ipynb`         | TabNet (Member 6)                       | Headline Models     | **STRICT-NESTED 5-FOLD DEVELOPMENT OOF COMPLETE**            |
 | `11_model_comparison.ipynb`              | Multi-Model Comparison & Error Analysis | Evaluation          | **SCAFFOLD — NOT EXECUTED**                                  |
 | `12_calibration.ipynb`                   | Probability Calibration & Reliability   | Evaluation          | **SCAFFOLD — NOT EXECUTED**                                  |
@@ -129,6 +129,7 @@ These are completed development-stage results only; they are **not** final holdo
 | Logistic Regression — No PCA                         |    0.100270 | 0.499881 | Completed benchmark                                  |
 | Logistic Regression — PCA 95%                        |    0.099721 | 0.499724 | Completed benchmark                                  |
 | FT-Transformer — current weighted early-stopping run |    0.099979 | 0.497254 | 5-fold OOF result available; protocol review pending |
+| EBM — raw-candidate nested development OOF | 0.099000 | 0.495976 | Complete; canonical individual-folder artifacts |
 | TabNet — formal strict-nested development OOF        |    0.099965 | 0.499317 | Complete: 5 outer folds, 40 candidate evaluations   |
 
 The formal TabNet result is also clustered around the no-skill reference. It contains 80,000 canonical OOF predictions from five 16,000-row outer folds and 40 inner candidate evaluations; the formal holdout was not used. The earlier T01 pooled result (`0.101706` AP / `0.504556` ROC-AUC) remains historical/exploratory evidence and is not the headline estimate. No final 80,000-row TabNet refit has been performed because model comparison must occur first. The remaining protocol-incomplete headline models must still be formally evaluated before a final project-wide conclusion about predictive signal is made.
@@ -169,7 +170,7 @@ Employee_Resignation_Prediction/
 │   ├── models/
 │   │   ├── ft_transformer/              # Populated with current FT experiment results
 │   │   ├── catboost/                    # Formal results pending
-│   │   ├── ebm/                         # Formal results pending
+│   │   ├── ebm/individual_IT25100429/    # Canonical nested EBM results
 │   │   ├── lightgbm/                    # Formal results pending
 │   │   ├── tabnet/                      # Formal strict-nested development results available
 │   │   └── xgboost/                     # Formal results pending
@@ -260,3 +261,11 @@ The project is **not yet complete**. The next formal work is to align and comple
 For full methodology and governance details, use:
 
 `docs/context/Employee_Resignation_Prediction_AI_Project_Context_v4_6_2.md`
+
+## EBM formal input reconciliation — IT25100429
+
+The six executed varieties are now registered in `configs/models/ebm.yaml`: E01/E02/E03 with raw and standardized numerical representations. Three raw candidates participate in nested inner-AP selection; three standardized pairs are sensitivity experiments. All fixed parameters and the .001 practical AP margin match the executed experiment. The previous unexecuted search-space ranges are superseded.
+
+The group's canonical formal EBM OOF is `results/models/ebm/individual_IT25100429/oof_predictions.csv`, paired with `fold_metrics.csv` and `summary_metrics.json` in that directory. Mean fold AP .099558; pooled AP .099000; pooled ROC-AUC .495976. This is a completed nested development evaluation, not final holdout evaluation or a frozen deployment model. Earlier EBM status tables are superseded by this update.
+
+Top-level EBM outputs are historical default-only results and must not be loaded as the group's formal input. `load_formal_ebm_input` checks the configured paths, artifact manifest hashes and exact frozen development membership; it has no historical fallback. Notebook 11 explicitly uses this loader.

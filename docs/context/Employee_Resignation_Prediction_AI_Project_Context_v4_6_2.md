@@ -2740,7 +2740,7 @@ Use milestone dependencies rather than exact administrative dates.
 | CatBoost | COMPLETED FORMAL DEVELOPMENT EVALUATION; strict nested 5-fold CV (pooled AP 0.099350; chance baseline) |
 | XGBoost | Current fixed-configuration 5-fold development results saved; final nested tuning/weighting alignment pending |
 | LightGBM | Adapter/config/scaffold present; formal nested evaluation pending |
-| EBM | Adapter/config present; executed development results available upstream on `origin/main`; local integration/verification pending; final nested-protocol status still to be verified |
+| EBM | COMPLETED NESTED DEVELOPMENT EVALUATION; six registered varieties, three primary raw candidates; canonical input `results/models/ebm/individual_IT25100429/oof_predictions.csv` |
 | TabNet | COMPLETED FORMAL DEVELOPMENT EVALUATION; strict-nested 5-fold CV, 40 candidate evaluations, five outer winner refits, 80,000 OOF rows, pooled AP 0.099965, pooled ROC-AUC 0.499317, formal holdout untouched |
 | Model comparison | SCAFFOLD — NOT EXECUTED (`11_model_comparison.ipynb`) |
 | Calibration | SCAFFOLD — NOT EXECUTED (`12_calibration.ipynb`) |
@@ -2770,7 +2770,7 @@ Use milestone dependencies rather than exact administrative dates.
 | CatBoost | M2 | 0.100956 CV mean; 0.099350 pooled AP | 0.003008 | completed formal strict-nested development run | 0.501267 CV mean; 0.500193 pooled | 0.211764 pooled | 0.098728 precision, 0.253871 recall, 0.142168 F1 @ 0.50 | ~368s (~6.1 min) | 0 reported |
 | XGBoost | M3 | 0.103245 current CV mean; 0.102628 pooled AP | 0.003592 | current fixed-configuration development run | 0.506130 pooled | | 0.50 currently reported; final nested protocol pending | | 0 reported |
 | LightGBM | M4 | TO BE GENERATED | | | | | | | |
-| EBM | M5 | UPSTREAM RESULT EXISTS — LOCAL VERIFICATION REQUIRED | | | | | | | |
+| EBM | M5 | .099558 CV mean; .099000 pooled AP | .002073 | nested development; canonical individual-folder OOF | .495976 pooled | .090109 | F1=0 at .50 | recorded per variety | 0 |
 | TabNet | M6 | 0.101700 CV mean; 0.099965 pooled AP | 0.003876 | completed formal strict-nested development run; historical T01 pooled AP 0.101706 retained separately | 0.501142 CV mean; 0.499317 pooled | 0.186177 pooled | 0.147103 F1 @ 0.50 | 6,189.80s fit + 2.70s predict | 0 reported |
 
 ### 8.33.3 Complexity and evidence comparison
@@ -3116,3 +3116,11 @@ affected_items:
 reconsider_if: precise trigger
 ```
 
+
+## EBM formal input reconciliation — IT25100429
+
+The six executed varieties are now registered in `configs/models/ebm.yaml`: E01/E02/E03 with raw and standardized numerical representations. Three raw candidates participate in nested inner-AP selection; three standardized pairs are sensitivity experiments. All fixed parameters and the .001 practical AP margin match the executed experiment. The previous unexecuted search-space ranges are superseded.
+
+The group's canonical formal EBM OOF is `results/models/ebm/individual_IT25100429/oof_predictions.csv`, paired with `fold_metrics.csv` and `summary_metrics.json` in that directory. Mean fold AP .099558; pooled AP .099000; pooled ROC-AUC .495976. This is a completed nested development evaluation, not final holdout evaluation or a frozen deployment model. Earlier EBM status tables are superseded by this update.
+
+Top-level EBM outputs are historical default-only results and must not be loaded as the group's formal input. `load_formal_ebm_input` checks the configured paths, artifact manifest hashes and exact frozen development membership; it has no historical fallback. Notebook 11 explicitly uses this loader.

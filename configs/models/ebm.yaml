@@ -1,67 +1,101 @@
-# ============================================================
-# Model Configuration: Explainable Boosting Machine / EBM (Member 5)
-# ============================================================
+# Authoritative registry of the six executed EBM varieties.
+# Three raw candidates participate in primary nested selection; scaled pairs are sensitivity only.
 model:
-  name: "EBM"
-  model_id: "ebm"
-  member: "Member 5"
-  algorithm_family: "Generalized Additive Models with Interactions (GA2M)"
-  implementation: "interpret.glassbox.ExplainableBoostingClassifier"
-
-# ------------------------------------------------------------
-# Reproducibility & Environment
-# ------------------------------------------------------------
+  name: EBM
+  model_id: ebm
+  id: ebm
+  member: Member 5
+  student_id: IT25100429
+  implementation: interpret.glassbox.ExplainableBoostingClassifier
+  algorithm_family: Generalized Additive Models with Interactions
 reproducibility:
   random_seed: 42
-  n_jobs: -1
-
-# ------------------------------------------------------------
-# Fixed Parameters (Baseline Defaults)
-# ------------------------------------------------------------
+  n_jobs: 2
 fixed_params:
+  objective: log_loss
   random_state: 42
-  n_jobs: -1
-
-# ------------------------------------------------------------
-# Cross-Validation Strategy
-# ------------------------------------------------------------
-validation:
-  cv_folds: 5
-  early_stopping_rounds: 50
-  validation_fraction_inner: 0.15
-
-# ------------------------------------------------------------
-# Bounded Hyperparameter Search Space
-# ------------------------------------------------------------
-search_space:
-  max_bins:
-    type: "int"
-    low: 128
-    high: 512
-    step: 64
-    default: 256
-  max_interaction_bins:
-    type: "int"
-    low: 16
-    high: 64
-    step: 16
-    default: 32
-  interactions:
-    type: "int"
-    low: 5
-    high: 25
-    step: 5
-    default: 10
-  learning_rate:
-    type: "float"
-    low: 0.01
-    high: 0.1
-    log: true
-    default: 0.04
-  min_samples_leaf:
-    type: "int"
-    low: 2
-    high: 10
-    step: 2
-    default: 4
-  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage
+  n_jobs: 2
+  max_bins: 256
+  max_interaction_bins: 32
+  max_rounds: 5000
+  early_stopping_rounds: 100
+  validation_size: 0.15
+  outer_bags: 8
+inner_validation:
+  fraction: 0.15
+  stratified: true
+  metric: average_precision
+  early_stopping_metric: log_loss
+  primary_preprocessing: raw
+  practical_ap_margin: 0.001
+  tie_break:
+  - interactions
+  - max_leaves
+  - candidate_id
+class_imbalance:
+  strategy: none
+candidates:
+- id: E01_raw
+  setting: E01
+  preprocessing: raw
+  role: primary
+  params:
+    learning_rate: 0.015
+    max_leaves: 2
+    min_samples_leaf: 10
+    interactions: 0
+- id: E01_standardized
+  setting: E01
+  preprocessing: standardized
+  role: sensitivity
+  params:
+    learning_rate: 0.015
+    max_leaves: 2
+    min_samples_leaf: 10
+    interactions: 0
+- id: E02_raw
+  setting: E02
+  preprocessing: raw
+  role: primary
+  params:
+    learning_rate: 0.03
+    max_leaves: 2
+    min_samples_leaf: 4
+    interactions: 5
+- id: E02_standardized
+  setting: E02
+  preprocessing: standardized
+  role: sensitivity
+  params:
+    learning_rate: 0.03
+    max_leaves: 2
+    min_samples_leaf: 4
+    interactions: 5
+- id: E03_raw
+  setting: E03
+  preprocessing: raw
+  role: primary
+  params:
+    learning_rate: 0.005
+    max_leaves: 3
+    min_samples_leaf: 2
+    interactions: 10
+- id: E03_standardized
+  setting: E03
+  preprocessing: standardized
+  role: sensitivity
+  params:
+    learning_rate: 0.005
+    max_leaves: 3
+    min_samples_leaf: 2
+    interactions: 10
+canonical_results:
+  directory: results/models/ebm/individual_IT25100429
+  oof_predictions: results/models/ebm/individual_IT25100429/oof_predictions.csv
+  fold_metrics: results/models/ebm/individual_IT25100429/fold_metrics.csv
+  summary_metrics: results/models/ebm/individual_IT25100429/summary_metrics.json
+  manifest: results/models/ebm/individual_IT25100429/formal_input_manifest.json
+  status: completed_nested_development_evaluation
+  historical_directory: results/models/ebm
+  historical_policy: Top-level EBM files are historical default-only evidence; never
+    use them as the formal group input.
