@@ -54,7 +54,7 @@ The upgraded package contains executed development OOF evidence for all six head
 - CatBoost: five-fold OOF evaluation and multi-candidate nested tuning evidence are present.
 - XGBoost: an upgraded **8-candidate × 5-outer-fold strict nested search** is present under `results/models/xgboost/strict_nested/`.
 - LightGBM: strict-nested evaluation artifacts are present; the current adapter uses the supported `eval_set` API.
-- EBM: five-fold OOF evaluation is present for the configured defaults; a genuine multi-candidate tuning run is **not** evidenced and must not be called a tuned optimum.
+- EBM: completed six-variety evaluation with nested selection among three raw candidates and three paired standardization sensitivities. Canonical formal results: `results/models/ebm/individual_IT25100429/`. Mean fold AP .099558; pooled AP .099000; ROC-AUC .495976. Top-level EBM files are historical defaults.
 - TabNet: strict-nested five-fold OOF evaluation and candidate-selection evidence are present.
 - Group model comparison: completed in `notebooks/group/02_model_comparison.ipynb` and `results/comparison/`.
 - Calibration diagnostics: completed development-only in `notebooks/group/03_calibration.ipynb`.
@@ -95,3 +95,7 @@ Notebooks should orchestrate and explain the implementation rather than become a
 ## Historical documentation
 
 Documents under `docs/context/` and `docs/archive/` preserve earlier project states. They may contain pre-refactor paths and older status statements. Use this README and `docs/ARCHITECTURE.md` for the current repository structure.
+
+### IT25100429 contribution on the refactored branch
+
+The completed notebooks use `notebooks/team_contributions/preprocessing/IT25100429_Standardization.ipynb` and `notebooks/team_contributions/models/member_5_ebm/09_m5_ebm.ipynb`. The experiment reads `configs/models/ebm.yaml`; `scripts/run_ebm_nested.py` invokes that same six-variety workflow. Group analysis uses the canonical manifest-validated EBM OOF via `configs/analysis_registry.yaml`. The Windows CRLF fix and manual Windows CI workflow are restored; native Windows verification remains pending. Assessment and viva guidance is in `reports/IT25100429_Individual_Contribution.md`.

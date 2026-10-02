@@ -1,0 +1,22 @@
+{
+  "model_name": "EBM",
+  "protocol": "five_fold_nested_development_raw_candidates",
+  "hash_normalization": "crlf_to_lf",
+  "config_sha256": "9c33b2d0f3d8bd7945c5c734dde31201377e3f0306edaf398eeb950e9ff7b347",
+  "rows": 80000,
+  "formal_holdout_used": false,
+  "files": {
+    "oof_predictions": {
+      "path": "results/models/ebm/individual_IT25100429/oof_predictions.csv",
+      "sha256": "6d81c366812d1e27ba120b30a5d9c8f6c151a44b9f741a9c7d27064b33ba91ff"
+    },
+    "fold_metrics": {
+      "path": "results/models/ebm/individual_IT25100429/fold_metrics.csv",
+      "sha256": "97d6f76f56b140b77f5cad2b918efd4e18e5d6742d46f966d79a7fbb76f45455"
+    },
+    "summary_metrics": {
+      "path": "results/models/ebm/individual_IT25100429/summary_metrics.json",
+      "sha256": "3d8fe3de744ea43e1882e786fcc6c78cda2d275b25e86b5d371146f06a4f900d"
+    }
+  }
+}

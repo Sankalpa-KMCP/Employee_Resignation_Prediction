@@ -1,0 +1,18 @@
+{
+  "average_precision": 0.09900047291772421,
+  "roc_auc": 0.49597571558344977,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "balanced_accuracy": 0.5,
+  "accuracy": 0.8999,
+  "brier_score": 0.09010896599124187,
+  "tn": 71992,
+  "fp": 0,
+  "fn": 8008,
+  "tp": 0,
+  "predicted_positive_count": 0,
+  "predicted_positive_rate": 0.0,
+  "cv_mean_ap": 0.0995577376800461,
+  "cv_std_ap": 0.00207293274495226
+}

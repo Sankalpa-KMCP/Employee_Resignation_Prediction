@@ -3131,3 +3131,9 @@ affected_items:
 reconsider_if: precise trigger
 ```
 
+
+## IT25100429 restored contribution — file-architecture branch
+
+The completed EBM experiment is restored in the refactored folder structure. The six executed varieties and fixed training settings are defined in `configs/models/ebm.yaml`; the helper is `src/models/ebm_experiments.py`, invoked by `scripts/run_ebm_nested.py`. Three raw candidates participate in primary nested inner-AP selection; their three standardized pairs are sensitivity experiments. Canonical formal input: `results/models/ebm/individual_IT25100429/oof_predictions.csv`, with manifest, fold and summary metrics in the same directory. Mean fold AP .099558; pooled AP .099000; ROC-AUC .495976. Previous statements that EBM tuning is incomplete are superseded by this verified evidence.
+
+Group analysis registry and notebooks now use this formal input through the CRLF-portable checksum loader. Top-level EBM results remain historical default-only evidence. Windows CI is restored but native Windows verification remains pending. No final holdout evaluation has been performed.

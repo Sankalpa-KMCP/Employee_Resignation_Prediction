@@ -1,0 +1,84 @@
+{
+  "student_id": "IT25100429",
+  "varieties": 6,
+  "inner_candidate_fits": 30,
+  "outer_candidate_refits": 30,
+  "formal_holdout_used": false,
+  "holdout_overlap": 0,
+  "seed": 42,
+  "practical_ap_margin": 0.001,
+  "python": "3.14.7",
+  "sklearn": "1.9.1",
+  "interpret": "0.7.8",
+  "candidate_settings": [
+    {
+      "setting": "E01",
+      "learning_rate": 0.015,
+      "max_leaves": 2,
+      "min_samples_leaf": 10,
+      "interactions": 0,
+      "preprocessing": "raw",
+      "candidate_id": "E01_raw"
+    },
+    {
+      "setting": "E01",
+      "learning_rate": 0.015,
+      "max_leaves": 2,
+      "min_samples_leaf": 10,
+      "interactions": 0,
+      "preprocessing": "standardized",
+      "candidate_id": "E01_standardized"
+    },
+    {
+      "setting": "E02",
+      "learning_rate": 0.03,
+      "max_leaves": 2,
+      "min_samples_leaf": 4,
+      "interactions": 5,
+      "preprocessing": "raw",
+      "candidate_id": "E02_raw"
+    },
+    {
+      "setting": "E02",
+      "learning_rate": 0.03,
+      "max_leaves": 2,
+      "min_samples_leaf": 4,
+      "interactions": 5,
+      "preprocessing": "standardized",
+      "candidate_id": "E02_standardized"
+    },
+    {
+      "setting": "E03",
+      "learning_rate": 0.005,
+      "max_leaves": 3,
+      "min_samples_leaf": 2,
+      "interactions": 10,
+      "preprocessing": "raw",
+      "candidate_id": "E03_raw"
+    },
+    {
+      "setting": "E03",
+      "learning_rate": 0.005,
+      "max_leaves": 3,
+      "min_samples_leaf": 2,
+      "interactions": 10,
+      "preprocessing": "standardized",
+      "candidate_id": "E03_standardized"
+    }
+  ],
+  "primary_preprocessing": "raw",
+  "final_model_frozen": false,
+  "fixed_parameters": {
+    "objective": "log_loss",
+    "random_state": 42,
+    "n_jobs": 2,
+    "max_bins": 256,
+    "max_interaction_bins": 32,
+    "max_rounds": 5000,
+    "early_stopping_rounds": 100,
+    "validation_size": 0.15,
+    "outer_bags": 8
+  },
+  "configuration_source": "configs/models/ebm.yaml",
+  "reconciliation": "Moved identical executed parameters into the authoritative config; numerical experiment unchanged."
+}
