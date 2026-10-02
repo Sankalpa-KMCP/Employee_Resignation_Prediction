@@ -8,6 +8,21 @@ version: "4.6.2"
 
 # AI entry point - read this first
 
+# Upgrade addendum — 2026-10-02
+
+**LIVE RECORD — VERIFIED FROM CURRENT REPOSITORY EVIDENCE.** This dated addendum supersedes older status-only statements later in this file where they describe work as pending. It does **not** alter the existing DECIDED methodology, model registry, ethical restrictions, or holdout-governance rules.
+
+- Raw dataset checksum re-verified as `2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb`; shape remains 100,000 × 20 and target prevalence remains 10.01%.
+- Frozen split registry remains 80,000 development / 20,000 holdout with five development folds.
+- CatBoost, LightGBM and TabNet retain strict-nested development evidence.
+- XGBoost now has an executed 8-candidate × 5-outer-fold strict-nested development search under `results/models/xgboost/strict_nested/`; pooled AP is approximately `0.101115` and pooled ROC-AUC approximately `0.504539`.
+- FT-Transformer retains saved controlled-screening and 5-fold OOF evidence, but its final strict-nested eight-candidate workflow has not been independently reproduced in the upgrade environment because the required RTDL dependency was unavailable there.
+- EBM retains a complete 5-fold OOF default-configuration run; a genuine multi-candidate tuning run is still not evidenced. A bounded rerunnable tuning script is now provided at `scripts/run_ebm_nested.py`.
+- Six-model development OOF comparison, calibration diagnostics, subgroup fairness diagnostics, and the optional development-only prioritization simulation are now executed and saved under `results/comparison/`, `results/calibration/`, `results/fairness/`, and `results/prioritization/`.
+- The current development evidence remains near no-skill; no final predictive model is frozen and the formal holdout remains intentionally unexecuted.
+- An evidence-backed report draft exists at `reports/FINAL_REPORT_DRAFT.md`. Official Group ID and personal identity mapping remain **PLACEHOLDER - HUMAN OR EXTERNAL INPUT REQUIRED** because the repository does not establish them.
+
+
 This project context is intentionally maintained as one canonical Markdown file for AI compatibility, project continuity, and auditability.
 
 ```yaml

@@ -303,8 +303,7 @@ class LightGBMAdapter:
                 model.fit(
                     X_inner_train,
                     y_inner_train,
-                    eval_X=X_inner_validation,
-                    eval_y=y_inner_validation,
+                    eval_set=[(X_inner_validation, y_inner_validation)],
                     eval_metric=self.selection_metric,
                     callbacks=[callback],
                 )

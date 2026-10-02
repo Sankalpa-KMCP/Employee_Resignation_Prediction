@@ -1,0 +1,11 @@
+{
+  "age_bands": [
+    "22-29",
+    "30-39",
+    "40-49",
+    "50-60"
+  ],
+  "scope": "development OOF only",
+  "prohibited_use": "No real hiring, firing, promotion, surveillance, disciplinary action, or automated retention decision.",
+  "interpretation": "Near-no-skill predictive performance means these subgroup results are descriptive and do not establish operational fairness."
+}

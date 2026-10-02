@@ -1,81 +1,250 @@
 # ============================================================
 # Model Configuration: XGBoost Classifier (Member 3)
+# Modernized Target Schema (v2.0.0)
+# Canonical source: Project Context v4.6.2, Sections 8.16, 8.19.2,
+# 8.21.5 (XGBoost search) and 8.25 (T-008, T-013, T-014, T-023).
 # ============================================================
 model:
-  name: "XGBoost"
+  id: "xgboost"
   model_id: "xgboost"
+  name: "XGBoost"                      # Must stay "XGBoost": OOF files and the runner's
+                                       # expected_model_name check already use this label.
+  owner: "member_3"
   member: "Member 3"
   algorithm_family: "Extreme Gradient Boosting"
   implementation: "xgboost.XGBClassifier"
+  config_version: "2.1.0"                # 2.1.0: preprocessing variants + tree-count policy
+  project_context_version: "4.6.2"
 
 # ------------------------------------------------------------
 # Reproducibility & Environment
 # ------------------------------------------------------------
 reproducibility:
-  random_seed: 42
+  random_seed: 42                      # Seeds the inner split and every XGBClassifier.
   n_jobs: -1
-  tree_method: "hist"
+  device: "cpu"                        # hist on CPU is deterministic for a fixed seed.
+  deterministic: true
 
 # ------------------------------------------------------------
-# Fixed Parameters (Baseline Defaults)
+# Inner-Validation & Early Stopping Policy (strict nested protocol)
+# All of this happens INSIDE the outer-training fold passed to fit().
+# The outer-validation fold and the formal holdout are never seen.
+# ------------------------------------------------------------
+inner_validation:
+  fraction: 0.15                       # 15% of outer-training rows (~9,600 of 64,000).
+  stratified: true
+  metric: "average_precision"          # Candidate selection uses sklearn AP on inner val.
+  early_stopping_rounds: 50            # Early stopping monitors fixed_params.eval_metric.
+  max_boosting_rounds: 1000            # Ceiling; early stopping picks the actual count.
+  refit_outer_train: true              # Refit winner on 100% of outer-training rows
+                                       # with n_estimators = selected best_iteration + 1,
+                                       # and NO eval set / early stopping at refit.
+
+# ------------------------------------------------------------
+# Semantic Class-Imbalance Strategy
+# Each candidate declares `weighting`:
+#   "none"          -> scale_pos_weight = 1.0
+#   "dynamic_ratio" -> scale_pos_weight = n_neg / n_pos, computed by the adapter
+#                      ONLY from the rows it is currently training on
+#                      (inner-train split during selection; outer-train at refit).
+# `weighting` is an adapter directive and must NOT be passed to XGBClassifier.
+# ------------------------------------------------------------
+class_imbalance:
+  strategy: "dynamic_ratio"
+  param_name: "scale_pos_weight"
+  candidate_key: "weighting"
+  allowed_values: ["none", "dynamic_ratio"]
+
+# ------------------------------------------------------------
+# Fixed Estimator Parameters (shared by every candidate)
 # ------------------------------------------------------------
 fixed_params:
   objective: "binary:logistic"
-  eval_metric: "aucpr"
-  random_state: 42
+  eval_metric: "aucpr"                 # Early-stopping monitor on inner validation only.
   tree_method: "hist"
+  n_estimators: 1000                   # = inner_validation.max_boosting_rounds
+  random_state: 42
   verbosity: 0
+  n_jobs: -1
 
 # ------------------------------------------------------------
-# Cross-Validation & Early Stopping Strategy
+# Search budget (T-014: search counts must not exceed frozen caps)
+# ------------------------------------------------------------
+search_budget:
+  max_candidates: 12                   # Canonical cap (Section 8.21.5).
+  declared_candidates: 8               # X01-X08 below.
+  selection_rule: "highest inner-validation average_precision; ties -> lower candidate id"
+
+# ------------------------------------------------------------
+# Discrete Candidate Registry X01-X08 (AUTHORITATIVE)
+# Every value is taken from the canonical Section 8.21.5 grid:
+#   max_depth 3/5/7; learning_rate 0.03/0.05/0.10; min_child_weight 1/5/10;
+#   subsample 0.8/1.0; colsample_bytree 0.8/1.0; reg_lambda 1/5/10;
+#   scale_pos_weight 1 or training-fold neg/pos ratio.
+# n_estimators is not a candidate axis: it is selected per fold by
+# early stopping under the 1000-round ceiling.
+# ------------------------------------------------------------
+candidates:
+  - id: "X01"
+    description: "Baseline unweighted (depth=5, lr=0.05, mcw=1, sub=0.8, col=0.8, lambda=1)"
+    params:
+      max_depth: 5
+      learning_rate: 0.05
+      min_child_weight: 1
+      subsample: 0.8
+      colsample_bytree: 0.8
+      reg_lambda: 1
+      weighting: "none"
+
+  - id: "X02"
+    description: "Baseline dynamic_ratio (depth=5, lr=0.05, mcw=1, sub=0.8, col=0.8, lambda=1)"
+    params:
+      max_depth: 5
+      learning_rate: 0.05
+      min_child_weight: 1
+      subsample: 0.8
+      colsample_bytree: 0.8
+      reg_lambda: 1
+      weighting: "dynamic_ratio"
+
+  - id: "X03"
+    description: "Conservative shallow unweighted (depth=3, lr=0.03, mcw=5, sub=1.0, col=1.0, lambda=5)"
+    params:
+      max_depth: 3
+      learning_rate: 0.03
+      min_child_weight: 5
+      subsample: 1.0
+      colsample_bytree: 1.0
+      reg_lambda: 5
+      weighting: "none"
+
+  - id: "X04"
+    description: "Conservative shallow dynamic_ratio (depth=3, lr=0.03, mcw=5, sub=1.0, col=1.0, lambda=5)"
+    params:
+      max_depth: 3
+      learning_rate: 0.03
+      min_child_weight: 5
+      subsample: 1.0
+      colsample_bytree: 1.0
+      reg_lambda: 5
+      weighting: "dynamic_ratio"
+
+  - id: "X05"
+    description: "High capacity unweighted (depth=7, lr=0.05, mcw=1, sub=0.8, col=0.8, lambda=1)"
+    params:
+      max_depth: 7
+      learning_rate: 0.05
+      min_child_weight: 1
+      subsample: 0.8
+      colsample_bytree: 0.8
+      reg_lambda: 1
+      weighting: "none"
+
+  - id: "X06"
+    description: "High capacity dynamic_ratio (depth=7, lr=0.05, mcw=1, sub=0.8, col=0.8, lambda=1)"
+    params:
+      max_depth: 7
+      learning_rate: 0.05
+      min_child_weight: 1
+      subsample: 0.8
+      colsample_bytree: 0.8
+      reg_lambda: 1
+      weighting: "dynamic_ratio"
+
+  - id: "X07"
+    description: "Regularized low-rate dynamic_ratio (depth=5, lr=0.03, mcw=10, sub=0.8, col=0.8, lambda=10)"
+    params:
+      max_depth: 5
+      learning_rate: 0.03
+      min_child_weight: 10
+      subsample: 0.8
+      colsample_bytree: 0.8
+      reg_lambda: 10
+      weighting: "dynamic_ratio"
+
+  - id: "X08"
+    description: "Fast learning dynamic_ratio (depth=5, lr=0.10, mcw=5, sub=0.8, col=0.8, lambda=5)"
+    params:
+      max_depth: 5
+      learning_rate: 0.10
+      min_child_weight: 5
+      subsample: 0.8
+      colsample_bytree: 0.8
+      reg_lambda: 5
+      weighting: "dynamic_ratio"
+
+# ------------------------------------------------------------
+# Tree-count policy (reconciles Section 8.21.5's n_estimators 300/600/1000)
+# The canonical grid lists n_estimators 300/600/1000 as discrete values. Here
+# the number of trees is chosen per fold by early stopping on the inner-
+# validation split, under a ceiling equal to the largest listed value (1000).
+# Every count from 1 to 1000 - including 300 and 600 - is therefore reachable,
+# and the choice uses inner-validation rows only, exactly like the discrete
+# grid would. This keeps the 8 candidates focused on the other hyperparameters
+# instead of tripling the grid (8 x 3 = 24 > 12 cap). The notebook's
+# tree-count diagnostic reports inner AP at fixed 300/600/1000 trees for every
+# candidate so the two policies can be compared on the same inner rows.
+# ------------------------------------------------------------
+tree_count_policy:
+  method: "inner early stopping under a fixed ceiling"
+  ceiling: 1000                        # = max of canonical {300, 600, 1000}
+  canonical_grid_values: [300, 600, 1000]
+  diagnostic_checkpoints: [300, 600, 1000]
+
+# ------------------------------------------------------------
+# Preprocessing variants (assessment: compare preprocessing varieties)
+# The PRIMARY variant is the canonical XGBoost representation (Section 8.19.2)
+# and is the only one that feeds model comparison (Notebook 11). The other
+# variants are SENSITIVITY experiments: each runs the identical nested
+# procedure (same 8 candidates, inner-only selection, outer folds prediction-
+# only) with a different input representation, and is compared descriptively.
+# Their results are not used to replace the primary pipeline.
+# ------------------------------------------------------------
+preprocessing_variants:
+  primary: "P1_onehot"
+  variants:
+    - id: "P1_onehot"
+      role: "primary"
+      encoding: "onehot"
+      drop_features: []
+      rationale: "Canonical M3 representation: fold-local OneHotEncoder(handle_unknown='ignore') on the 4 nominal categoricals; 13 numericals unscaled (trees are scale-invariant)."
+    - id: "P2_native_categorical"
+      role: "sensitivity"
+      encoding: "native"
+      drop_features: []
+      rationale: "XGBoost's own categorical splits (enable_categorical=True): category vocabularies learned from training rows only, unseen categories treated as missing. Tests whether one-hot encoding limits the splits trees can find."
+    - id: "P3_onehot_no_salary"
+      role: "sensitivity"
+      encoding: "onehot"
+      drop_features: ["Monthly_Salary"]
+      rationale: "Monthly_Salary is fully determined by Job_Title x Performance_Score (verified audit, Section 8.13.2), so it adds no information but can split importance with its sources. Tests whether removing the redundant feature changes performance or stability."
+
+# ------------------------------------------------------------
+# Evaluation guard
+# ------------------------------------------------------------
+evaluation:
+  primary_metric: "average_precision"
+  outer_cv_folds: 5
+  formal_holdout_allowed: false
+
+# ------------------------------------------------------------
+# COMPATIBILITY BLOCKS (descriptive only; `candidates` is authoritative)
+# tests/test_model_configs.py still lists xgboost as a legacy-schema model
+# and requires `validation` and a non-empty `search_space`. These mirror the
+# values above (same approach as tabnet.yaml) so no shared test file needs
+# editing. Adapters must read `inner_validation` and `candidates`, not these.
 # ------------------------------------------------------------
 validation:
   cv_folds: 5
   early_stopping_rounds: 50
   validation_fraction_inner: 0.15
 
-# ------------------------------------------------------------
-# Bounded Hyperparameter Search Space
-# ------------------------------------------------------------
 search_space:
-  n_estimators:
-    type: "int"
-    low: 200
-    high: 800
-    step: 100
-    default: 400
-  learning_rate:
-    type: "float"
-    low: 0.01
-    high: 0.2
-    log: true
-    default: 0.05
-  max_depth:
-    type: "int"
-    low: 3
-    high: 8
-    step: 1
-    default: 5
-  subsample:
-    type: "float"
-    low: 0.6
-    high: 1.0
-    step: 0.1
-    default: 0.8
-  colsample_bytree:
-    type: "float"
-    low: 0.6
-    high: 1.0
-    step: 0.1
-    default: 0.8
-  reg_alpha:
-    type: "float"
-    low: 0.0
-    high: 5.0
-    default: 0.1
-  reg_lambda:
-    type: "float"
-    low: 1.0
-    high: 10.0
-    default: 1.0
-  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage
+  max_depth: [3, 5, 7]
+  learning_rate: [0.03, 0.05, 0.10]
+  min_child_weight: [1, 5, 10]
+  subsample: [0.8, 1.0]
+  colsample_bytree: [0.8, 1.0]
+  reg_lambda: [1, 5, 10]
+  weighting: ["none", "dynamic_ratio"]
+  n_estimators_ceiling: 1000

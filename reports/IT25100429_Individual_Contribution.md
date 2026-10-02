@@ -3,9 +3,9 @@
 ## Scope and demonstration
 My responsibilities are numerical standardization and the Member 5 Explainable Boosting Machine classifier. Standardization supports the model investigation; EBM is the implemented classifier satisfying the individual model requirement.
 
-Open `notebooks/member_contributions/IT25100429_Standardization.ipynb` for numerical feature selection, raw/scaled statistics, salary histograms, mathematical explanation and a training-fold-only scaler demonstration. The whole-development scaling section is descriptive, not a reusable CV transformer.
+Open `notebooks/team_contributions/preprocessing/IT25100429_Standardization.ipynb` for numerical feature selection, raw/scaled statistics, salary histograms, mathematical explanation and a training-fold-only scaler demonstration. The whole-development scaling section is descriptive, not a reusable CV transformer.
 
-Open `notebooks/09_member_5/09_m5_ebm.ipynb` for model suitability, implementation, six varieties, bounded tuning, validation rationale, metrics, parameter/preprocessing comparison, conclusions and model explanations. The helper is `src/models/ebm_experiments.py`.
+Open `notebooks/team_contributions/models/member_5_ebm/09_m5_ebm.ipynb` for model suitability, implementation, six varieties, bounded tuning, validation rationale, metrics, parameter/preprocessing comparison, conclusions and model explanations. The helper is `src/models/ebm_experiments.py`.
 
 ## Assessment evidence map
 
@@ -52,3 +52,9 @@ Primary mean fold AP: 0.099558 (fold SD 0.002073); pooled AP: 0.099000; ROC-AUC:
 Raw and standardized versions gave identical OOF probabilities for each parameter setting. Standardization supplied no EBM performance benefit in this experiment. E01 had the highest fixed-variety mean fold AP (.099570), with zero interactions and two leaves, but this descriptive ranking must not be substituted for an unbiased nested-selection estimate. The inner-selected raw configurations were E02 for folds 1–2, E01 for folds 3–4 and E03 for fold 5.
 
 The environment used Python 3.14 and InterpretML 0.7.8, with other exact versions in the verification requirements. Execution in the formal Python 3.11 environment remains to be checked. Individual marks still depend on personally explaining and demonstrating the work.
+
+## Upstream refactored-branch verification record
+
+The contribution is restored on `refactor/file-architecture` using the new notebook locations. The standardization root resolver searches all parent directories. The canonical six-variety script replaces the unexecuted eight-candidate script. All four group-analysis notebooks now use the portable manifest loader for EBM. The existing parameter settings and trained OOF artifacts are unchanged; relocation verification uses these validated artifacts rather than repeating all 60 experimental fits.
+
+Refactored-branch verification completed: 96 relevant tests passed (including CRLF portability, strict config, frozen-holdout guards, group utilities and notebook architecture). Both relocated individual notebooks were verified from their own directories. EBM verification consumed the unchanged manifest-validated trained artifacts and ran its explanation demonstration; the full 60-fit training cell remains available for deliberate reruns. Group comparison, calibration diagnostics, fairness and prioritization notebooks executed successfully using the canonical EBM input, with derived outputs refreshed. The final holdout notebook was not executed. No native Windows run, commit or push was performed.
