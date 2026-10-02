@@ -5,7 +5,7 @@
 Before formal submission the group must:
 1. supply the verified Group ID;
 2. review member identities/ownership and AI-use declaration;
-3. resolve or accurately disclose the remaining FT-Transformer and EBM tuning limitations;
+3. resolve or accurately disclose the remaining FT-Transformer tuning limitation;
 4. format/export the report as a PDF of no more than 15 pages;
 5. name/title the final PDF using the Group ID as required by the evaluation document.
 
