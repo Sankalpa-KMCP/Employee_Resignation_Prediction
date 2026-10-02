@@ -2,8 +2,8 @@
   "development_rows": 80000,
   "positive_prevalence": 0.1001,
   "ranking_leader": "XGBoost",
-  "leader_pooled_average_precision": 0.10111510419605803,
-  "leader_ap_uplift_over_prevalence": 0.0010151041960580337,
+  "leader_pooled_average_precision": 0.10118149850917421,
+  "leader_ap_uplift_over_prevalence": 0.0010814985091742169,
   "final_model_frozen": false,
   "reason_not_frozen": "All models remain near the no-skill baseline and not all six have equivalent completed tuning evidence.",
   "formal_holdout_accessed": false

@@ -52,7 +52,7 @@ The upgraded package contains executed development OOF evidence for all six head
 
 - FT-Transformer: saved five-fold OOF evidence and controlled screening are present; the final strict-nested eight-candidate workflow has **not** been independently reproduced in this package.
 - CatBoost: five-fold OOF evaluation and multi-candidate nested tuning evidence are present.
-- XGBoost: an upgraded **8-candidate × 5-outer-fold strict nested search** is present under `results/models/xgboost/strict_nested/`.
+- XGBoost: Member 3's primary **P1 one-hot, 8-candidate × 5-outer-fold strict nested search** is the group input at `results/models/xgboost/oof_predictions.csv`. P2/P3 preprocessing comparisons are sensitivity evidence; the older independent result under `strict_nested/` is historical.
 - LightGBM: strict-nested evaluation artifacts are present; the current adapter uses the supported `eval_set` API.
 - EBM: completed nested five-fold development evaluation with three raw candidates and three standardized sensitivity variants; formal inputs are verified against their manifest under `results/models/ebm/individual_IT25100429/`.
 - TabNet: strict-nested five-fold OOF evaluation and candidate-selection evidence are present.
@@ -63,7 +63,9 @@ The upgraded package contains executed development OOF evidence for all six head
 - Formal holdout: still locked because no practically useful final model has been frozen.
 - Final report: evidence-backed draft content is in `reports/FINAL_REPORT_DRAFT.md`; the official Group ID is not available in the repository, so the required final Group-ID-named PDF cannot be generated accurately yet.
 
-The strongest pooled development Average Precision is the upgraded nested XGBoost result (~0.1011) versus a no-skill prevalence baseline of ~0.1001. The package therefore records a **near-no-signal negative result** rather than claiming useful resignation prediction.
+The strongest pooled development Average Precision is the current Member 3 XGBoost primary result (**0.101181**) versus a no-skill prevalence baseline of **0.1001**. The package therefore records a **near-no-signal negative result** rather than claiming useful resignation prediction. The six-model comparison ranks pooled AP; mean outer-fold AP is also reported and has a different numerical leader.
+
+The four models that previously lacked an explicit input-representation comparison now have a bounded, paired training exercise in `scripts/run_preprocessing_sensitivity.py`. It contrasts the full predictor set with training-median masking of `Monthly_Salary` on a 5,000/2,000 development sample. These short fits are explanatory evidence only; see `reports/INDIVIDUAL_MODEL_EVIDENCE.md` for all six members' variation tables and limitations.
 
 See `docs/ASSIGNMENT_ALIGNMENT.md` and `docs/FINAL_VALIDATION_STATUS.md` for the current assessment/readiness state.
 

@@ -13,7 +13,7 @@ This folder contains individually attributable work.
 - `IT25100445_Feature_Selection.ipynb`
 - `IT25100565_Data_Quality.ipynb`
 
-The project files do not establish which IT number corresponds to Member 1–6 model ownership, so this README does not guess that mapping.
+The verified Member 5 EBM contribution identifies IT25100429 as the standardization owner. The remaining IT-to-model relationships are not established here and should be verified by the group.
 
 ## Model contributions
 
@@ -27,3 +27,5 @@ The project files do not establish which IT number corresponds to Member 1–6 m
 - Member 6 — TabNet
 
 Each member should be able to explain model suitability, implementation, tuning/variants, validation, metrics, comparison, limitations and code/output during the viva.
+
+`reports/INDIVIDUAL_MODEL_EVIDENCE.md` collects compact comparison tables for all six members. The short paired preprocessing checks for Members 1, 2, 4 and 6 are exploratory and are clearly distinguished from their formal five-fold OOF results.

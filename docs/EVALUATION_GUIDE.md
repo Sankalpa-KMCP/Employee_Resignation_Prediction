@@ -1,14 +1,16 @@
 # Current Evaluation Guide
 
-This guide reflects the upgraded repository state. ## Headline evidence
+This guide reflects the current repository state.
+
+## Headline evidence
 
 | Member | Model | Development evaluation | Tuning status |
 |---|---|---|---|
 | 1 | FT-Transformer | Saved 5-fold OOF evidence | Controlled screening exists; final strict-nested 8-candidate rerun not independently reproduced |
 | 2 | CatBoost | 5-fold OOF | Multi-candidate nested tuning evidenced |
-| 3 | XGBoost | 5-fold OOF | Upgraded 8-candidate strict nested tuning evidenced |
+| 3 | XGBoost | 5-fold OOF | Member 3 P1 one-hot 8-candidate strict nested tuning; P2/P3 descriptive preprocessing sensitivity |
 | 4 | LightGBM | 5-fold OOF | Strict nested tuning evidenced |
-| 5 | EBM | 5-fold OOF | Current evidence is fixed/default configuration; bounded tuning script is ready but not executed |
+| 5 | EBM | 5-fold OOF | Completed nested selection among three raw candidates, with three standardized sensitivity pairs |
 | 6 | TabNet | 5-fold OOF | Strict nested tuning evidenced |
 
 ## Canonical group-stage evidence
@@ -21,9 +23,11 @@ This guide reflects the upgraded repository state. ## Headline evidence
 
 ## Current conclusion
 
-Development prevalence is approximately 0.1001. The strongest pooled AP is the upgraded nested XGBoost result at approximately 0.101115, with ROC-AUC approximately 0.504539. This is a negligible improvement over no-skill. The correct conclusion is weak/absent predictive signal, not model success.
+Development prevalence is approximately 0.1001. The current Member 3 P1 XGBoost result has the strongest pooled AP at approximately 0.101181, with ROC-AUC approximately 0.502471. The group comparison uses pooled AP for its numerical ranking and also reports mean outer-fold AP; TabNet is highest on the latter. The tiny differences do not establish useful predictive signal.
 
-Do not unlock the final holdout merely to search for a better result. A final model should only be frozen after the group resolves the remaining FT/EBM tuning evidence and decides whether the weak-signal result warrants a corroborating holdout run.
+The FT historical weighted run is reproducibly configured as FT02 and loaded read-only by default. Its modern eight-candidate nested rerun remains unexecuted. EBM tuning is complete. The formal holdout remains locked while the group decides whether the weak-signal result warrants a corroborating run.
+
+See `reports/INDIVIDUAL_MODEL_EVIDENCE.md` for each member's preprocessing and parameter comparison, including the limits of the small exploratory salary-ablation exercise.
 
 ## Viva emphasis
 

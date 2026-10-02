@@ -5,7 +5,7 @@
 | One model per student | Six model notebooks under `notebooks/team_contributions/models/` | Evidenced |
 | Model suitability / implementation explanation | Model notebooks + configs + `src/models/` | Evidenced |
 | Hyperparameter tuning / varieties | CatBoost, XGBoost, LightGBM, EBM, TabNet have candidate-selection evidence | Partial across all six |
-| Different preprocessing / hyperparameter variants | Model-specific adapters/configs and tuning artifacts | Evidenced, except FT final strict-nested rerun |
+| Different preprocessing / hyperparameter variants | XGBoost and EBM full five-fold comparisons; bounded paired exploratory checks for FT-Transformer, CatBoost, LightGBM and TabNet in `reports/INDIVIDUAL_MODEL_EVIDENCE.md` | Evidenced with explicitly different validation strength; FT final strict-nested rerun remains unexecuted |
 | Relevant metrics | AP, ROC-AUC, Brier, threshold metrics, fold stability | Evidenced |
 | Validation method | Frozen 80/20 split and five development CV folds | Evidenced |
 | Compare six individual models | `notebooks/group/02_model_comparison.ipynb`, `results/comparison/` | Completed on development OOF |

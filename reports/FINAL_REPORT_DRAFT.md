@@ -51,7 +51,7 @@ Shared baselines include Dummy classifiers, and PCA is benchmarked with Logistic
 ### Hyperparameter tuning status
 
 - **CatBoost:** multi-candidate nested development selection evidenced.
-- **XGBoost:** upgraded eight-candidate nested development selection evidenced in `results/models/xgboost/strict_nested/`.
+- **XGBoost:** Member 3's primary P1 one-hot, eight-candidate nested development selection is evidenced in `results/models/xgboost/`. P2 native-categorical and P3 salary-ablated experiments are descriptive preprocessing sensitivity evidence; `strict_nested/` is a superseded independent run.
 - **LightGBM:** strict nested candidate selection evidenced.
 - **TabNet:** strict nested candidate selection evidenced.
 - **FT-Transformer:** saved five-fold OOF results and earlier controlled screening are present, but the final strict-nested eight-candidate adapter run has not been independently reproduced in this package.
@@ -63,14 +63,16 @@ All six canonical development OOF files cover the same 80,000 development employ
 
 | Model | Pooled AP | ROC-AUC | Brier | CV AP mean ± SD |
 |---|---:|---:|---:|---:|
-| XGBoost | 0.101115 | 0.504539 | 0.239092 | 0.101350 ± 0.001942 |
+| XGBoost | 0.101181 | 0.502471 | 0.175329 | 0.101643 ± 0.000990 |
 | LightGBM | 0.100153 | 0.498740 | 0.180215 | 0.100202 ± 0.002446 |
 | FT-Transformer | 0.099979 | 0.497254 | 0.247413 | 0.099696 ± 0.002237 |
 | TabNet | 0.099965 | 0.499317 | 0.186177 | 0.101700 ± 0.003876 |
 | CatBoost | 0.099346 | 0.500155 | 0.210753 | 0.100690 ± 0.002784 |
 | EBM | 0.099000 | 0.495976 | 0.090109 | 0.099558 ± 0.002073 |
 
-The development prevalence/no-skill AP is approximately **0.1001**. XGBoost is the numerical pooled-AP leader after the upgraded nested search, but its AP uplift above prevalence is only about **0.0010**. This difference is too small to support a claim of meaningful predictive usefulness, especially while the final FT-Transformer strict-nested workflow remains to be independently reproduced.
+The development prevalence/no-skill AP is approximately **0.1001**. The current Member 3 XGBoost P1 experiment is the numerical pooled-AP leader, but its AP uplift above prevalence is only about **0.00108**. The group ranks by pooled AP and reports mean outer-fold AP separately; TabNet has the highest mean fold AP (**0.101700**), so the aggregation rule matters. Neither summary supports a claim of meaningful predictive usefulness. FT-Transformer's later eight-candidate strict-nested workflow remains unexecuted.
+
+Individual preprocessing and parameter comparisons, including the short paired sensitivity exercise for Members 1, 2, 4 and 6, are tabulated in `reports/INDIVIDUAL_MODEL_EVIDENCE.md`. The paired exercise is exploratory and does not change the full-development headline results above.
 
 Calibration diagnostics are saved in `results/calibration/`. EBM has the smallest raw Brier score because its probabilities stay close to the low base rate; this is a calibration property and does not make it the strongest discriminator.
 
