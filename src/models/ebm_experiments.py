@@ -121,15 +121,25 @@ def run_experiments(root):
     write_formal_manifest(root)
     return data, comparison, nested, nested_metrics, out
 
+def text_sha256(path):
+    """Hash text bytes after CRLF-to-LF normalization, preserving all other bytes.
+
+    Git may check text out with CRLF on Windows. Only that representation change
+    is ignored: spaces, numbers, encoding and lone CR bytes remain significant.
+    """
+    return hashlib.sha256(Path(path).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
 def write_formal_manifest(root):
     root = Path(root)
-    files = {name: {"path": CONFIG["canonical_results"][name],
-                   "sha256": hashlib.sha256((root / CONFIG["canonical_results"][name]).read_bytes()).hexdigest()}
+    config = load_model_config(root / "configs/models/ebm.yaml", strict_schema=True)
+    files = {name: {"path": config["canonical_results"][name],
+                   "sha256": text_sha256(root / config["canonical_results"][name])}
              for name in ("oof_predictions", "fold_metrics", "summary_metrics")}
     manifest = dict(model_name="EBM", protocol="five_fold_nested_development_raw_candidates",
-                    config_sha256=hashlib.sha256((root / "configs/models/ebm.yaml").read_bytes()).hexdigest(),
+                    hash_normalization="crlf_to_lf", config_sha256=text_sha256(root / "configs/models/ebm.yaml"),
                     rows=80000, formal_holdout_used=False, files=files)
-    (root / CONFIG["canonical_results"]["manifest"]).write_text(json.dumps(manifest, indent=2))
+    (root / config["canonical_results"]["manifest"]).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
 
 def load_formal_ebm_input(root):
@@ -137,12 +147,16 @@ def load_formal_ebm_input(root):
     root = Path(root)
     config = load_model_config(root / "configs/models/ebm.yaml", strict_schema=True)
     manifest = json.loads((root / config["canonical_results"]["manifest"]).read_text())
-    if manifest["config_sha256"] != hashlib.sha256((root / "configs/models/ebm.yaml").read_bytes()).hexdigest():
+    # Legacy manifests stored hashes of LF files; their values already match
+    # this canonical representation. Reject any unsupported hash convention.
+    if manifest.get("hash_normalization", "crlf_to_lf") != "crlf_to_lf":
+        raise ValueError("Unsupported EBM manifest hash normalization.")
+    if manifest["config_sha256"] != text_sha256(root / "configs/models/ebm.yaml"):
         raise ValueError("EBM config changed since formal artifact reconciliation; verify or rerun experiments.")
     for name, entry in manifest["files"].items():
         if entry["path"] != config["canonical_results"][name]:
             raise ValueError("EBM manifest does not point to the configured canonical input.")
-        if hashlib.sha256((root / entry["path"]).read_bytes()).hexdigest() != entry["sha256"]:
+        if text_sha256(root / entry["path"]) != entry["sha256"]:
             raise ValueError("EBM formal artifact checksum mismatch.")
     predictions = pd.read_csv(root / config["canonical_results"]["oof_predictions"])
     registry = pd.read_csv(root / "data/processed/split_registry.csv")

@@ -44,3 +44,72 @@ def test_formal_loader_has_no_historical_fallback(tmp_path):
     (historical / "oof_predictions.csv").write_text("historical result")
     with pytest.raises(FileNotFoundError):
         load_formal_ebm_input(tmp_path)
+
+
+import pytest
+from pathlib import Path
+import shutil
+from src.models.ebm_experiments import load_formal_ebm_input, write_formal_manifest, text_sha256
+
+@pytest.fixture
+def formal_checkout(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    paths = ["configs/models/ebm.yaml", "data/processed/split_registry.csv",
+             "results/models/ebm/individual_IT25100429/formal_input_manifest.json",
+             "results/models/ebm/individual_IT25100429/oof_predictions.csv",
+             "results/models/ebm/individual_IT25100429/fold_metrics.csv",
+             "results/models/ebm/individual_IT25100429/summary_metrics.json"]
+    for relative in paths:
+        target = tmp_path / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(root / relative, target)
+    return tmp_path
+
+
+def to_crlf(root):
+    for path in root.rglob("*"):
+        if path.is_file():
+            path.write_bytes(path.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
+
+
+def test_loader_accepts_windows_line_endings_and_manifest_writer_is_portable(formal_checkout):
+    root = formal_checkout
+    import json
+    before = load_formal_ebm_input(root)
+    original_manifest = json.loads((root / "results/models/ebm/individual_IT25100429/formal_input_manifest.json").read_text())
+    to_crlf(root)
+    after = load_formal_ebm_input(root)
+    pd.testing.assert_frame_equal(before[0], after[0])
+    pd.testing.assert_frame_equal(before[1], after[1])
+    assert before[2] == after[2]
+    write_formal_manifest(root)
+    generated = json.loads((root / "results/models/ebm/individual_IT25100429/formal_input_manifest.json").read_text())
+    assert generated == original_manifest
+    # A manifest produced from CRLF also verifies an LF checkout.
+    for path in root.rglob("*"):
+        if path.is_file():path.write_bytes(path.read_bytes().replace(b"\r\n", b"\n"))
+    load_formal_ebm_input(root)
+
+
+@pytest.mark.parametrize("relative,old,new,error", [
+    ("configs/models/ebm.yaml", b"n_jobs: 2", b"n_jobs: 3", "config changed"),
+    ("results/models/ebm/individual_IT25100429/summary_metrics.json", b"0.099000", b"0.199000", "checksum mismatch"),
+])
+def test_crlf_loader_still_rejects_content_changes(formal_checkout,relative,old,new,error):
+    to_crlf(formal_checkout)
+    path = formal_checkout / relative
+    contents = path.read_bytes()
+    assert old in contents
+    path.write_bytes(contents.replace(old,new,1))
+    with pytest.raises(ValueError, match=error):load_formal_ebm_input(formal_checkout)
+
+
+def test_normalization_preserves_whitespace_and_lone_cr(tmp_path):
+    p = tmp_path / "file.txt"
+    p.write_bytes(b"value\r\n")
+    canonical = text_sha256(p)
+    p.write_bytes(b"value\n")
+    assert text_sha256(p) == canonical
+    for changed in (b"value \n", b"value\r"):
+        p.write_bytes(changed)
+        assert text_sha256(p) != canonical
