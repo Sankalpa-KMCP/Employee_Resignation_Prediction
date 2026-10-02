@@ -1,0 +1,119 @@
+{
+  "result_label": "STRICT NESTED DEVELOPMENT OOF RESULTS",
+  "protocol": "five-fold strict nested cross-validation (outer CV / inner selection)",
+  "model": "XGBoost",
+  "member": "Member 3",
+  "config_version": "2.1.0",
+  "project_context_version": "4.6.2",
+  "run_finished_utc": "2026-10-02T09:16:26+00:00",
+  "git_commit": "e84be4e66d8d0430622db87d4bad178ee8b03037",
+  "uncommitted_xgboost_changes": true,
+  "raw_dataset_sha256_lf_normalized": "2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb",
+  "raw_dataset_sha256_file_bytes": "2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb",
+  "split_registry_sha256_lf_normalized": "87edc10ac38f2435c49beddbf412f9de293e3e0622558b27ffbdf31fadd7ea41",
+  "split_registry_sha256_expected": "87edc10ac38f2435c49beddbf412f9de293e3e0622558b27ffbdf31fadd7ea41",
+  "split_registry_verified_before_training": true,
+  "split_registry_sha256_file_bytes": "87edc10ac38f2435c49beddbf412f9de293e3e0622558b27ffbdf31fadd7ea41",
+  "source_sha256": {
+    "configs/models/xgboost.yaml": "99ee24abcdfb24e23064d0854fcaa367b427bee7b287957c5b75d819c3c0a471",
+    "src/models/xgboost_model.py": "b537c5ad7b0471ad82c3019b6f538373903c8bfa45219df45ff43b195ff4b583",
+    "src/models/runner.py": "733235533171f920df33e64c2ea11e83da6c8f76845d342e75c3ac7056e6d6aa",
+    "src/models/config.py": "755cf1000af5de18745e6b4dc6a3e2f98bab4d6fbab53c170cba2a56cbf8f41a",
+    "src/evaluation/metrics.py": "3f86c1037fa3c1582d02f6f9fdb644597ecd0718798fb3dd15f3171c41c6ae48",
+    "src/evaluation/oof_validation.py": "e9065c1b33c889151aa7c58fa3023694c7e0b9b2bc71f48887a3347608dd4eb2",
+    "configs/feature_contract.yaml": "4c1a4d6e87a1227e0874f3a21660a2cb9a2eeb619f4c7e7574fc18211608825c"
+  },
+  "environment": {
+    "python": "3.13.9",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "cpu_count": 12,
+    "xgboost": "3.4.1",
+    "scikit_learn": "1.7.2",
+    "pandas": "2.3.3",
+    "numpy": "2.3.5"
+  },
+  "seed": 42,
+  "candidate_ids": [
+    "X01",
+    "X02",
+    "X03",
+    "X04",
+    "X05",
+    "X06",
+    "X07",
+    "X08"
+  ],
+  "candidate_cap": 12,
+  "selection_metric": "inner-validation average precision (sklearn); ties -> earlier candidate",
+  "early_stopping": {
+    "monitor": "aucpr",
+    "rounds": 50,
+    "max_boosting_rounds": 1000
+  },
+  "class_weighting": "per-candidate; dynamic_ratio = n_neg/n_pos from the rows being fitted only",
+  "preprocessing": "fold-local OneHotEncoder(handle_unknown='ignore') on 4 categoricals; 13 numericals unscaled",
+  "preprocessing_variants": {
+    "P1_onehot": {
+      "role": "primary",
+      "encoding": "onehot",
+      "drop_features": []
+    },
+    "P2_native_categorical": {
+      "role": "sensitivity",
+      "encoding": "native",
+      "drop_features": []
+    },
+    "P3_onehot_no_salary": {
+      "role": "sensitivity",
+      "encoding": "onehot",
+      "drop_features": [
+        "Monthly_Salary"
+      ]
+    }
+  },
+  "tree_count_policy": {
+    "method": "inner early stopping under a fixed ceiling",
+    "ceiling": 1000,
+    "canonical_grid_values": [
+      300,
+      600,
+      1000
+    ],
+    "diagnostic_checkpoints": [
+      300,
+      600,
+      1000
+    ]
+  },
+  "models_trained": {
+    "primary_inner_candidate_fits": 40,
+    "primary_outer_refits": 5,
+    "sensitivity_variant_fits": 90,
+    "tree_count_diagnostic_fits": 40,
+    "legacy_reproduction_fits": 5,
+    "total_xgboost_models_fitted": 180
+  },
+  "feature_count": 17,
+  "categorical_feature_count": 4,
+  "numerical_feature_count": 13,
+  "excluded_from_x": [
+    "Employee_ID",
+    "Hire_Date",
+    "Resigned"
+  ],
+  "development_rows": 80000,
+  "formal_holdout_rows": 20000,
+  "formal_holdout_rows_used": 0,
+  "outer_folds": 5,
+  "outer_training_rows_per_fold": 64000,
+  "outer_validation_rows_per_fold": 16000,
+  "inner_training_rows_per_fold": 54400,
+  "inner_validation_rows_per_fold": 9600,
+  "candidate_evaluations": 40,
+  "outer_winner_refits": 5,
+  "refit_on_all_outer_training_rows": true,
+  "fold_models_saved_to": "models/xgboost/fold_01..fold_05 (git-ignored)",
+  "fold_model_reload_reproduces_oof": true,
+  "wall_time_seconds": 54.56873370008543,
+  "supersedes": "results/models/xgboost/exploratory_fixed_param_run/ (fixed parameters, global scale_pos_weight)"
+}
