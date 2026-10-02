@@ -1,6 +1,7 @@
 {
   "model_name": "EBM",
   "protocol": "five_fold_nested_development_raw_candidates",
+  "hash_normalization": "crlf_to_lf",
   "config_sha256": "9c33b2d0f3d8bd7945c5c734dde31201377e3f0306edaf398eeb950e9ff7b347",
   "rows": 80000,
   "formal_holdout_used": false,

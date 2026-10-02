@@ -1,0 +1,38 @@
+name: EBM Windows formal-input portability
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fresh-windows-checkout:
+    runs-on: windows-latest
+    steps:
+      - name: Enable Windows Git line endings before checkout
+        shell: pwsh
+        run: git config --global core.autocrlf true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Install verification dependencies
+        run: python -m pip install interpret-core==0.7.8 scikit-learn==1.9.1 pandas==3.0.6 numpy==2.5.3 pyyaml==6.0.3 pytest==9.1.1
+      - name: Verify native Windows CRLF checkout and formal loader
+        shell: pwsh
+        run: |
+          @'
+          import platform
+          from pathlib import Path
+          import json
+          from src.models.ebm_experiments import load_formal_ebm_input
+          assert platform.system() == "Windows"
+          root = Path.cwd()
+          manifest = json.loads((root / "results/models/ebm/individual_IT25100429/formal_input_manifest.json").read_text())
+          for relative in ["configs/models/ebm.yaml", *[e["path"] for e in manifest["files"].values()]]:
+              assert b"\r\n" in (root / relative).read_bytes(), relative
+          predictions, folds, metrics = load_formal_ebm_input(root)
+          assert len(predictions) == 80000
+          assert len(folds) == 5
+          print("Native Windows fresh CRLF checkout verified:", len(predictions), "OOF rows; mean AP", metrics["cv_mean_ap"])
+          '@ | python -
+      - name: Run EBM and configuration regression tests
+        run: python -m pytest -q -p no:cacheprovider tests/test_ebm_experiments.py tests/test_model_configs.py tests/test_metrics.py tests/test_oof_predictions.py tests/test_holdout_guard.py
