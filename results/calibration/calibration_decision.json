@@ -1,0 +1,4 @@
+{
+  "calibration_model_frozen": false,
+  "conclusion": "Diagnostics are complete, but no calibrator is frozen because no final predictive model is frozen and discrimination is near no-skill."
+}

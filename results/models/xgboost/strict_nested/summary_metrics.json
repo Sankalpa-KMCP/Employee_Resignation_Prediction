@@ -1,0 +1,13 @@
+{
+  "model_name": "XGBoost",
+  "protocol": "strict_nested_candidate_selection",
+  "n_candidates": 8,
+  "n_outer_folds": 5,
+  "n_development_rows": 80000,
+  "pooled_average_precision": 0.10111510419605803,
+  "pooled_roc_auc": 0.5045388669975429,
+  "pooled_brier_score": 0.23909159019070558,
+  "cv_average_precision_mean": 0.10134998448880468,
+  "cv_average_precision_sd": 0.0019422905077354031,
+  "total_runtime_seconds": 18.349435806274414
+}

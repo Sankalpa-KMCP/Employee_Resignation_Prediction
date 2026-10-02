@@ -88,7 +88,9 @@ ipython_config.py
 !.env.example
 
 .venv/
+.venv*/
 venv/
+venv*/
 env/
 ENV/
 env.bak/
@@ -209,6 +211,10 @@ celerybeat.pid
 .agents/
 .antigravity/
 .copilot/
+.claude/
+.cline/
+.continue/
+.roo/
 
 
 # ============================================================
@@ -225,6 +231,10 @@ celerybeat.pid
 *.pt
 *.pth
 *.ckpt
+*.safetensors
+*.bin
+*.keras
+*.weights.h5
 
 # Model artifact directories (keep directory structure with .gitkeep)
 models/*/*
@@ -235,8 +245,9 @@ models/*/*
 # Raw / Intermediate / Generated Data
 # ============================================================
 
-# Large raw dataset files
-data/raw/*.csv
+# Large raw dataset files (with whitelist for canonical benchmark dataset)
+data/raw/*
+!data/raw/Extended_Employee_Performance_and_Productivity_Data.csv
 
 # Intermediate data
 data/interim/
@@ -249,21 +260,31 @@ data/processed/*
 # Common large data formats
 *.parquet
 *.feather
+*.arrow
 
 
 # ============================================================
 # Generated Results / Temporary Experiment Artifacts
 # ============================================================
 
-# Temporary model-training outputs
+# Temporary model-training and experiment outputs
 results/tmp/
 results/temp/
+
+# CatBoost training outputs
+catboost_info/
 
 # TensorBoard logs
 runs/
 
 # MLflow
 mlruns/
+
+# Weights & Biases
+wandb/
+
+# PyTorch Lightning
+lightning_logs/
 
 # Optuna / temporary tuning databases
 *.db
@@ -333,6 +354,14 @@ temp/
 !.gitkeep
 
 # IMPORTANT:
-# data/processed/split_registry.csv is intentionally version controlled.
-# It defines the frozen development/holdout partition and CV folds used
-# consistently across all model workflows.
+# The following inputs are intentionally version controlled:
+# 1. data/raw/Extended_Employee_Performance_and_Productivity_Data.csv
+#    Canonical raw benchmark dataset preserved under LF normalization.
+# 2. data/processed/split_registry.csv
+#    Defines the frozen development/holdout partition and CV folds used
+#    consistently across all model workflows.
+
+# Local review manifests and requirements
+REVIEW_MANIFEST.md
+REVIEW_REQUIREMENTS.txt
+REVIEW_*

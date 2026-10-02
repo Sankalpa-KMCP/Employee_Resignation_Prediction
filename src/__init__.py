@@ -1,5 +1,1 @@
-"""
-Project module placeholder.
-
-Implementation will be added during the corresponding project stage.
-"""
+"""Reusable implementation package for the IT2011 employee-resignation project."""

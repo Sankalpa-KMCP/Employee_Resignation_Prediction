@@ -64,4 +64,9 @@ search_space:
     high: 10
     step: 2
     default: 4
-  # TODO: Refine parameter ranges during dedicated hyperparameter tuning stage
+
+# Formal multi-candidate execution is not evidenced in the supplied repository.
+# Do not describe the current OOF result as a tuned optimum.
+tuning_status:
+  completed: false
+  reason: "Current saved OOF predictions use the search-space defaults; a bounded multi-candidate run still requires the InterpretML dependency and execution."

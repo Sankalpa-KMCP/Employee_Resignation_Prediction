@@ -1,0 +1,7 @@
+{
+  "status": "exploratory development-only simulation",
+  "risk_model": "XGBoost",
+  "risk_model_finally_frozen": false,
+  "calibration_used": false,
+  "warning": "Not an operational recommendation. The risk model remains near no-skill and no final model/calibrator is frozen."
+}

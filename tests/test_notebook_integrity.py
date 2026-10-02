@@ -13,27 +13,30 @@ EXPECTED_NOTEBOOKS = [
     "03_eda.ipynb",
     "04_baselines.ipynb",
     "04a_pca_analysis.ipynb",
-    "05_member_1/05_m1_ft_transformer.ipynb",
-    "06_member_2/06_m2_catboost.ipynb",
-    "07_member_3/07_m3_xgboost.ipynb",
-    "08_member_4/08_m4_lightgbm.ipynb",
-    "09_member_5/09_m5_ebm.ipynb",
-    "10_member_6/10_m6_tabnet.ipynb",
-    "11_model_comparison.ipynb",
-    "12_calibration.ipynb",
-    "13_fairness_analysis.ipynb",
-    "14_retention_prioritization.ipynb",
-    "15_final_holdout_evaluation.ipynb",
+    "team_contributions/models/member_1_ft_transformer/05_m1_ft_transformer.ipynb",
+    "team_contributions/models/member_2_catboost/06_m2_catboost.ipynb",
+    "team_contributions/models/member_3_xgboost/07_m3_xgboost.ipynb",
+    "team_contributions/models/member_4_lightgbm/08_m4_lightgbm.ipynb",
+    "team_contributions/models/member_5_ebm/09_m5_ebm.ipynb",
+    "team_contributions/models/member_6_tabnet/10_m6_tabnet.ipynb",
+    "group/01_group_pipeline.ipynb",
+    "group/02_model_comparison.ipynb",
+    "group/03_calibration.ipynb",
+    "group/04_fairness_analysis.ipynb",
+    "group/05_retention_prioritization.ipynb",
+    "group/06_final_holdout_evaluation.ipynb",
 ]
 
-EXPECTED_MEMBER_SUBDIRS = {
-    "05_member_1",
-    "06_member_2",
-    "07_member_3",
-    "08_member_4",
-    "09_member_5",
-    "10_member_6",
+EXPECTED_TOP_LEVEL_SUBDIRS = {"team_contributions", "group"}
+EXPECTED_MODEL_SUBDIRS = {
+    "member_1_ft_transformer",
+    "member_2_catboost",
+    "member_3_xgboost",
+    "member_4_lightgbm",
+    "member_5_ebm",
+    "member_6_tabnet",
 }
+
 
 
 @pytest.mark.parametrize("nb_rel_path", EXPECTED_NOTEBOOKS)
@@ -51,7 +54,19 @@ def test_notebook_exists_and_is_valid_json(nb_rel_path: str):
     assert len(nb_data["cells"]) > 0, f"Notebook {nb_rel_path} has 0 cells."
 
 
-def test_member_subdirectories_in_notebooks():
-    """Verify notebooks directory has exactly the expected member folders and no obsolete subdirectories."""
-    subdirs = {p.name for p in NOTEBOOKS_DIR.iterdir() if p.is_dir() and not p.name.startswith(".")}
-    assert subdirs == EXPECTED_MEMBER_SUBDIRS, f"Notebook subdirectories mismatch. Expected {EXPECTED_MEMBER_SUBDIRS}, found {subdirs}"
+def test_notebook_architecture_subdirectories():
+    """Verify the refactored group/team-contribution notebook architecture."""
+    top_level_subdirs = {
+        path.name
+        for path in NOTEBOOKS_DIR.iterdir()
+        if path.is_dir() and not path.name.startswith(".")
+    }
+    assert top_level_subdirs == EXPECTED_TOP_LEVEL_SUBDIRS
+
+    model_dir = NOTEBOOKS_DIR / "team_contributions" / "models"
+    model_subdirs = {
+        path.name
+        for path in model_dir.iterdir()
+        if path.is_dir() and not path.name.startswith(".")
+    }
+    assert model_subdirs == EXPECTED_MODEL_SUBDIRS

@@ -26,7 +26,7 @@ from src.models.lightgbm_execution import (
 ROOT = Path(__file__).resolve().parents[1]
 RAW_PATH = ROOT / "data" / "raw" / "Extended_Employee_Performance_and_Productivity_Data.csv"
 REGISTRY_PATH = ROOT / "data" / "processed" / "split_registry.csv"
-NOTEBOOK_PATH = ROOT / "notebooks" / "08_member_4" / "08_m4_lightgbm.ipynb"
+NOTEBOOK_PATH = ROOT / "notebooks" / "team_contributions" / "models" / "member_4_lightgbm" / "08_m4_lightgbm.ipynb"
 CONFIG_PATH = ROOT / "configs" / "models" / "lightgbm.yaml"
 
 

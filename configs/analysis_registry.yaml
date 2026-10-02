@@ -1,0 +1,27 @@
+# Canonical development-OOF artefacts used by group analysis.
+# The formal 20,000-row holdout is intentionally absent from this registry.
+models:
+  FT-Transformer:
+    oof_path: results/models/ft_transformer/weighted_early_stopping_final/ft_transformer_final_oof_predictions.csv
+    protocol: legacy controlled screening + 5-fold OOF; final nested rerun not independently reproduced in this package
+    tuning_complete: false
+  CatBoost:
+    oof_path: results/models/catboost/oof_predictions.csv
+    protocol: strict nested candidate selection
+    tuning_complete: true
+  XGBoost:
+    oof_path: results/models/xgboost/strict_nested/oof_predictions.csv
+    protocol: strict nested 8-candidate selection
+    tuning_complete: true
+  LightGBM:
+    oof_path: results/models/lightgbm/strict_nested/oof_predictions.csv
+    protocol: strict nested candidate selection
+    tuning_complete: true
+  EBM:
+    oof_path: results/models/ebm/oof_predictions.csv
+    protocol: fixed/default configuration 5-fold OOF; multi-candidate tuning not yet evidenced
+    tuning_complete: false
+  TabNet:
+    oof_path: results/models/tabnet/oof_predictions.csv
+    protocol: strict nested candidate selection
+    tuning_complete: true

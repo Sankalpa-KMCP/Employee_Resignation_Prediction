@@ -1,0 +1,16 @@
+{
+  "candidate_ids": [
+    "XGB01",
+    "XGB02",
+    "XGB03",
+    "XGB04",
+    "XGB05",
+    "XGB06",
+    "XGB07",
+    "XGB08"
+  ],
+  "selection_metric": "inner_average_precision",
+  "inner_validation_fraction": 0.15,
+  "class_weighting": "fold-local scale_pos_weight",
+  "outer_validation_used_for_selection": false
+}
