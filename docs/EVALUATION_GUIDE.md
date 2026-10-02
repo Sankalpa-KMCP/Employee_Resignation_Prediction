@@ -1,8 +1,6 @@
 # Current Evaluation Guide
 
-This guide reflects the upgraded repository state. Historical guides are under `docs/archive/`.
-
-## Headline evidence
+This guide reflects the upgraded repository state. ## Headline evidence
 
 | Member | Model | Development evaluation | Tuning status |
 |---|---|---|---|

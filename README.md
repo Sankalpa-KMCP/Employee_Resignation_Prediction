@@ -94,4 +94,4 @@ Notebooks should orchestrate and explain the implementation rather than become a
 
 ## Historical documentation
 
-Documents under `docs/context/` and `docs/archive/` preserve earlier project states. They may contain pre-refactor paths and older status statements. Use this README and `docs/ARCHITECTURE.md` for the current repository structure.
+Documents under `docs/context/` preserve earlier project states. They may contain pre-refactor paths and older status statements. Use this README and `docs/ARCHITECTURE.md` for the current repository structure.
