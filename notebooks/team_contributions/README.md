@@ -30,4 +30,4 @@ Each member should be able to explain model suitability, implementation, tuning/
 
 `reports/INDIVIDUAL_MODEL_EVIDENCE.md` collects compact comparison tables for all six members. The short paired preprocessing checks for Members 1, 2, 4 and 6 are exploratory and are clearly distinguished from their formal five-fold OOF results.
 
-Member 1's `models/member_1_ft_transformer/05_m1_ft_transformer.ipynb` combines the current strict nested evaluation with the earlier FT-Transformer notebook. Its historical appendix preserves the earlier explanations, code, tables and plots as a static record; Run All executes only the current formal workflow.
+Member 1's `models/member_1_ft_transformer/05_m1_ft_transformer.ipynb` contains the complete formal evaluation in 28 cells, with eight aggregate figure groups. The executable companion `05_m1_ft_transformer_historical.ipynb` preserves all 15 historical code cells. Both default to saved review without training or artifact export. Explicit historical FT02 or formal nested repetitions write to isolated rerun directories; the group registry continues to use the canonical strict nested evidence.

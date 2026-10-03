@@ -13,11 +13,29 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
-def run(root):
+def _resolve_output_directory(root, output_dir=None):
+    """Keep explicit experiments inside the FT rerun boundary."""
+    root = Path(root).resolve()
+    if output_dir is None:
+        return root / "results/models/ft_transformer/strict_nested"
+    output = Path(output_dir)
+    output = (output if output.is_absolute() else root / output).resolve()
+    boundary = (root / "results/models/ft_transformer/reruns").resolve()
+    if output == boundary or not output.is_relative_to(boundary):
+        raise ValueError("Explicit FT output must be a directory beneath results/models/ft_transformer/reruns.")
+    return output
+
+
+def run(root, output_dir=None):
+    """Execute/resume nested CV; explicit outputs must be isolated reruns.
+
+    Existing callers retain the canonical destination. Notebook retraining passes
+    a fresh directory from create_run_directory, preserving canonical evidence.
+    """
+    root = Path(root).resolve()
+    out = _resolve_output_directory(root, output_dir)
     import torch
     import src.models.ft_transformer as ft
-    root = Path(root)
-    out = root / "results/models/ft_transformer/strict_nested"
     out.mkdir(parents=True, exist_ok=True)
     config = load_model_config(root / "configs/models/ft_transformer.yaml", strict_schema=True)
     contract = yaml.safe_load((root / "configs/feature_contract.yaml").read_text())
