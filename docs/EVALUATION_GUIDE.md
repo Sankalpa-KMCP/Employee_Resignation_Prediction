@@ -19,7 +19,17 @@ This guide reflects the current repository state.
 - Calibration diagnostics: `notebooks/group/03_calibration.ipynb` and `results/calibration/`
 - Ethics/fairness: `notebooks/group/04_fairness_analysis.ipynb` and `results/fairness/`
 - Optional prioritization simulation: `notebooks/group/05_retention_prioritization.ipynb` and `results/prioritization/`
-- Final holdout: `notebooks/group/06_final_holdout_evaluation.ipynb` — intentionally locked
+- Final holdout: `notebooks/group/06_final_holdout_evaluation.ipynb` — default Run All produces a readiness report; actual evaluation remains locked
+
+## Group-stage interpretation and execution
+
+Calibration reports raw OOF reliability, occupied-bin counts, Brier error relative to a constant development-prevalence reference, and outer-fold diagnostics. It does not fit a calibrator on its own evaluation labels or claim a frozen probability source. Calibration and discrimination must be interpreted separately.
+
+Fairness attaches demographics using `load_development_data`, which isolates development rows before parsing their features and targets. Age groups come from `configs/feature_contract.yaml`. Subgroup tables retain positive, negative and predicted-positive denominators. Undefined precision, recall or false-positive rates remain missing, not fabricated zeros. AP/AUC size flags and max-minus-min gaps are descriptive reporting aids, not proof of fairness or statistical significance.
+
+Prioritization recomputes the pooled-AP leader from validated OOF files. Its risk source remains exploratory and uncalibrated. Proxy MinMaxScalers fit each outer-training development partition, then transform its validation rows with clipping and a constant-component-to-zero policy. The equal-weight primary proxy, no-salary mean and epsilon-adjusted multiplicative sensitivity use the approved components; the multiplicative epsilon is explicitly 0.01. All sensitivity rankings report value-weighted capture against the same primary proxy. Capacity stays at 20% with 10%/30% sensitivity, and 200 seed-42 random allocations provide an empirical allocation range, not model-performance confidence intervals. Exported tables contain no employee-level rankings.
+
+The holdout notebook runs readiness checks without reading employee data or deserializing a pipeline. Actual evaluation uses the separate one-time evaluator in `src/evaluation/holdout.py`, requires a hash-bound trusted development freeze and explicit activation, and preserves a started receipt after failures. See [Final holdout protocol](FINAL_HOLDOUT_PROTOCOL.md) for the supported prediction-only scope, manifest fields and limitations.
 
 ## Current conclusion
 
