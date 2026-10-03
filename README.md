@@ -113,3 +113,6 @@ The command-line equivalents `python scripts/run_xgboost_nested.py` and `python 
 The TabNet and strict LightGBM inventories describe files available in this checkout. TabNet's 18 absent serialized artifacts are marked unavailable, with blank current hashes and sizes; its saved predictions remain usable. These inventories do not certify that unavailable model weights can be reloaded.
 
 Completed formal FT update: see `reports/Six_Model_Comparison.md` for the current six-member discussion. The group notebook retains main's declared pooled-AP ranking and separately reports mean fold AP. The existing Word export predates this update; rebuild it from the updated Markdown before submission.
+
+## IT25100429 supplementary Decision Tree
+The additional experiment is in `notebooks/team_contributions/models/member_5_ebm/10_IT25100429_decision_tree_extra.ipynb`. It compares six tree varieties with inner selection, uses only frozen development folds, and supplies a shallow tree, overfitting plot, feature importance, confusion matrix and PR curve. Run All defaults to saved review; set `RUN_TRAINING=True` only to deliberately regenerate the supplementary outputs. Details: `reports/IT25100429_Decision_Tree_Experiment.md`. EBM remains the assigned contribution and the canonical six-model registry is unchanged.
