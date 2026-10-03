@@ -12,7 +12,7 @@
 | Discuss challenges / expected behavior | Report draft, comparison conclusion, weak-signal analysis | Evidenced |
 | Ethics / bias mitigation | `notebooks/group/04_fairness_analysis.ipynb`, `results/fairness/`, report draft | Evidenced |
 | AI usage declaration | Context AI log + report draft section | Requires group review before submission |
-| Final report max 15 pages / PDF / Group ID filename | Draft content exists in `reports/FINAL_REPORT_DRAFT.md` | Final PDF cannot be completed without verified Group ID |
+| Final report max 15 pages / PDF / Group ID filename | Nine-page Word report at `reports/FINAL_REPORT.docx`, with editable source at `reports/FINAL_REPORT_DRAFT.md` | Word delivered as requested; identity placeholders remain. Recheck the page limit after filling them and confirm the assessment's submission format. No PDF generated. |
 | Formal holdout | Locked in `notebooks/group/06_final_holdout_evaluation.ipynb` | Correctly not executed before freeze |
 
 ## Unresolved items that must not be hidden
@@ -20,4 +20,4 @@
 1. Official Group ID and personal identity mapping are not present in the repository.
 2. EBM nested development results are imported from `main` and manifest-verified; a full local retraining of the 60 experimental fits has not been performed.
 3. FT-Transformer has completed GPU fixed-FT02 OOF evidence, with historical screening. Its optional eight-candidate extension was not executed; original per-fold adapter diagnostics are unavailable. Its final fit uses inner-training rows only, so protocols are not equivalent across all six models.
-4. The final holdout remains intentionally untouched because no final model is frozen.
+4. Formal holdout evaluation remains locked because no final model is frozen. Historical aggregate audit exposure is disclosed in [the holdout protocol](FINAL_HOLDOUT_PROTOCOL.md); pristine label-blind status is not claimed.

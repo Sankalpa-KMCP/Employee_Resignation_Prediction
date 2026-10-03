@@ -29,7 +29,7 @@ The notebook now defaults to validated saved evidence. `RUN_EBM_TRAINING=True` d
 
 Raw preprocessing remains the primary EBM representation. Standardized numerical variants are a sensitivity experiment and do not alter the approved features. Outer validation scores do not select the primary candidates. A predeclared .001 absolute inner AP margin prefers fewer interactions and leaves when practically equivalent. This is not a significance claim.
 
-The historical notebook is retained as `09_m5_ebm_historical.ipynb`. No final group model, calibrator or decision threshold has been frozen. The final holdout is not evaluated. The other five individual models and group analysis remain separate responsibilities.
+The historical notebook is retained in the [EBM archive](../docs/archive/historical_ebm/09_m5_ebm_historical.ipynb), outside the active notebook workflows. No final group model, calibrator or decision threshold has been frozen. The final holdout is not evaluated. The other five individual models and group analysis remain separate responsibilities.
 
 ## Viva prompts
 - EBM sums an intercept, feature functions and optional interaction functions on the log-odds scale; probabilities come from the logistic link.

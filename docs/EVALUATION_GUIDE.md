@@ -39,6 +39,20 @@ The canonical FT02 GPU run `FT02_20261003T025004Z` is loaded read-only by defaul
 
 See `reports/INDIVIDUAL_MODEL_EVIDENCE.md` for each member's preprocessing and parameter comparison, including the limits of the small exploratory salary-ablation exercise.
 
+## Shared input safeguards
+
+The OOF runner rejects target, identifier, raw-date and split-metadata predictors,
+along with empty or repeated predictor lists, before creating any model adapter.
+Original development labels must be numeric binary values before fitting or
+integer conversion. The development loader and original-source OOF parity check
+apply the same label validation.
+
+The preprocessing sensitivity script uses the hash-verified development loader,
+which skips holdout rows before parsing their predictors and outcomes. Its
+original paired evidence remains at `results/models/preprocessing_sensitivity/`;
+each deliberate repeat writes to a fresh `reruns/<UTC timestamp>/` directory.
+Repeated experiments do not automatically replace the saved group evidence.
+
 ## Viva emphasis
 
 Each member must explain model suitability, representation/preprocessing, important hyperparameters, the number/type of variants evaluated, class imbalance treatment, validation design, metrics, limitations and saved evidence. Every member should also understand why AP is primary, why OOF alignment matters, and why the negative result is academically defensible.

@@ -58,3 +58,8 @@ Moved notebooks now locate the project root by walking upward until they find th
 ## Historical artifact rule
 
 Model result folders were not aggressively normalized in this refactor. Their current model-specific structures encode earlier experiment history and are referenced by stored notebook outputs. Normalize them only when each model's final workflow is frozen and references can be updated together.
+
+The superseded EBM notebook is retained under `docs/archive/historical_ebm/` as
+historical evidence. It is not part of the active run-all workflow; its original
+unguarded training and fixed output paths must not be executed. Use the active
+member 5 notebook for saved review or an explicitly enabled isolated rerun.

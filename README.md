@@ -61,11 +61,11 @@ The upgraded package contains executed development OOF evidence for all six head
 - Fairness/subgroup diagnostics: completed development-only in `notebooks/group/04_fairness_analysis.ipynb`.
 - Retention prioritization: completed only as an exploratory development simulation; it is explicitly non-operational.
 - Formal holdout: still locked because no practically useful final model has been frozen.
-- Final report: evidence-backed draft content is in `reports/FINAL_REPORT_DRAFT.md`; the official Group ID is not available in the repository, so the required final Group-ID-named PDF cannot be generated accurately yet.
+- Final report: the requested Word deliverable is `reports/FINAL_REPORT.docx`, with editable source in `reports/FINAL_REPORT_DRAFT.md`. Group ID, member identities and group confirmation of AI usage remain explicit placeholders. See `reports/README.md` for rebuilding and submission preparation.
 
 The strongest pooled development Average Precision is the current Member 3 XGBoost primary result (**0.101181**) versus a no-skill prevalence baseline of **0.1001**. The package therefore records a **near-no-signal negative result** rather than claiming useful resignation prediction. The six-model comparison ranks pooled AP; mean outer-fold AP is also reported and has a different numerical leader.
 
-The four models that previously lacked an explicit input-representation comparison now have a bounded, paired training exercise in `scripts/run_preprocessing_sensitivity.py`. It contrasts the full predictor set with training-median masking of `Monthly_Salary` on a 5,000/2,000 development sample. These short fits are explanatory evidence only; see `reports/INDIVIDUAL_MODEL_EVIDENCE.md` for all six members' variation tables and limitations.
+The four models that previously lacked an explicit input-representation comparison now have a bounded, paired training exercise in `scripts/run_preprocessing_sensitivity.py`. It contrasts the full predictor set with training-median masking of `Monthly_Salary` on a 5,000/2,000 development sample. The script verifies frozen input hashes and excludes holdout rows before parsing their values. Deliberate repeats write to new `results/models/preprocessing_sensitivity/reruns/<UTC timestamp>/` directories, preserving the original evidence. These short fits are explanatory evidence only; see `reports/INDIVIDUAL_MODEL_EVIDENCE.md` for all six members' variation tables and limitations.
 
 See `docs/ASSIGNMENT_ALIGNMENT.md` and `docs/FINAL_VALIDATION_STATUS.md` for the current assessment/readiness state.
 
