@@ -29,6 +29,23 @@ def build_pipeline(features, categorical, depth, weight, scaled=False):
     return Pipeline([("preprocess",prep),("tree",DecisionTreeClassifier(
         max_depth=depth, min_samples_leaf=50, class_weight=weight, random_state=42))])
 
+def render_simple_tree(model, names, path):
+    """Show every split and leaf; hide statistical labels for a readable demo."""
+    fig,ax=plt.subplots(figsize=(18,7))
+    annotations=plot_tree(model.named_steps["tree"],
+        feature_names=[str(n).replace("_"," ") for n in names],
+        class_names=["Stays","Resigned"],filled=True,rounded=True,
+        impurity=False,precision=2,fontsize=12,ax=ax)
+    for annotation in annotations:
+        lines=annotation.get_text().splitlines()
+        lines=[line.replace("class = ","Predict: ") for line in lines
+               if not line.startswith(("samples =", "value ="))]
+        annotation.set_text("\n".join(lines))
+    ax.set_title("Decision Tree: follow True left or False right to a prediction",fontsize=16,pad=12)
+    fig.text(.5,.02,"Depth-3 D02 illustration · fold 1 training only · colours show weighted class tendency",ha="center",fontsize=11)
+    fig.tight_layout(rect=(0,.04,1,1));fig.savefig(path,dpi=160,bbox_inches="tight");plt.close(fig)
+
+
 def run(root):
     root=Path(root)
     pd.set_option("display.max_columns",None)
@@ -77,9 +94,7 @@ def run(root):
     (out/"selection_evidence.json").write_text(json.dumps(evidence,indent=2))
     (out/"summary_metrics.json").write_text(json.dumps(summary,indent=2))
     names=demo.named_steps["preprocess"].get_feature_names_out()
-    fig,ax=plt.subplots(figsize=(24,12));plot_tree(demo.named_steps["tree"],feature_names=names,class_names=["Stays","Resigned"],filled=True,rounded=True,precision=2,fontsize=9,ax=ax)
-    ax.set_title("D02: depth-3 balanced tree fitted on fold 1 training only (illustrative)")
-    fig.tight_layout();fig.savefig(out/"tree_diagram.png",dpi=140);plt.close(fig)
+    render_simple_tree(demo, names, out/"tree_diagram.png")
     importance=pd.Series(demo.named_steps["tree"].feature_importances_,index=names).sort_values(ascending=False)
     importance.rename("importance").to_csv(out/"feature_importance.csv")
     fig,ax=plt.subplots(figsize=(9,5));importance.head(12).sort_values().plot.barh(ax=ax);ax.set_title("Illustrative D02 impurity importance (model behaviour, not causality)");fig.tight_layout();fig.savefig(out/"feature_importance.png",dpi=150);plt.close(fig)
