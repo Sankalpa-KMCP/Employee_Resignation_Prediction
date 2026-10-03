@@ -1,0 +1,8 @@
+check,passed,detail
+comparison decision,True,results/comparison/comparison_summary.json
+calibration decision,True,results/calibration/calibration_decision.json
+fairness decision,True,results/fairness/fairness_summary.json
+prioritization decision,True,results/prioritization/prioritization_decision.json
+final model frozen,False,A numerical OOF leader alone is not a final freeze.
+no previous assessment,True,Any receipt or result blocks reruns; an empty reserved directory or .gitkeep is allowed.
+valid freeze manifest,False,Missing or invalid: models/frozen/freeze.json

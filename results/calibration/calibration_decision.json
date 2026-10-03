@@ -1,4 +1,10 @@
 {
   "calibration_model_frozen": false,
-  "conclusion": "Diagnostics are complete, but no calibrator is frozen because no final predictive model is frozen and discrimination is near no-skill."
+  "probability_source_frozen": false,
+  "calibrator_fitted": false,
+  "diagnostics_complete": true,
+  "development_rows": 80000,
+  "formal_holdout_accessed": false,
+  "best_raw_brier_model": "EBM",
+  "conclusion": "Raw OOF diagnostics are complete. No calibrator or probability source is frozen because the final model is not frozen and discrimination remains near no-skill."
 }

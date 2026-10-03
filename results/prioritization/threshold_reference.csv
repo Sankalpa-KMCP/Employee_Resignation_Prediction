@@ -1,0 +1,2 @@
+risk_model,threshold,predicted_positive_count,predicted_positive_rate,precision,recall,f1
+XGBoost,0.5,15215,0.1901875,0.10266184686164968,0.19505494505494506,0.13452181027429702

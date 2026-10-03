@@ -6,6 +6,22 @@
     "50-60"
   ],
   "scope": "development OOF only",
+  "diagnostics_complete": true,
+  "development_rows": 80000,
+  "models": [
+    "CatBoost",
+    "EBM",
+    "FT-Transformer",
+    "LightGBM",
+    "TabNet",
+    "XGBoost"
+  ],
+  "reference_threshold": 0.5,
+  "capacity": 0.2,
+  "minimum_ranking_group_size": 30,
+  "undefined_rate_policy": "missing, never fabricated zero",
+  "formal_holdout_accessed": false,
+  "sensitive_feature_ablations_executed": false,
   "prohibited_use": "No real hiring, firing, promotion, surveillance, disciplinary action, or automated retention decision.",
-  "interpretation": "Near-no-skill predictive performance means these subgroup results are descriptive and do not establish operational fairness."
+  "interpretation": "These descriptive subgroup diagnostics do not establish operational fairness; predictive discrimination remains near no-skill."
 }

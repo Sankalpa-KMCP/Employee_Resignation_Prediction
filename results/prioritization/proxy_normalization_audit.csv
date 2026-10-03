@@ -1,0 +1,16 @@
+cv_fold,component,training_rows,validation_rows,training_min,training_max,validation_rows_outside_bounds
+1,Performance_Score,64000,16000,1.0,5.0,0
+1,Monthly_Salary,64000,16000,3850.0,9000.0,0
+1,Years_At_Company,64000,16000,0.0,10.0,0
+2,Performance_Score,64000,16000,1.0,5.0,0
+2,Monthly_Salary,64000,16000,3850.0,9000.0,0
+2,Years_At_Company,64000,16000,0.0,10.0,0
+3,Performance_Score,64000,16000,1.0,5.0,0
+3,Monthly_Salary,64000,16000,3850.0,9000.0,0
+3,Years_At_Company,64000,16000,0.0,10.0,0
+4,Performance_Score,64000,16000,1.0,5.0,0
+4,Monthly_Salary,64000,16000,3850.0,9000.0,0
+4,Years_At_Company,64000,16000,0.0,10.0,0
+5,Performance_Score,64000,16000,1.0,5.0,0
+5,Monthly_Salary,64000,16000,3850.0,9000.0,0
+5,Years_At_Company,64000,16000,0.0,10.0,0

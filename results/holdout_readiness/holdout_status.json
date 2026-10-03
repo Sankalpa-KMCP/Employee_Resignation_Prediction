@@ -1,0 +1,12 @@
+{
+  "readiness_checks_complete": true,
+  "freeze_ready": false,
+  "evaluation_requested": false,
+  "formal_holdout_evaluated_this_run": false,
+  "status": "locked",
+  "unmet_checks": [
+    "final model frozen",
+    "valid freeze manifest"
+  ],
+  "historical_audit_exposure_caveat": "Earlier preliminary audit exposed aggregate holdout-related information; eventual assessment is corroborative."
+}

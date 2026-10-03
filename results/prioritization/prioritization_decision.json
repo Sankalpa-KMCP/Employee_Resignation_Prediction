@@ -3,5 +3,17 @@
   "risk_model": "XGBoost",
   "risk_model_finally_frozen": false,
   "calibration_used": false,
-  "warning": "Not an operational recommendation. The risk model remains near no-skill and no final model/calibrator is frozen."
+  "policy_frozen": false,
+  "development_rows": 80000,
+  "primary_capacity": 0.2,
+  "sensitivity_capacities": [
+    0.1,
+    0.3
+  ],
+  "random_repeats": 200,
+  "random_seed": 42,
+  "proxy_normalization": "outer-training development fit; validation transform; clip to [0,1]",
+  "multiplicative_epsilon": 0.01,
+  "formal_holdout_accessed": false,
+  "warning": "Academic raw-score simulation only. No operational policy, causal benefit, employee worth or monetary return is established."
 }
