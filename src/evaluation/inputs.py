@@ -9,7 +9,7 @@ import pandas as pd
 import yaml
 
 from src.evaluation.oof_validation import validate_oof_predictions
-from src.evaluation.metrics import calculate_binary_metrics
+from src.evaluation.metrics import calculate_binary_metrics, validate_binary_targets
 
 
 def load_development_data(root, *, usecols=None):
@@ -39,6 +39,7 @@ def load_development_data(root, *, usecols=None):
     data = pd.read_csv(path, skiprows=skip, usecols=columns)
     if not data.Employee_ID.is_unique or set(data.Employee_ID) != ids:
         raise ValueError("Source development IDs do not match the frozen registry.")
+    validate_binary_targets(data.Resigned.to_numpy(), name="Resigned")
     data["Resigned"] = data.Resigned.astype(int)
     print(f"Rows before/after development isolation: {len(identifiers):,} -> {len(data):,}; "
           f"Resigned prevalence={data.Resigned.mean():.5f} (imbalanced; no resampling during saved review).")

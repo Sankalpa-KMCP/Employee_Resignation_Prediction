@@ -312,3 +312,27 @@ def test_metric_values_are_finite():
         "predicted_positive_rate",
     ]:
         assert np.isfinite(metrics[key])
+
+
+@pytest.mark.parametrize("invalid", [0.8, 1.8, -0.2, np.nan, np.inf])
+@pytest.mark.parametrize("argument", ["y_true", "y_pred"])
+def test_labels_are_validated_before_integer_conversion(argument, invalid):
+    inputs = {"y_true": [0, 1], "y_probability": [0.1, 0.9], "y_pred": [0, 1]}
+    inputs[argument] = [invalid, 1]
+    with pytest.raises(ValueError, match=argument):
+        calculate_binary_metrics(**inputs)
+
+
+@pytest.mark.parametrize("labels", [[0, 1], [0.0, 1.0], [False, True]])
+def test_exact_binary_label_representations_remain_supported(labels):
+    metrics = calculate_binary_metrics(labels, [0.1, 0.9], y_pred=labels)
+    assert metrics["accuracy"] == 1.0
+
+
+@pytest.mark.parametrize("argument", ["y_true", "y_pred"])
+@pytest.mark.parametrize("labels", [[[0, 1]], ["0", "1"]])
+def test_label_dimensions_and_numeric_type_are_explicit(argument, labels):
+    inputs = {"y_true": [0, 1], "y_probability": [0.1, 0.9], "y_pred": [0, 1]}
+    inputs[argument] = labels
+    with pytest.raises(ValueError, match=argument):
+        calculate_binary_metrics(**inputs)

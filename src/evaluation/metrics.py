@@ -26,22 +26,26 @@ from sklearn.metrics import (
 DEFAULT_THRESHOLD = 0.50
 
 
-def _validate_binary_targets(y_true: np.ndarray) -> None:
-    """Validate that the target contains only binary labels."""
+def validate_binary_targets(y_true: Iterable[int], name: str = "y_true") -> None:
+    """Reject invalid original labels before any integer conversion or model fit."""
+    y_true = np.asarray(y_true)
     if y_true.ndim != 1:
-        raise ValueError("y_true must be one-dimensional.")
+        raise ValueError(f"{name} must be one-dimensional.")
 
     if len(y_true) == 0:
-        raise ValueError("y_true cannot be empty.")
+        raise ValueError(f"{name} cannot be empty.")
+
+    if y_true.dtype.kind not in "biuf":
+        raise ValueError(f"{name} must contain numeric binary labels 0 and 1.")
 
     if not np.isfinite(y_true).all():
-        raise ValueError("y_true contains non-finite values.")
+        raise ValueError(f"{name} contains non-finite values.")
 
     unique_values = set(np.unique(y_true))
 
     if not unique_values.issubset({0, 1}):
         raise ValueError(
-            "y_true must contain only binary labels 0 and 1."
+            f"{name} must contain only binary labels 0 and 1."
         )
 
 
@@ -139,17 +143,17 @@ def calculate_binary_metrics(
     measure ranking; precision, recall and F1 depend on the supplied predictions
     or threshold. Brier score measures probability error rather than ranking.
     """
-    true_values = np.asarray(
-        y_true,
-        dtype=int,
-    )
+    # Validate the original values before converting to integers. Otherwise
+    # values such as 0.8 would be silently truncated to valid-looking labels.
+    true_values = np.asarray(y_true)
 
     probabilities = np.asarray(
         y_probability,
         dtype=float,
     )
 
-    _validate_binary_targets(true_values)
+    validate_binary_targets(true_values)
+    true_values = true_values.astype(int)
     _validate_probabilities(probabilities)
 
     if len(true_values) != len(probabilities):
@@ -163,12 +167,10 @@ def calculate_binary_metrics(
             threshold=threshold,
         )
     else:
-        predictions = np.asarray(
-            y_pred,
-            dtype=int,
-        )
+        predictions = np.asarray(y_pred)
 
-        _validate_binary_targets(predictions)
+        validate_binary_targets(predictions, name="y_pred")
+        predictions = predictions.astype(int)
 
         if len(predictions) != len(true_values):
             raise ValueError(

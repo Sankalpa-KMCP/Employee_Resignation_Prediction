@@ -33,13 +33,23 @@ def refresh_artifact_inventory(root, manifest_path):
 
     Missing artifacts retain their path and role but have no current size or hash.
     The manifest's own size and checksum remain blank to avoid self-reference.
+    Both the shared ``artifact`` and legacy ``relative_path`` schemas are
+    supported, including inventories that originally had no size/hash fields.
+    Where both occur, ``artifact`` is a display label and ``relative_path`` is
+    the location. Stored Windows separators are normalized for portability.
     """
     root = Path(root).resolve()
     manifest_path = Path(manifest_path).resolve()
     manifest = pd.read_csv(manifest_path)
-    manifest["size_bytes"] = manifest["size_bytes"].astype("Int64")
+    path_column = "relative_path" if "relative_path" in manifest else "artifact"
+    if path_column not in manifest:
+        raise ValueError("Artifact inventory requires artifact or relative_path.")
+    if "size_bytes" not in manifest:
+        manifest["size_bytes"] = pd.Series(pd.NA, index=manifest.index, dtype="Int64")
+    else:
+        manifest["size_bytes"] = manifest["size_bytes"].astype("Int64")
     for index, row in manifest.iterrows():
-        path = (root / row.artifact).resolve()
+        path = (root / str(row[path_column]).replace("\\", "/")).resolve()
         if not path.is_relative_to(root):
             raise ValueError("Artifact inventory path escapes the project root.")
         exists = path.is_file()

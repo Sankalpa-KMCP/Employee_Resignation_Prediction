@@ -292,3 +292,50 @@ def test_runner_catches_invalid_factory_object(synthetic_split_data):
             split_registry=registry,
             feature_cols=feature_cols,
         )
+
+
+@pytest.mark.parametrize("column", ["Resigned", "Employee_ID", "Hire_Date", "cv_fold", "partition"])
+def test_runner_rejects_forbidden_predictors_before_creating_adapter(synthetic_split_data, column):
+    features, registry, feature_cols = synthetic_split_data
+    created = []
+
+    def factory():
+        created.append(True)
+        return InstrumentedMockAdapter()
+
+    with pytest.raises(ValueError, match="Forbidden predictor"):
+        run_5fold_cv(factory, features, registry, [*feature_cols, column])
+    assert created == []  # Even missing forbidden columns must fail before fitting.
+
+
+@pytest.mark.parametrize("feature_cols", [[], ["Age", "Age"]])
+def test_runner_requires_unique_nonempty_predictors(synthetic_split_data, feature_cols):
+    features, registry, _ = synthetic_split_data
+    with pytest.raises(ValueError, match="non-empty and unique"):
+        run_5fold_cv(InstrumentedMockAdapter, features, registry, feature_cols)
+
+
+@pytest.mark.parametrize("invalid", [0.8, -1.0, 2.0, np.nan, np.inf, "invalid", "0"])
+def test_runner_rejects_original_invalid_labels_before_fitting(synthetic_split_data, invalid):
+    features, registry, feature_cols = synthetic_split_data
+    features = features.copy()
+    features["Resigned"] = features.Resigned.astype(object if isinstance(invalid, str) else float)
+    features.loc[0, "Resigned"] = invalid
+    created = []
+
+    def factory():
+        created.append(True)
+        return InstrumentedMockAdapter()
+
+    with pytest.raises(ValueError, match="Resigned"):
+        run_5fold_cv(factory, features, registry, feature_cols)
+    assert created == []
+
+
+@pytest.mark.parametrize("dtype", [float, bool])
+def test_runner_accepts_exact_binary_float_and_boolean_labels(synthetic_split_data, dtype):
+    features, registry, feature_cols = synthetic_split_data
+    features = features.copy()
+    features["Resigned"] = features.Resigned.astype(dtype)
+    result = run_5fold_cv(InstrumentedMockAdapter, features, registry, feature_cols)
+    assert result.predictions.y_true.tolist() == features.Resigned.astype(int).tolist()

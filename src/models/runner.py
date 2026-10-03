@@ -9,9 +9,11 @@ from typing import Any, Callable, Sequence
 import numpy as np
 import pandas as pd
 
+from src.data.feature_contract import load_feature_contract
 from src.evaluation.metrics import (
     calculate_binary_metrics,
     probabilities_to_predictions,
+    validate_binary_targets,
 )
 from src.evaluation.oof_validation import validate_oof_predictions
 from src.models.base import ModelAdapter, OOFResult
@@ -93,6 +95,18 @@ def run_5fold_cv(
     # ---------------------------------------------------------
     # 1. Input and Schema Validation
     # ---------------------------------------------------------
+    # The target, IDs and split metadata cannot be predictors. Read the frozen
+    # exclusions rather than maintaining a second feature policy in this runner.
+    feature_cols = list(feature_cols)
+    if not feature_cols or len(feature_cols) != len(set(feature_cols)):
+        raise ValueError("Predictor columns must be non-empty and unique.")
+    contract = load_feature_contract()
+    forbidden = {item["column"] for item in contract["excluded_features"]}
+    forbidden.update({target_col, id_col, fold_col, partition_col})
+    leaked_features = forbidden.intersection(feature_cols)
+    if leaked_features:
+        raise ValueError(f"Forbidden predictor columns: {sorted(leaked_features)}")
+
     required_registry_cols = {id_col, partition_col, fold_col}
     missing_registry_cols = required_registry_cols - set(split_registry.columns)
     if missing_registry_cols:
@@ -159,6 +173,10 @@ def run_5fold_cv(
     fold_mapping = dev_registry[[id_col, fold_col]].copy()
     fold_mapping[fold_col] = fold_mapping[fold_col].astype(int)
     dev_data = dev_data.merge(fold_mapping, on=id_col, validate="one_to_one")
+
+    # Validate the original development labels before adapters can convert them.
+    # In particular, astype(int) must never turn a fractional target into 0 or 1.
+    validate_binary_targets(dev_data[target_col].to_numpy(), name=target_col)
 
     observed_folds = sorted(dev_data[fold_col].unique())
     expected_folds_sorted = sorted(expected_folds)

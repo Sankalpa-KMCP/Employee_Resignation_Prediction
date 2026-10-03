@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from src.evaluation.metrics import validate_binary_targets
 
 REQUIRED_COLUMNS = {
     "Employee_ID",
@@ -334,6 +335,8 @@ def validate_oof_predictions(
             ["Employee_ID", "Resigned"]
         ].copy()
 
+        # Original source labels must be binary; casting first hides bad input.
+        validate_binary_targets(source_targets["Resigned"].to_numpy(), name="Resigned")
         source_targets["expected_y_true"] = (
             source_targets["Resigned"]
             .astype(int)

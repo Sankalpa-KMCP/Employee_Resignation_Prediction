@@ -105,6 +105,74 @@ def test_inventory_reports_missing_artifacts_and_changed_metadata(tmp_path):
     assert pd.isna(inventory.loc[2, "sha256"]) and pd.isna(inventory.loc[2, "size_bytes"])
 
 
+def test_legacy_catboost_inventory_refreshes_windows_relative_paths(tmp_path):
+    artifact = tmp_path / "results/models/catboost/oof.csv"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text("synthetic evidence")
+    manifest_path = tmp_path / "manifest.csv"
+    pd.DataFrame({"file_name": ["oof.csv", "missing.cbm"],
+                  "relative_path": [r"results\models\catboost\oof.csv", r"models\catboost\missing.cbm"],
+                  "size_bytes": [1, 99], "exists": [True, True]}).to_csv(manifest_path, index=False)
+    refreshed = refresh_artifact_inventory(tmp_path, manifest_path)
+    assert refreshed.loc[0, "exists"]
+    assert refreshed.loc[0, "size_bytes"] == artifact.stat().st_size
+    assert refreshed.loc[0, "sha256"] == hashlib.sha256(artifact.read_bytes()).hexdigest()
+    assert not refreshed.loc[1, "exists"]
+    assert pd.isna(refreshed.loc[1, "size_bytes"])
+    assert pd.isna(refreshed.loc[1, "sha256"])
+
+
+def test_inventory_rejects_paths_outside_checkout(tmp_path):
+    manifest_path = tmp_path / "manifest.csv"
+    pd.DataFrame({"artifact": ["../outside.txt"], "size_bytes": [1]}).to_csv(manifest_path, index=False)
+    original = manifest_path.read_bytes()
+    with pytest.raises(ValueError, match="escapes"):
+        refresh_artifact_inventory(tmp_path, manifest_path)
+    assert manifest_path.read_bytes() == original
+
+
+def test_inventory_uses_relative_path_instead_of_artifact_label_and_adds_sizes(tmp_path):
+    # FT-Transformer's original schema has a display label, path and exists only.
+    artifact = tmp_path / "results/models/ft_transformer/oof.csv"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text("synthetic evidence")
+    manifest_path = tmp_path / "manifest.csv"
+    pd.DataFrame({"artifact": ["oof.csv", "missing.zip"],
+                  "relative_path": [r"results\models\ft_transformer\oof.csv", r"models\missing.zip"],
+                  "exists": [True, True]}).to_csv(manifest_path, index=False)
+    refreshed = refresh_artifact_inventory(tmp_path, manifest_path)
+    assert refreshed.loc[0, "exists"]
+    assert refreshed.loc[0, "size_bytes"] == artifact.stat().st_size
+    assert refreshed.loc[0, "sha256"] == hashlib.sha256(artifact.read_bytes()).hexdigest()
+    assert not refreshed.loc[1, "exists"]
+    assert pd.isna(refreshed.loc[1, "size_bytes"])
+    assert pd.isna(refreshed.loc[1, "sha256"])
+
+
+def test_development_loader_rejects_fractional_source_labels(small_checkout):
+    raw_path = small_checkout / "raw.csv"
+    raw = pd.read_csv(raw_path)
+    raw.loc[0, "Resigned"] = "0.8"
+    raw.to_csv(raw_path, index=False)
+    contract_path = small_checkout / "configs/feature_contract.yaml"
+    contract = yaml.safe_load(contract_path.read_text())
+    contract["dataset"]["sha256"] = hashlib.sha256(raw_path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+    contract_path.write_text(yaml.safe_dump(contract))
+    with pytest.raises(ValueError, match="Resigned must contain only binary"):
+        load_development_data(small_checkout)
+
+
+def test_oof_parity_rejects_fractional_original_source_labels(small_checkout):
+    from src.evaluation.oof_validation import validate_oof_predictions
+
+    source, split = load_development_data(small_checkout)
+    source["Resigned"] = source.Resigned.astype(float)
+    source.loc[0, "Resigned"] = 0.8
+    predictions = pd.read_csv(small_checkout / "oof.csv")
+    with pytest.raises(ValueError, match="Resigned must contain only binary"):
+        validate_oof_predictions(predictions, split, source_data=source)
+
+
 @pytest.mark.parametrize("member,prefix", [("member_2_catboost", "06"), ("member_3_xgboost", "07"), ("member_5_ebm", "09")])
 def test_default_notebooks_never_fit_or_export(monkeypatch, member, prefix):
     import IPython.display
