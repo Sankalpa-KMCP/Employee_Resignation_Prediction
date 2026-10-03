@@ -54,14 +54,21 @@ def verified_review():
 
 def test_default_comparison_is_complete_and_read_only(verified_review):
     cells = read_notebook()["cells"]
-    assert len(cells) == 30
-    assert sum(c["cell_type"] == "code" for c in cells) == 15
-    assert sum(c["cell_type"] == "markdown" for c in cells) == 15
+    assert len(cells) == 36
+    assert sum(c["cell_type"] == "code" for c in cells) == 19
+    assert sum(c["cell_type"] == "markdown" for c in cells) == 17
     assert not verified_review["EXPORT_RESULTS"]
     assert len(verified_review["rendered_figures"]) == 8
     assert len(verified_review["comparison"]) == 6
     assert len(verified_review["folds"]) == 30
     assert len(verified_review["baselines"]) == 2
+    assert not verified_review["cross_export"]
+    assert len(verified_review["cross_confusion_counts"]) == 6
+    assert len(verified_review["cross_error_overlap"]) == 12
+    assert set(verified_review["cross_top_risk"]) == {1, 5, 10}
+    assert not set(verified_review["cross_aligned"].Employee_ID).intersection(
+        verified_review["cross_holdout_ids"]
+    )
 
 
 def test_comparison_preserves_canonical_values_and_scientific_references(verified_review):
