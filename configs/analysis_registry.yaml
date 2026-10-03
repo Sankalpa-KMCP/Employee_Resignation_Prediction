@@ -2,9 +2,12 @@
 # The formal 20,000-row holdout is intentionally absent from this registry.
 models:
   FT-Transformer:
-    oof_path: results/models/ft_transformer/weighted_early_stopping_final/ft_transformer_final_oof_predictions.csv
-    protocol: legacy controlled screening + 5-fold OOF; final nested rerun not independently reproduced in this package
+    oof_path: results/models/ft_transformer/reruns/FT02_20261003T025004Z/ft_transformer_final_oof_predictions.csv
+    protocol: fixed FT02 GPU 5-fold OOF; inner-AP epoch selection then fresh fit on inner-training rows; historical screening is descriptive, no eight-candidate search
+    # This flag refers to multi-candidate nested tuning, not completion of fixed FT02 evaluation.
     tuning_complete: false
+    evaluation_complete: true
+    candidate_search_executed: false
   CatBoost:
     oof_path: results/models/catboost/oof_predictions.csv
     protocol: strict nested candidate selection
