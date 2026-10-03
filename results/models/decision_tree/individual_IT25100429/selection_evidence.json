@@ -1,0 +1,172 @@
+[
+  {
+    "outer_fold": 1,
+    "inner_train_rows": 54400,
+    "inner_validation_rows": 9600,
+    "outer_train_rows": 64000,
+    "outer_validation_rows": 16000,
+    "winner": "D05",
+    "candidates": [
+      {
+        "candidate_id": "D01",
+        "inner_ap": 0.10098863995134261
+      },
+      {
+        "candidate_id": "D02",
+        "inner_ap": 0.0991443775881076
+      },
+      {
+        "candidate_id": "D03",
+        "inner_ap": 0.10091689168081781
+      },
+      {
+        "candidate_id": "D04",
+        "inner_ap": 0.10281098076217333
+      },
+      {
+        "candidate_id": "D05",
+        "inner_ap": 0.10426594950563833
+      },
+      {
+        "candidate_id": "D06",
+        "inner_ap": 0.1026888738041474
+      }
+    ]
+  },
+  {
+    "outer_fold": 2,
+    "inner_train_rows": 54400,
+    "inner_validation_rows": 9600,
+    "outer_train_rows": 64000,
+    "outer_validation_rows": 16000,
+    "winner": "D06",
+    "candidates": [
+      {
+        "candidate_id": "D01",
+        "inner_ap": 0.1000913886540421
+      },
+      {
+        "candidate_id": "D02",
+        "inner_ap": 0.10029448987386362
+      },
+      {
+        "candidate_id": "D03",
+        "inner_ap": 0.09886543114913164
+      },
+      {
+        "candidate_id": "D04",
+        "inner_ap": 0.09981207066941772
+      },
+      {
+        "candidate_id": "D05",
+        "inner_ap": 0.0992110888477751
+      },
+      {
+        "candidate_id": "D06",
+        "inner_ap": 0.10188940509951672
+      }
+    ]
+  },
+  {
+    "outer_fold": 3,
+    "inner_train_rows": 54400,
+    "inner_validation_rows": 9600,
+    "outer_train_rows": 64000,
+    "outer_validation_rows": 16000,
+    "winner": "D01",
+    "candidates": [
+      {
+        "candidate_id": "D01",
+        "inner_ap": 0.10083770685702047
+      },
+      {
+        "candidate_id": "D02",
+        "inner_ap": 0.10034912471020224
+      },
+      {
+        "candidate_id": "D03",
+        "inner_ap": 0.09829244254784734
+      },
+      {
+        "candidate_id": "D04",
+        "inner_ap": 0.09557517068466674
+      },
+      {
+        "candidate_id": "D05",
+        "inner_ap": 0.09487346433047836
+      },
+      {
+        "candidate_id": "D06",
+        "inner_ap": 0.09721244821362114
+      }
+    ]
+  },
+  {
+    "outer_fold": 4,
+    "inner_train_rows": 54400,
+    "inner_validation_rows": 9600,
+    "outer_train_rows": 64000,
+    "outer_validation_rows": 16000,
+    "winner": "D02",
+    "candidates": [
+      {
+        "candidate_id": "D01",
+        "inner_ap": 0.10206871205485257
+      },
+      {
+        "candidate_id": "D02",
+        "inner_ap": 0.10264605309080996
+      },
+      {
+        "candidate_id": "D03",
+        "inner_ap": 0.09929114302033712
+      },
+      {
+        "candidate_id": "D04",
+        "inner_ap": 0.09966185432611677
+      },
+      {
+        "candidate_id": "D05",
+        "inner_ap": 0.0971879668109893
+      },
+      {
+        "candidate_id": "D06",
+        "inner_ap": 0.09709359003275092
+      }
+    ]
+  },
+  {
+    "outer_fold": 5,
+    "inner_train_rows": 54400,
+    "inner_validation_rows": 9600,
+    "outer_train_rows": 64000,
+    "outer_validation_rows": 16000,
+    "winner": "D04",
+    "candidates": [
+      {
+        "candidate_id": "D01",
+        "inner_ap": 0.10112579780708499
+      },
+      {
+        "candidate_id": "D02",
+        "inner_ap": 0.10125131016479706
+      },
+      {
+        "candidate_id": "D03",
+        "inner_ap": 0.10146899664086403
+      },
+      {
+        "candidate_id": "D04",
+        "inner_ap": 0.10359915946077439
+      },
+      {
+        "candidate_id": "D05",
+        "inner_ap": 0.09644252868848685
+      },
+      {
+        "candidate_id": "D06",
+        "inner_ap": 0.09945518940613754
+      }
+    ]
+  }
+]
