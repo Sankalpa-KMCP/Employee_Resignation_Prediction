@@ -13,12 +13,16 @@ def reliability_table(y_true, y_probability, n_bins: int = 10) -> pd.DataFrame:
     Return counts, mean scores, observed positive rates and bin fractions.
     Empty bins keep NaN means so they cannot suggest evidence of calibration.
     """
-    y=np.asarray(y_true,dtype=int); p=np.asarray(y_probability,dtype=float)
+    y=np.asarray(y_true); p=np.asarray(y_probability,dtype=float)
     if y.ndim!=1 or p.ndim!=1 or len(y)!=len(p) or len(y)==0:
         raise ValueError("y_true and y_probability must be non-empty 1D arrays of equal length.")
     if not np.isfinite(p).all() or (p<0).any() or (p>1).any():
         raise ValueError("Probabilities must be finite and in [0, 1].")
-    if n_bins < 2: raise ValueError("n_bins must be at least 2.")
+    if not np.isin(y, [0, 1]).all():
+        raise ValueError("Targets must contain binary labels 0 and 1.")
+    y = y.astype(int)
+    if not isinstance(n_bins, int) or isinstance(n_bins, bool) or n_bins < 2:
+        raise ValueError("n_bins must be an integer of at least 2.")
     # Equal-width bins summarize reliability without optimizing bin boundaries on outcomes.
     edges=np.linspace(0,1,n_bins+1)
     bins=np.clip(np.digitize(p,edges[1:-1],right=False),0,n_bins-1)
