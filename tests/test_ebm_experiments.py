@@ -113,3 +113,35 @@ def test_normalization_preserves_whitespace_and_lone_cr(tmp_path):
     for changed in (b"value \n", b"value\r"):
         p.write_bytes(changed)
         assert text_sha256(p) != canonical
+
+
+def test_new_ebm_experiment_is_isolated_with_mocked_fits(formal_checkout, monkeypatch):
+    """Exercise the full export path without performing any real EBM training."""
+    import json
+    from src.models import ebm_experiments
+
+    root = Path(__file__).resolve().parents[1]
+    for relative in ("configs/feature_contract.yaml", "data/raw/Extended_Employee_Performance_and_Productivity_Data.csv"):
+        destination = formal_checkout / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(root / relative, destination)
+    canonical = formal_checkout / "results/models/ebm/individual_IT25100429"
+    before = {p.name: p.read_bytes() for p in canonical.iterdir()}
+    fitted_rows = []
+
+    def fake_fit(X, y, candidate, categorical):
+        fitted_rows.append(len(X))
+        return candidate
+
+    monkeypatch.setattr(ebm_experiments, "fit_candidate", fake_fit)
+    monkeypatch.setattr(ebm_experiments, "predict", lambda candidate, X: np.full(len(X), .1 + candidate["learning_rate"]))
+    _, _, predictions, _, output = ebm_experiments.run_experiments(formal_checkout)
+    assert output.parent == formal_checkout / "results/models/ebm/reruns"
+    assert len(predictions) == 80_000
+    assert fitted_rows.count(54_400) == 30 and fitted_rows.count(64_000) == 30
+    assert {p.name: p.read_bytes() for p in canonical.iterdir()} == before
+    manifest = json.loads((output / "formal_input_manifest.json").read_text())
+    for entry in manifest["files"].values():
+        path = formal_checkout / entry["path"]
+        assert path.parent == output
+        assert entry["sha256"] == text_sha256(path)

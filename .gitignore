@@ -240,6 +240,9 @@ celerybeat.pid
 models/*/*
 !models/*/.gitkeep
 
+# Deliberate reruns keep their serialized models beside the run evidence.
+results/models/*/reruns/*/model/
+
 
 # ============================================================
 # Raw / Intermediate / Generated Data

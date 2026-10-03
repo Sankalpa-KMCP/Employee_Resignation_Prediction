@@ -139,6 +139,10 @@ def validate_oof_predictions(
             "OOF predictions contain missing cv_fold values."
         )
 
+    numeric_folds = pd.to_numeric(predictions["cv_fold"], errors="coerce")
+    if not numeric_folds.isin([1, 2, 3, 4, 5]).all():
+        raise ValueError("OOF cv_fold values must be integers 1 through 5.")
+
     observed_folds = set(
         predictions["cv_fold"]
         .astype(int)

@@ -15,6 +15,7 @@ from src.evaluation.metrics import calculate_binary_metrics
 from src.evaluation.oof_validation import validate_oof_predictions
 
 from src.models.config import load_model_config
+from src.models.experiment_outputs import create_run_directory
 
 CONFIG = load_model_config(Path(__file__).resolve().parents[2] / "configs/models/ebm.yaml", strict_schema=True)
 CANDIDATES = [dict(c["params"], setting=c["setting"], preprocessing=c["preprocessing"], candidate_id=c["id"])
@@ -60,15 +61,15 @@ def choose(records):
     eligible = [r for r in records if r["inner_ap"] >= best - CONFIG["inner_validation"]["practical_ap_margin"]]
     return min(eligible, key=lambda r: (r["interactions"], r["max_leaves"], r["candidate_id"]))
 
-def run_experiments(root):
+def run_experiments(root, output_dir=None):
     """Run six development-only EBM varieties across the frozen five outer folds.
 
     Select primary raw candidates on inner AP and report standardized pairs as sensitivity evidence.
-    Write canonical evidence and its manifest; return data, comparison, nested OOF, metrics and directory.
+    Write a new isolated rerun and its manifest; return data, comparison, nested OOF, metrics and directory.
+    An explicit output_dir must be a new directory beneath results/models/ebm/reruns.
     """
-    root = Path(root)
-    out = root / CONFIG["canonical_results"]["directory"]
-    out.mkdir(parents=True, exist_ok=True)
+    root = Path(root).resolve()
+    out = create_run_directory(root, "ebm", output_dir)
     import yaml
     contract = yaml.safe_load((root / "configs/feature_contract.yaml").read_text())
     features = contract["primary_model_features"]
@@ -140,7 +141,7 @@ def run_experiments(root):
                     candidate_settings=CANDIDATES, fixed_parameters=CONFIG["fixed_params"], primary_preprocessing="raw", final_model_frozen=False)
     (out / "summary_metrics.json").write_text(json.dumps(nested_metrics, indent=2))
     (out / "run_metadata.json").write_text(json.dumps(metadata, indent=2))
-    write_formal_manifest(root)
+    write_formal_manifest(root, output_dir=out)
     return data, comparison, nested, nested_metrics, out
 
 def text_sha256(path):
@@ -152,20 +153,24 @@ def text_sha256(path):
     return hashlib.sha256(Path(path).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
-def write_formal_manifest(root):
-    """Write hashes binding the canonical EBM predictions, fold metrics and summary to their config.
+def write_formal_manifest(root, output_dir=None):
+    """Bind EBM predictions, fold metrics and summary to their config with hashes.
 
     Text hashes normalize Windows line endings so equivalent checkouts validate consistently.
+    With output_dir, describe that isolated run; otherwise refresh the canonical manifest.
     """
-    root = Path(root)
+    root = Path(root).resolve()
     config = load_model_config(root / "configs/models/ebm.yaml", strict_schema=True)
-    files = {name: {"path": config["canonical_results"][name],
-                   "sha256": text_sha256(root / config["canonical_results"][name])}
+    paths = {name: config["canonical_results"][name] if output_dir is None else
+             (Path(output_dir) / Path(config["canonical_results"][name]).name).relative_to(root).as_posix()
+             for name in ("oof_predictions", "fold_metrics", "summary_metrics", "manifest")}
+    files = {name: {"path": paths[name],
+                   "sha256": text_sha256(root / paths[name])}
              for name in ("oof_predictions", "fold_metrics", "summary_metrics")}
     manifest = dict(model_name="EBM", protocol="five_fold_nested_development_raw_candidates",
                     hash_normalization="crlf_to_lf", config_sha256=text_sha256(root / "configs/models/ebm.yaml"),
                     rows=80000, formal_holdout_used=False, files=files)
-    (root / config["canonical_results"]["manifest"]).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    (root / paths["manifest"]).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
 
 def load_formal_ebm_input(root):

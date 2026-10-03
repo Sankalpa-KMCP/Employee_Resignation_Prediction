@@ -9,20 +9,17 @@ import yaml
 from sklearn.metrics import average_precision_score, brier_score_loss, roc_auc_score
 
 from src.evaluation.oof_validation import validate_oof_predictions
+from src.evaluation.inputs import load_group_inputs
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_canonical_six_model_inputs_match_frozen_development() -> None:
-    registry = yaml.safe_load((ROOT / "configs/analysis_registry.yaml").read_text(encoding="utf-8"))
-    split = pd.read_csv(ROOT / "data/processed/split_registry.csv", dtype={"cv_fold": "Int64"})
-    raw = pd.read_csv(ROOT / "data/raw/Extended_Employee_Performance_and_Productivity_Data.csv")
-
+    registry, frames = load_group_inputs(ROOT)
     assert len(registry["models"]) == 6
-    for entry in registry["models"].values():
-        predictions = pd.read_csv(ROOT / entry["oof_path"])
-        validate_oof_predictions(predictions, split, source_data=raw)
+    assert set(frames) == set(registry["models"])
+    assert all(len(predictions) == 80_000 for predictions in frames.values())
 
 
 def test_member3_primary_result_is_the_group_xgboost_input() -> None:
