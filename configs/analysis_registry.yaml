@@ -9,6 +9,7 @@ models:
     evaluation_complete: true
     candidate_search_executed: false
   CatBoost:
+    model_name: CatBoost Classifier
     oof_path: results/models/catboost/oof_predictions.csv
     protocol: strict nested candidate selection
     tuning_complete: true

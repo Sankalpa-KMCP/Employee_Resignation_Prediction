@@ -23,7 +23,9 @@ Open `notebooks/team_contributions/models/member_5_ebm/09_m5_ebm.ipynb` for mode
 | Code/output demonstration | Executed notebooks, figures, inner selection log and OOF prediction checks |
 
 ## Result locations and group integration
-New results are under `results/models/ebm/individual_IT25100429/`. Use its `summary_metrics.json`, `fold_metrics.csv` and `oof_predictions.csv` for the group's EBM comparison, rather than historical default-only metrics in the parent directory. Mean outer-fold Average Precision is the group primary comparison value. Pooled AP is also reported and is a different aggregation.
+Canonical results are under `results/models/ebm/individual_IT25100429/`. Use its `summary_metrics.json`, `fold_metrics.csv` and `oof_predictions.csv` for the group's EBM comparison, rather than historical default-only metrics in the parent directory. Pooled out-of-fold Average Precision is the primary group ranking metric. Mean outer-fold AP and its standard deviation describe fold stability; they are a different aggregation.
+
+The notebook now defaults to validated saved evidence. `RUN_EBM_TRAINING=True` deliberately repeats 60 experimental fits plus one explanation fit in a new `results/models/ebm/reruns/` directory. New runs do not replace the canonical group input automatically. The notebook's parameter table is generated from `configs/models/ebm.yaml`: E02 has two leaves and E03 has three.
 
 Raw preprocessing remains the primary EBM representation. Standardized numerical variants are a sensitivity experiment and do not alter the approved features. Outer validation scores do not select the primary candidates. A predeclared .001 absolute inner AP margin prefers fewer interactions and leaves when practically equivalent. This is not a significance claim.
 

@@ -56,7 +56,16 @@ P2 has a slightly higher descriptive AP but markedly worse Brier than P1; the di
 
 Effects depend on the weighting profile and the sample is small; no preprocessing choice is made from it. Use `results/models/lightgbm/strict_nested/` for formal five-fold performance and `notebooks/team_contributions/models/member_4_lightgbm/08_m4_lightgbm.ipynb` for the historical/formal distinction.
 
-**Member 5, EBM (IT25100429).** The formal raw-input model selects among E01/E02/E03 with an inner AP rule on every outer fold. It also evaluates the same three parameter settings after fold-local numerical standardization as a sensitivity check. E01 is learning rate 0.015, two leaves, zero interactions; E02 is 0.03, four leaves, five interactions; E03 is 0.005, two leaves, ten interactions.
+**Member 5, EBM (IT25100429).** The formal raw-input model selects among E01/E02/E03 with an inner AP rule on every outer fold. It also evaluates the same three parameter settings after fold-local numerical standardization as a sensitivity check. The following parameter table is generated from `configs/models/ebm.yaml`; E02 uses two leaves and E03 uses three.
+
+| Candidate | Preprocessing | Learning rate | Max leaves | Min samples/leaf | Interactions |
+| --- | --- | --- | --- | --- | --- |
+| E01_raw | raw | 0.015 | 2 | 10 | 0 |
+| E01_standardized | standardized | 0.015 | 2 | 10 | 0 |
+| E02_raw | raw | 0.03 | 2 | 4 | 5 |
+| E02_standardized | standardized | 0.03 | 2 | 4 | 5 |
+| E03_raw | raw | 0.005 | 3 | 2 | 10 |
+| E03_standardized | standardized | 0.005 | 3 | 2 | 10 |
 
 | Candidate/preprocessing | Pooled AP | Mean fold AP | ROC-AUC | Brier |
 |---|---:|---:|---:|---:|
