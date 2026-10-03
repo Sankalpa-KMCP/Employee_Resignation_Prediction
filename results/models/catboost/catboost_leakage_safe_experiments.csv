@@ -1,0 +1,4 @@
+Experiment,PR_AUC,ROC_AUC,Brier_Score,Balanced_Acc_05,Pred_Pos_Rate_05,Prob_Min,Prob_Mean,Prob_Max
+"Exp 1: Conservative Unweighted (C03, depth=4, lr=0.03, l2=5, unweighted)",0.10046,0.499683,0.09047,0.5,0.0,0.1125,0.1198,0.1295
+"Exp 2: Conservative Balanced (C04, depth=4, lr=0.03, l2=5, Balanced)",0.100215,0.499755,0.24956,0.49905,0.5236,0.4496,0.4994,0.5269
+"Exp 3: Baseline Unweighted (C01, depth=6, lr=0.05, l2=3, unweighted)",0.099761,0.498695,0.090109,0.5,0.0,0.0827,0.1027,0.1305
