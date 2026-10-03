@@ -112,6 +112,27 @@ def test_runner_fresh_adapter_isolation(synthetic_split_data):
             assert instantiated_adapters[i] is not instantiated_adapters[j]
 
 
+def test_runner_preserves_metadata_from_every_fold(synthetic_split_data):
+    features, registry, feature_cols = synthetic_split_data
+    adapters = []
+
+    class FoldAdapter(InstrumentedMockAdapter):
+        def get_metadata(self):
+            return {"instance": adapters.index(self) + 1, "diagnostic": {"epochs": len(adapters)}}
+
+    def factory():
+        adapter = FoldAdapter()
+        adapters.append(adapter)
+        return adapter
+
+    result = run_5fold_cv(factory, features, registry, feature_cols)
+    assert result.metadata["instance"] == 5
+    evidence = result.metadata["fold_metadata"]
+    assert [item["fold"] for item in evidence] == [1, 2, 3, 4, 5]
+    assert [item["adapter_metadata"]["instance"] for item in evidence] == [1, 2, 3, 4, 5]
+    assert [item["adapter_metadata"]["diagnostic"]["epochs"] for item in evidence] == [1, 2, 3, 4, 5]
+
+
 def test_runner_row_parity_and_canonical_schema(synthetic_split_data):
     features, registry, feature_cols = synthetic_split_data
 

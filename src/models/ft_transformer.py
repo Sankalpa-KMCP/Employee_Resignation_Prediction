@@ -2,14 +2,16 @@
 
 Implements a leakage-safe FT-Transformer pipeline conforming to ModelAdapter protocol with:
 - fold-local numerical and categorical preprocessing
-- strict nested candidate selection across FT01–FT08
+- strict nested candidate selection across FT01–FT08 in automatic selection mode
 - fold-local positive-class weighting (dynamic_ratio vs unweighted)
 - stratified inner validation early stopping on Average Precision
-- full outer-training refit on 100% of outer rows for selected_epoch_count epochs
+- optional full outer-training refit for the selected epoch count
 - comprehensive candidate selection evidence logging
 
 The outer validation fold and formal holdout are never used for model fitting,
 class-weight calculation, preprocessing fitting, candidate selection, or early stopping.
+
+The Member 1 notebook uses this implementation; executing its saved-evidence path does not train a new model.
 """
 
 from __future__ import annotations
@@ -376,6 +378,10 @@ class FTTransformerAdapter:
         random_seed: int | None = None,
         batch_size: int | None = None,
     ) -> None:
+        """Resolve a fixed experiment or configured candidate search and initialize unfitted state.
+
+        Training partitions, category mappings and class weights are established later during fit.
+        """
         self.name = name
         self.model_id = model_id
         self.candidate_id = candidate_id or "default"
@@ -798,9 +804,8 @@ class FTTransformerAdapter:
                 self._inner_eval_results["refit_time_seconds"] = self.refit_time_seconds_
                 self._fitted_on_all_outer_rows = True
             else:
-                # Legacy compatibility: fit and retain model trained on inner partition
-                self.refit_time_seconds_ = 0.0
-                self._inner_eval_results["refit_time_seconds"] = 0.0
+                # Select epochs above, then train fresh on inner-training rows only.
+                refit_start = time.perf_counter()
                 # Preprocess inner training data
                 self._preprocess(X_in_tr, fit=True)
                 # Fit model on inner train for selected epochs
@@ -812,6 +817,8 @@ class FTTransformerAdapter:
                     batch_size=fit_batch_size,
                 )
                 self._fitted_on_all_outer_rows = False
+                self.refit_time_seconds_ = float(time.perf_counter() - refit_start)
+                self._inner_eval_results["refit_time_seconds"] = self.refit_time_seconds_
 
         # =====================================================================
         # Branch 3: Direct Mode (Zero inner-val or small dataset)
@@ -848,7 +855,10 @@ class FTTransformerAdapter:
         selected_epochs: int,
         batch_size: int,
     ) -> None:
-        """Instantiate completely fresh model and train on 100% of outer rows.
+        """Train a fresh model on the supplied rows for the selected epoch count.
+
+        The caller supplies all outer-training rows for a full refit, or only
+        inner-training rows when refit_outer_train=False.
 
         Guarantees:
         - Fresh StandardScaler and category vocabularies fitted on X_outer
@@ -870,7 +880,7 @@ class FTTransformerAdapter:
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(self.random_seed)
 
-        # 1. Fit fresh preprocessors on ALL outer-training rows
+        # 1. Fit fresh preprocessors on the supplied final-training partition.
         (
             self._scaler,
             self._category_maps,
@@ -883,7 +893,7 @@ class FTTransformerAdapter:
             X_outer, self.categorical_features, self._num_features, self._scaler, self._category_maps
         )
 
-        # 2. Derive pos_weight strictly from outer-training labels
+        # 2. Derive pos_weight from that same partition's labels.
         weighting = str(self.params.get("weighting", "none")).lower()
         if weighting == "dynamic_ratio":
             pos_count = int(np.sum(y_outer == 1))
@@ -1133,6 +1143,16 @@ class FTTransformerAdapter:
             "patience": self.patience,
             "max_epochs": self.max_epochs,
             "refit_outer_train": self.refit_outer_train,
+            "final_fit_strategy": "fresh_model_for_selected_epoch_count",
+            "final_fit_partition": (
+                "outer_training" if self._fitted_on_all_outer_rows else "inner_training"
+            ) if self._fitted else None,
+            "best_weights_restored": False,
+            "selection_checkpoint_used_for_final_predictions": False,
+            "selection_learning_rate_scheduler": (
+                "ReduceLROnPlateau" if self._inner_eval_results.get("all_candidates") else None
+            ),
+            "final_fit_learning_rate_scheduler": None,
             "random_seed": self.random_seed,
             "params": copy.deepcopy(self.params),
             "weighting_strategy": self.params.get("weighting", "none"),
@@ -1140,7 +1160,8 @@ class FTTransformerAdapter:
             "feature_names": list(self._feature_names),
             "num_features": list(self._num_features),
             "class_weighting": (
-                "outer_training_fold_positive_class_weight"
+                ("outer_training_fold_positive_class_weight" if self._fitted_on_all_outer_rows
+                 else "inner_training_positive_class_weight")
                 if self._pos_weight is not None
                 else "unweighted_bce"
             ),

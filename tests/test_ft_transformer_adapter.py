@@ -450,6 +450,41 @@ def test_get_selection_evidence_fails_before_fit():
         adapter.get_selection_evidence()
 
 
+def test_direct_fit_metadata_has_no_selection_scheduler(synthetic_data):
+    X, y = synthetic_data
+    adapter = FTTransformerAdapter(params={"max_epochs": 1}, inner_val_fraction=0)
+    with patch.object(adapter, "_refit_fresh_outer_model"):
+        adapter.fit(X, y)
+    assert adapter.get_metadata()["selection_learning_rate_scheduler"] is None
+
+
+def test_fixed_ft02_metadata_matches_fresh_inner_training_fit(ft_raw_config, synthetic_data):
+    """Epoch selection must not be reported as restoring the selection model."""
+    X, y = synthetic_data
+    adapter = FTTransformerAdapter(
+        config=ft_raw_config, candidate_id="FT02", refit_outer_train=False,
+    )
+    evaluation = {"inner_ap": 0.25, "selected_epoch_count": 3}
+    with patch("src.models.ft_transformer._evaluate_candidate", return_value=evaluation) as select:
+        with patch.object(adapter, "_refit_fresh_outer_model") as fresh_fit:
+            adapter.fit(X, y)
+
+    assert select.call_count == 1
+    assert select.call_args.kwargs["candidate_dict"]["id"] == "FT02"
+    assert fresh_fit.call_count == 1
+    assert fresh_fit.call_args.kwargs["selected_epochs"] == 3
+    inner_rows = select.call_args.kwargs["X_in_tr"]
+    pd.testing.assert_frame_equal(fresh_fit.call_args.kwargs["X_outer"], inner_rows)
+    assert len(inner_rows) < len(X)
+    metadata = adapter.get_metadata()
+    assert metadata["final_fit_partition"] == "inner_training"
+    assert metadata["fitted_on_all_outer_rows"] is False
+    assert metadata["best_weights_restored"] is False
+    assert metadata["selection_checkpoint_used_for_final_predictions"] is False
+    assert metadata["selection_learning_rate_scheduler"] == "ReduceLROnPlateau"
+    assert metadata["final_fit_learning_rate_scheduler"] is None
+
+
 # =============================================================================
 # 8. Inference Validity & Direct Compatibility
 # =============================================================================

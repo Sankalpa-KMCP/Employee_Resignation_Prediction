@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import time
 from typing import Any, Callable, Sequence
 
@@ -176,6 +177,7 @@ def run_5fold_cv(
     captured_model_name: str | None = None
     captured_model_id: str | None = None
     last_metadata: dict[str, Any] = {}
+    fold_metadata: list[dict[str, Any]] = []
 
     for fold_num in expected_folds_sorted:
         # Create a fresh, independent adapter instance for this fold
@@ -299,7 +301,9 @@ def run_5fold_cv(
         fold_prediction_dfs.append(fold_df)
 
         if hasattr(adapter, "get_metadata") and callable(adapter.get_metadata):
-            last_metadata = adapter.get_metadata()
+            last_metadata = copy.deepcopy(adapter.get_metadata())
+            # Keep each fold's selection/refit evidence rather than exporting only fold 5.
+            fold_metadata.append({"fold": fold_num, "adapter_metadata": last_metadata})
 
     # ---------------------------------------------------------
     # 5. Assemble and Validate Full OOF Predictions
@@ -360,5 +364,5 @@ def run_5fold_cv(
         summary_metrics=summary_metrics,
         fit_time_seconds_total=total_fit_time,
         predict_time_seconds_total=total_predict_time,
-        metadata=last_metadata,
+        metadata={**last_metadata, "fold_metadata": fold_metadata},
     )
