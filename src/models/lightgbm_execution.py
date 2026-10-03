@@ -3,6 +3,8 @@
 This module orchestrates an already-fitted strict-nested run. Candidate selection,
 early stopping, and outer-fold fitting remain in ``LightGBMAdapter`` and the
 shared five-fold runner.
+
+The Member 4 notebook uses this layer to load development inputs and export formal evidence.
 """
 
 from __future__ import annotations
@@ -52,6 +54,7 @@ def _json_safe(value: Any) -> Any:
 
 
 def _strict_json(value: Any) -> str:
+    """Serialize metadata with non-finite numbers replaced by null, rejecting non-standard JSON NaN."""
     return json.dumps(_json_safe(value), indent=2, allow_nan=False)
 
 

@@ -1,5 +1,1 @@
-"""
-Project module placeholder.
-
-Implementation will be added during the corresponding project stage.
-"""
+"""Shared classification metrics, OOF validation and group evaluation diagnostics."""

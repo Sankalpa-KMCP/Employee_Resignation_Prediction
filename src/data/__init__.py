@@ -1,5 +1,1 @@
-"""
-Project module placeholder.
-
-Implementation will be added during the corresponding project stage.
-"""
+"""Feature contracts, frozen split access and dataset integrity checks."""

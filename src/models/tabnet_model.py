@@ -3,6 +3,8 @@
 PyTorch and pytorch-tabnet are imported only when training or loading a fitted
 model. Configuration and preprocessing checks therefore remain available in the
 project's lightweight core environment.
+
+The Member 6 notebook uses this adapter for fold-specific preprocessing, selection and refitting.
 """
 
 from __future__ import annotations
@@ -114,23 +116,31 @@ class TabNetPreprocessor:
 
     @property
     def feature_order(self) -> list[str]:
+        """Return categorical columns first, followed by numerical columns, matching the model matrix."""
         return self.categorical_features + self.numerical_features
 
     @property
     def cat_idxs(self) -> list[int]:
+        """Return embedding column positions in the categorical-first input matrix."""
         return list(range(len(self.categorical_features)))
 
     @property
     def cat_dims(self) -> list[int]:
+        """Return fitted embedding sizes, including an extra slot for unknown or missing categories."""
         if not self.fitted:
             raise RuntimeError("TabNet preprocessor has not been fitted.")
         return [len(self.category_mappings[column]) + 1 for column in self.categorical_features]
 
     def fit(self, X: pd.DataFrame) -> TabNetPreprocessor:
+        """Learn category codes, numerical medians and scaling from the supplied training dataframe.
+
+        Return this preprocessor; callers control which training partition it receives.
+        """
         self._validate_columns(X)
         self.category_mappings = {}
         for column in self.categorical_features:
             values = sorted(X[column].dropna().astype(str).unique().tolist())
+            # Reserve zero for absent/unseen labels; training categories start at one.
             self.category_mappings[column] = {
                 value: code for code, value in enumerate(values, start=1)
             }
@@ -142,6 +152,10 @@ class TabNetPreprocessor:
         return self
 
     def transform(self, X: pd.DataFrame) -> np.ndarray:
+        """Apply fitted mappings, imputation and scaling to X without learning new statistics.
+
+        Return a finite float32 matrix in feature_order; unseen or missing categories use code zero.
+        """
         if not self.fitted:
             raise RuntimeError("TabNet preprocessor has not been fitted.")
         self._validate_columns(X)
@@ -162,9 +176,11 @@ class TabNetPreprocessor:
         return matrix
 
     def fit_transform(self, X: pd.DataFrame) -> np.ndarray:
+        """Fit on the supplied training rows and return their transformed model matrix."""
         return self.fit(X).transform(X)
 
     def _validate_columns(self, X: pd.DataFrame) -> None:
+        """Reject input missing any configured numerical or categorical feature."""
         missing = set(self.feature_order) - set(X.columns)
         if missing:
             raise ValueError(f"TabNet input is missing approved features: {sorted(missing)}")
@@ -188,11 +204,14 @@ def _average_precision_metric(metric_base: Any) -> type:
     """Build pytorch-tabnet's custom average-precision metric class."""
 
     class AveragePrecisionMetric(metric_base):
+        """Expose positive-class Average Precision to TabNet's early-stopping metric interface."""
         def __init__(self) -> None:
+            """Register an Average Precision metric that TabNet maximizes during early stopping."""
             self._name = "average_precision"
             self._maximize = True
 
         def __call__(self, y_true: np.ndarray, y_score: np.ndarray) -> float:
+            """Return Average Precision from labels and the positive-class column of TabNet probabilities."""
             return float(average_precision_score(y_true, y_score[:, 1]))
 
     return AveragePrecisionMetric
@@ -212,6 +231,7 @@ class TabNetAdapter:
         patience_override: int | None = None,
         outer_fold: int | None = None,
     ) -> None:
+        """Resolve fixed or automatic candidate selection and initialize unfitted adapter state."""
         self.config = dict(config) if config is not None else load_tabnet_config()
         validate_tabnet_config(self.config)
         self.requested_candidate_id = candidate_id
@@ -248,6 +268,7 @@ class TabNetAdapter:
         self._fitted = False
 
     def _find_candidate(self, candidate_id: str) -> dict[str, Any]:
+        """Return a copy of the requested configured candidate; reject unknown IDs."""
         matches = [item for item in self.config["candidates"] if item["id"] == candidate_id]
         if not matches:
             available = [item["id"] for item in self.config["candidates"]]
@@ -255,6 +276,7 @@ class TabNetAdapter:
         return dict(matches[0])
 
     def _new_preprocessor(self) -> TabNetPreprocessor:
+        """Create fresh, unfitted preprocessing state so separate fits cannot share learned statistics."""
         return TabNetPreprocessor(
             categorical_features=self.categorical_features.copy(),
             numerical_features=self.numerical_features.copy(),
@@ -265,6 +287,10 @@ class TabNetAdapter:
         preprocessor: TabNetPreprocessor,
         candidate: Mapping[str, Any] | None = None,
     ) -> Any:
+        """Construct a TabNet classifier using the candidate and fitted embedding dimensions.
+
+        No fitting occurs here; dependency loading is deferred until a model is needed.
+        """
         torch, _, classifier = _tabnet_dependencies()
         training = self.config["training"]
         resolved_candidate = candidate if candidate is not None else self.candidate
@@ -337,6 +363,7 @@ class TabNetAdapter:
                     **self._fit_kwargs(candidate),
                 )
 
+                # TabNet reports zero-based epochs; a fresh refit needs an epoch count.
                 best_epoch_zero_based = int(
                     getattr(selection_model, "best_epoch", self.max_epochs - 1)
                 )
@@ -375,6 +402,7 @@ class TabNetAdapter:
             )
             raise RuntimeError(f"All TabNet candidate fits failed. {failures}")
 
+        # Rank successful candidates by inner AP; candidate ID breaks exact ties deterministically.
         winner = min(
             successful_records,
             key=lambda record: (
@@ -423,6 +451,7 @@ class TabNetAdapter:
 
     @staticmethod
     def _normalise_history(model: Any) -> dict[str, list[float]]:
+        """Convert supported TabNet history containers to lists of floats, or return an empty mapping."""
         history_object = getattr(model, "history", {})
         history_data = getattr(history_object, "history", history_object)
         try:
@@ -437,6 +466,7 @@ class TabNetAdapter:
     def _extract_best_inner_ap(
         model: Any, history: Mapping[str, list[float]]
     ) -> float:
+        """Recover the best finite inner AP from best_cost or training history; fail if neither is available."""
         best_cost = getattr(model, "best_cost", None)
         if best_cost is not None and np.isfinite(float(best_cost)):
             return float(best_cost)
@@ -454,6 +484,7 @@ class TabNetAdapter:
     def _fit_kwargs(
         self, candidate: Mapping[str, Any] | None = None
     ) -> dict[str, Any]:
+        """Resolve candidate-specific class balancing and batch options for selection and refitting."""
         training = self.config["training"]
         resolved_candidate = candidate if candidate is not None else self.candidate
         if resolved_candidate is None:
@@ -468,6 +499,10 @@ class TabNetAdapter:
         }
 
     def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
+        """Return one finite positive-class probability per row using the saved preprocessor.
+
+        Require a fitted adapter and a two-column classifier output; clip scores to [0, 1].
+        """
         if not self._fitted or self.preprocessor is None or self.model is None:
             raise RuntimeError("TabNetAdapter must be fitted before prediction.")
         matrix = self.preprocessor.transform(X)
@@ -480,6 +515,10 @@ class TabNetAdapter:
         return np.clip(positive_probability, 0.0, 1.0)
 
     def save(self, directory: Path) -> dict[str, Any]:
+        """Save the fitted network and adapter state, including the preprocessor, to a directory.
+
+        Return the paths needed to reload prediction state.
+        """
         if not self._fitted or self.preprocessor is None or self.model is None:
             raise RuntimeError("TabNetAdapter must be fitted before it can be saved.")
         directory = Path(directory)
@@ -517,6 +556,7 @@ class TabNetAdapter:
 
     @classmethod
     def load(cls, directory: Path) -> TabNetAdapter:
+        """Restore a fitted adapter and its preprocessor from trusted local model artifacts."""
         directory = Path(directory)
         state = joblib.load(directory / "adapter_state.joblib")
         adapter = cls(
@@ -545,6 +585,7 @@ class TabNetAdapter:
         return adapter
 
     def get_metadata(self) -> dict[str, Any]:
+        """Return configuration, preprocessing dimensions and recorded selection/training evidence."""
         preprocessor_metadata: dict[str, Any] = {}
         if self.preprocessor is not None and self.preprocessor.fitted:
             preprocessor_metadata = {
@@ -588,6 +629,7 @@ class TabNetAdapter:
     def _validate_training_input(
         self, X: pd.DataFrame, y: pd.Series | np.ndarray
     ) -> None:
+        """Require approved features, matching row counts, at least ten rows and both binary target classes."""
         missing = set(self.feature_order) - set(X.columns)
         if missing:
             raise ValueError(f"TabNet input is missing approved features: {sorted(missing)}")

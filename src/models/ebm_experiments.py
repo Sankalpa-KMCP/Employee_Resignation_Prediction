@@ -1,4 +1,7 @@
-"""IT25100429: bounded EBM experiments with nested selection and scaling sensitivity."""
+"""IT25100429: bounded EBM experiments with nested selection and scaling sensitivity.
+
+The Member 5 notebook and EBM launcher share this formal experiment workflow.
+"""
 from pathlib import Path
 import json, time, hashlib, platform
 import numpy as np
@@ -18,6 +21,10 @@ CANDIDATES = [dict(c["params"], setting=c["setting"], preprocessing=c["preproces
               for c in CONFIG["candidates"]]
 
 def fit_candidate(X, y, candidate, categorical):
+    """Fit one configured EBM variety on X and y, learning optional scaling only from X.
+
+    Return the model, optional scaler and numerical column names for consistent prediction.
+    """
     X = X.copy()
     numeric = [c for c in X if c not in categorical]
     scaler = None
@@ -32,6 +39,10 @@ def fit_candidate(X, y, candidate, categorical):
     return model, scaler, numeric
 
 def predict(fitted, X):
+    """Return positive-class probabilities using the fitted model and its existing scaler.
+
+    Prediction transforms X without refitting or changing the caller's dataframe.
+    """
     model, scaler, numeric = fitted
     X = X.copy()
     if scaler is not None:
@@ -40,11 +51,21 @@ def predict(fitted, X):
 
 def choose(records):
     # Predeclared practical equivalence margin: 0.001 absolute AP.
+    """Choose an inner-AP candidate within the configured practical margin of the best score.
+
+    Prefer fewer interactions, then fewer leaves, then candidate ID among eligible records.
+    """
+    # Only inner-validation scores choose a candidate; outer scores remain evaluation evidence.
     best = max(r["inner_ap"] for r in records)
     eligible = [r for r in records if r["inner_ap"] >= best - CONFIG["inner_validation"]["practical_ap_margin"]]
     return min(eligible, key=lambda r: (r["interactions"], r["max_leaves"], r["candidate_id"]))
 
 def run_experiments(root):
+    """Run six development-only EBM varieties across the frozen five outer folds.
+
+    Select primary raw candidates on inner AP and report standardized pairs as sensitivity evidence.
+    Write canonical evidence and its manifest; return data, comparison, nested OOF, metrics and directory.
+    """
     root = Path(root)
     out = root / CONFIG["canonical_results"]["directory"]
     out.mkdir(parents=True, exist_ok=True)
@@ -95,6 +116,7 @@ def run_experiments(root):
         chosen["selected_candidate"] = winner["candidate_id"]
         nested_records.append(chosen)
     all_predictions = pd.concat(predictions, ignore_index=True)
+    # One independently selected candidate supplies each outer fold of the primary OOF file.
     nested = pd.concat(nested_records, ignore_index=True)
     validate_oof_predictions(nested, registry, source_data=data, expected_model_name="EBM")
     summaries = []
@@ -131,6 +153,10 @@ def text_sha256(path):
 
 
 def write_formal_manifest(root):
+    """Write hashes binding the canonical EBM predictions, fold metrics and summary to their config.
+
+    Text hashes normalize Windows line endings so equivalent checkouts validate consistently.
+    """
     root = Path(root)
     config = load_model_config(root / "configs/models/ebm.yaml", strict_schema=True)
     files = {name: {"path": config["canonical_results"][name],

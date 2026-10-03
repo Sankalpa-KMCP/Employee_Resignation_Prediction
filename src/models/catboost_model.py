@@ -2,6 +2,8 @@
 
 Conforms to the ModelAdapter protocol with fold-local preprocessing,
 strict nested inner-validation early stopping, and native categorical handling.
+
+The Member 2 notebook uses this adapter with native categorical inputs.
 """
 
 from __future__ import annotations
@@ -43,6 +45,10 @@ class CatBoostAdapter:
         refit_outer_train: bool | None = None,
         random_seed: int | None = None,
     ) -> None:
+        """Resolve fixed or automatically selected candidates and training options without fitting.
+
+        Keep nominal predictors available for CatBoost's native categorical handling.
+        """
         self.name = name
         self.model_id = model_id
         self.candidate_id = candidate_id or "default"

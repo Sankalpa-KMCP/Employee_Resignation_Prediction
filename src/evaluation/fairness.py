@@ -1,4 +1,7 @@
-"""Aggregate subgroup diagnostics for the academic fairness analysis."""
+"""Aggregate subgroup diagnostics for the academic fairness analysis.
+
+Group analysis reports these descriptive comparisons alongside model limitations.
+"""
 from __future__ import annotations
 import numpy as np
 import pandas as pd
@@ -6,18 +9,28 @@ from sklearn.metrics import average_precision_score, roc_auc_score, confusion_ma
 
 
 def subgroup_classification_metrics(df: pd.DataFrame, group_col: str, threshold: float=0.5, min_count: int=30) -> pd.DataFrame:
+    """Return threshold and ranking diagnostics for each subgroup, including missing group labels.
+
+    AP and ROC-AUC are withheld for groups below min_count or without both classes.
+    The size flag is a reporting heuristic, not a statistical guarantee or proof of fairness.
+    """
     required={group_col,'y_true','y_probability'}
     if missing:=required-set(df.columns): raise ValueError(f"Missing columns: {sorted(missing)}")
     rows=[]
     for group,g in df.groupby(group_col,dropna=False):
         y=g.y_true.astype(int).to_numpy(); p=g.y_probability.astype(float).to_numpy(); pred=(p>=threshold).astype(int)
         tn,fp,fn,tp=confusion_matrix(y,pred,labels=[0,1]).ravel()
+        # Small or single-class groups cannot support the reported ranking comparisons.
         stable=len(g)>=min_count and len(np.unique(y))==2
         rows.append({group_col:group,'n':len(g),'prevalence':float(y.mean()),'average_precision':float(average_precision_score(y,p)) if stable else np.nan,'roc_auc':float(roc_auc_score(y,p)) if stable else np.nan,'precision':float(tp/(tp+fp)) if tp+fp else 0.0,'recall':float(tp/(tp+fn)) if tp+fn else 0.0,'false_positive_rate':float(fp/(fp+tn)) if fp+tn else 0.0,'predicted_positive_rate':float(pred.mean()),'stable_rate_estimates':bool(stable)})
     return pd.DataFrame(rows)
 
 
 def top_k_representation(df: pd.DataFrame, group_col: str, capacity: float=0.20) -> pd.DataFrame:
+    """Compare subgroup shares in the population and the highest-scoring capacity fraction.
+
+    Return selection counts and representation ratios; these describe allocation, not causality.
+    """
     if not 0<capacity<1: raise ValueError("capacity must be between 0 and 1")
     n=max(1,int(round(len(df)*capacity)))
     selected=df.nlargest(n,'y_probability')

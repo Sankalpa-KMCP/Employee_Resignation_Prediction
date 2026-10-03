@@ -1,9 +1,9 @@
 """Centralized model configuration loader, schema validator, and candidate resolver.
 
-This module is the authoritative I/O boundary for model experiment configurations.
-Model adapters and training loops must not load or parse YAML files directly;
-they must receive validated configuration dictionaries or resolved parameter
-mappings produced by this module.
+This module reads shared model configurations, validates their declared schema,
+and merges fixed parameters with candidate-specific settings. Notebook callers
+and adapters can pass its validated mappings into experiment workflows; some
+model modules also provide their own configuration loading and validation.
 """
 
 from __future__ import annotations

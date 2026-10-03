@@ -22,6 +22,7 @@ from sklearn.metrics import (
 )
 
 
+# Ranking metrics do not use this threshold; precision, recall and F1 do.
 DEFAULT_THRESHOLD = 0.50
 
 
@@ -132,6 +133,11 @@ def calculate_binary_metrics(
     It is intentionally named ``average_precision`` rather than
     ``pr_auc`` to avoid conflating AP with trapezoidal integration of
     the precision-recall curve.
+
+    Interpret AP against the positive prevalence of the evaluated rows: high
+    accuracy alone can hide poor minority-class performance. AP and ROC-AUC
+    measure ranking; precision, recall and F1 depend on the supplied predictions
+    or threshold. Brier score measures probability error rather than ranking.
     """
     true_values = np.asarray(
         y_true,

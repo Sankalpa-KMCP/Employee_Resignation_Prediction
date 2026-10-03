@@ -39,6 +39,8 @@ being silently resolved.
 
 Direct mode (``params=...`` without ``config``) trains one fixed parameter set
 with no inner selection; it is kept for backward compatibility only.
+
+The Member 3 notebook uses this adapter across its declared preprocessing variants.
 """
 
 from __future__ import annotations
@@ -156,6 +158,7 @@ class XGBoostAdapter:
         preprocessing: str | Mapping[str, Any] | None = None,
         max_candidates: int | None = None,
     ) -> None:
+        """Resolve configured nested selection or direct fixed fitting, then initialize unfitted state."""
         self.categorical_features: list[str] = (
             list(categorical_features)
             if categorical_features is not None
@@ -189,6 +192,10 @@ class XGBoostAdapter:
         inner_val_fraction, early_stopping_rounds, refit_outer_train,
         random_seed, preprocessing, max_candidates,
     ) -> None:
+        """Resolve the candidate pool, overrides and inner-validation protocol from configuration.
+
+        Normalize resolved and raw configs through the same precedence checks.
+        """
         self.mode = "nested"
 
         # A resolved candidate dict is normalised back to its raw config so that
@@ -287,6 +294,7 @@ class XGBoostAdapter:
         inner_val_fraction, early_stopping_rounds, refit_outer_train,
         random_seed, preprocessing,
     ) -> None:
+        """Configure a single direct experiment without nested candidate selection or an inner split."""
         self.mode = "direct"
         self.name = name or "XGBoost"
         self.model_id = model_id or "xgboost"
@@ -307,6 +315,7 @@ class XGBoostAdapter:
 
     @staticmethod
     def _validate_patience(value: Any) -> int | None:
+        """Normalize positive early-stopping patience; zero or None disables it, invalid values raise."""
         if value is None:
             return None
         if isinstance(value, bool) or int(value) != value or int(value) < 0:
@@ -315,6 +324,7 @@ class XGBoostAdapter:
 
     @staticmethod
     def _validate_overrides(overrides: dict[str, Any]) -> dict[str, Any]:
+        """Reject reserved constructor options and conflicting or unsupported weighting overrides."""
         reserved = RESERVED_OVERRIDE_KEYS & set(overrides)
         if reserved:
             raise ValueError(
@@ -328,6 +338,7 @@ class XGBoostAdapter:
 
     @staticmethod
     def _resolve_seed(random_seed: Any, params: Mapping[str, Any], fallback: Any) -> int:
+        """Resolve the explicit or estimator seed, rejecting disagreement before using the fallback."""
         param_seed = params.get("random_state")
         if random_seed is not None and param_seed is not None and int(param_seed) != int(random_seed):
             raise ValueError(
@@ -340,6 +351,7 @@ class XGBoostAdapter:
         return int(fallback)
 
     def _resolve_preprocessing(self, preprocessing: Any, config: Mapping[str, Any] | None) -> dict[str, Any]:
+        """Resolve and validate the primary, named or inline categorical representation and feature drops."""
         registry = (config or {}).get("preprocessing_variants", {}) or {}
         variants = {str(v["id"]): dict(v) for v in registry.get("variants", []) if isinstance(v, Mapping)}
         if preprocessing is None:
@@ -370,6 +382,7 @@ class XGBoostAdapter:
     # Fit-state helpers
     # ------------------------------------------------------------------
     def _reset_fit_state(self) -> None:
+        """Clear learned encoder/model state and evidence before a new fit so previous runs cannot leak through."""
         self._model: Any = None
         self._encoder: Any = None
         self._input_feature_names: list[str] = []
@@ -393,9 +406,11 @@ class XGBoostAdapter:
         self.profile_inner_validation_index_: pd.Index | None = None
 
     def _present_categoricals(self, X: pd.DataFrame) -> list[str]:
+        """Return configured categorical features present in X, retaining their configured order."""
         return [c for c in self.categorical_features if c in X.columns]
 
     def _select_features(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Apply the configured feature-drop experiment and reject drops absent from X."""
         drop = self.preprocessing_spec["drop_features"]
         missing = [c for c in drop if c not in X.columns]
         if missing:
@@ -461,6 +476,8 @@ class XGBoostAdapter:
     # ------------------------------------------------------------------
     @staticmethod
     def _positive_ratio(y: np.ndarray) -> float:
+        """Return negative/positive counts from the supplied training labels for dynamic class weighting."""
+        # The caller supplies the current training partition, not validation or holdout labels.
         n_pos = int((y == 1).sum())
         n_neg = int((y == 0).sum())
         if n_pos == 0:
@@ -507,6 +524,7 @@ class XGBoostAdapter:
 
     @staticmethod
     def _new_classifier(params: Mapping[str, Any], early_stopping_rounds: int | None = None) -> Any:
+        """Construct XGBClassifier with optional early stopping, deferring dependency loading until needed."""
         try:
             from xgboost import XGBClassifier
         except ImportError as exc:  # pragma: no cover - environment guard
@@ -520,6 +538,10 @@ class XGBoostAdapter:
         return XGBClassifier(**kwargs)
 
     def _inner_split(self, X: pd.DataFrame, y_arr: np.ndarray):
+        """Return sorted training/validation row positions from a seeded stratified inner split.
+
+        X must contain outer-training rows only; this helper does not inspect the frozen registry.
+        """
         from sklearn.model_selection import train_test_split
 
         positions = np.arange(len(X))
@@ -533,6 +555,7 @@ class XGBoostAdapter:
 
     @staticmethod
     def _validate_xy(X: Any, y: Any) -> np.ndarray:
+        """Check dataframe inputs, matching label count and both binary classes; return integer labels."""
         if not isinstance(X, pd.DataFrame):
             raise TypeError("X must be a pandas DataFrame with contract column names.")
         y_arr = np.asarray(y).astype(int)

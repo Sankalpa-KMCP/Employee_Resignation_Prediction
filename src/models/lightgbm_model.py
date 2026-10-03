@@ -1,4 +1,7 @@
-"""LightGBM adapter with strict-nested, fold-local candidate selection."""
+"""LightGBM adapter with strict-nested, fold-local candidate selection.
+
+The Member 4 notebook delegates categorical preparation and fitting to this adapter.
+"""
 
 from __future__ import annotations
 
@@ -66,6 +69,10 @@ class LightGBMAdapter:
         candidate_id: str | None = None,
         outer_fold: int | None = None,
     ) -> None:
+        """Configure either formal candidate selection or a direct historical fit, without training.
+
+        Formal config and direct params are mutually exclusive inputs.
+        """
         if config is not None and params is not None:
             raise ValueError("Supply either formal config or direct params, not both.")
 
@@ -155,6 +162,7 @@ class LightGBMAdapter:
         self._inner_validation_positions = np.asarray([], dtype=int)
 
     def _find_candidate(self, candidate_id: str) -> dict[str, Any]:
+        """Return an independent copy of a configured candidate, or reject an unknown ID."""
         matches = [candidate for candidate in self._candidate_pool if candidate["id"] == candidate_id]
         if not matches:
             available = [candidate["id"] for candidate in self._candidate_pool]
@@ -260,6 +268,10 @@ class LightGBMAdapter:
         X: pd.DataFrame,
         y: pd.Series | np.ndarray,
     ) -> LightGBMAdapter:
+        """Select candidate and tree count on an inner split of the supplied outer-training rows.
+
+        Refit preprocessing and the selected model on all supplied outer-training rows; return self.
+        """
         classifier, early_stopping = _lightgbm_dependencies()
         y_array = np.asarray(y, dtype=int).reshape(-1)
         inner_train, inner_validation = self._create_inner_split(y_array)

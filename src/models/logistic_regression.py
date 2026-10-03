@@ -3,6 +3,8 @@
 Serves as the reference linear benchmark and PCA demonstration model.
 Supports fold-local standardization, one-hot encoding, and optional PCA
 decomposition (e.g. >=95% variance retention).
+
+The shared baseline notebook uses this adapter to provide a simple reference model.
 """
 
 from __future__ import annotations
@@ -33,6 +35,7 @@ class LogisticRegressionAdapter:
         categorical_features: list[str] | None = None,
         params: dict[str, Any] | None = None,
     ) -> None:
+        """Configure the baseline classifier and feature groups without learning scaling or encoding."""
         self.name = name
         self.model_id = model_id
         self.use_pca = use_pca

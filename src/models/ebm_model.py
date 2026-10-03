@@ -2,6 +2,8 @@
 
 Conforms to the ModelAdapter protocol with Generalized Additive Models
 plus pairwise interactions (GA2M).
+
+This single-fit adapter is separate from the canonical nested workflow in ebm_experiments.
 """
 
 from __future__ import annotations
@@ -26,6 +28,10 @@ class EBMAdapter:
         params: dict[str, Any] | None = None,
         categorical_features: list[str] | None = None,
     ) -> None:
+        """Configure a single EBM adapter and its nominal feature names without fitting.
+
+        The formal six-variety workflow is implemented separately in ebm_experiments.
+        """
         self.name = name
         self.model_id = model_id
         self.params = params or {
@@ -61,6 +67,7 @@ class EBMAdapter:
             ) from exc
 
         self._feature_names = list(X.columns)
+        # Nominal feature types let EBM model categories without imposing numeric distances.
         self._feature_types = [
             "nominal" if col in self.categorical_features else "continuous"
             for col in self._feature_names
