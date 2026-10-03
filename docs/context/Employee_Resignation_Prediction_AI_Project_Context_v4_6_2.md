@@ -8,6 +8,18 @@ version: "4.6.2"
 
 # AI entry point - read this first
 
+# Canonical FT evidence and scope decision — 2026-10-03
+
+This user-requested correction supersedes older FT status and search-scope statements below. The completed FT scope is fixed FT02 plus the preserved historical screening and paired preprocessing evidence; the eight-candidate search/full outer-training refit remains an optional unexecuted extension. This is an explicit scope change, not evidence that a nested candidate search ran.
+
+- Canonical FT run: `results/models/ft_transformer/reruns/FT02_20261003T025004Z/`, selected through `configs/analysis_registry.yaml`.
+- GPU result: pooled AP 0.099842, ROC-AUC 0.498905, Brier 0.247200, mean fold AP 0.100396 ± 0.001809, elapsed 8.52 minutes.
+- Actual fitting: fixed FT02, stratified 15% inner validation, AP-based epoch selection with scheduler/early stopping, then fresh training on inner-training rows only for the selected epochs; no restored selection weights and no scheduler during final fitting.
+- Original export omitted per-fold adapter metadata. Corrected metadata describes the known code path and discloses unrecoverable diagnostics. Future runs export real adapter metadata for all folds.
+- FT notebook defaults to read-only saved-result validation. Comparison, calibration, fairness, prioritization and active report tables use this GPU run. Earlier FT artifacts remain historical and unchanged.
+- Other canonical inputs remain those in the current analysis registry: Member 3 P1 XGBoost, manifest-bound nested EBM, CatBoost, LightGBM and TabNet. Protocols are not claimed equivalent; no final model is frozen and holdout remains locked.
+- AI assistance: Codex corrected narrative/protocol metadata, adopted the selected saved GPU evidence, refreshed dependent analyses and added regression checks at the user's request. No full FT training or holdout evaluation was launched.
+
 # Upgrade addendum — 2026-10-02
 
 **LIVE RECORD — VERIFIED FROM CURRENT REPOSITORY EVIDENCE.** This dated addendum supersedes older status-only statements later in this file where they describe work as pending. It does **not** alter the existing DECIDED methodology, model registry, ethical restrictions, or holdout-governance rules.

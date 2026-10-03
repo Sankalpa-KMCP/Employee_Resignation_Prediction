@@ -6,7 +6,7 @@ We evaluated six different model families on the same frozen 80,000-row developm
 
 ## Model evidence to know
 
-- FT-Transformer: saved controlled-screening and five-fold OOF evidence; final strict-nested rerun still unresolved.
+- FT-Transformer: canonical GPU FT02 five-fold OOF, AP ≈ 0.099842, ROC-AUC ≈ 0.498905, runtime 8.52 minutes. Inner validation chooses epochs, then a fresh model fits inner-training rows only. Historical screening supports the fixed candidate; the optional eight-candidate search was not executed.
 - CatBoost: strict nested candidate evidence.
 - XGBoost: Member 3's current P1 one-hot eight-candidate nested run; pooled AP ≈ 0.101181. P2/P3 are sensitivity evidence.
 - LightGBM: strict nested candidate evidence; adapter API issue repaired in current source.

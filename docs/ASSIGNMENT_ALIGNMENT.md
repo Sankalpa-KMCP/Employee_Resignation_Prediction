@@ -4,8 +4,8 @@
 |---|---|---|
 | One model per student | Six model notebooks under `notebooks/team_contributions/models/` | Evidenced |
 | Model suitability / implementation explanation | Model notebooks + configs + `src/models/` | Evidenced |
-| Hyperparameter tuning / varieties | CatBoost, XGBoost, LightGBM, EBM, TabNet have candidate-selection evidence | Partial across all six |
-| Different preprocessing / hyperparameter variants | XGBoost and EBM full five-fold comparisons; bounded paired exploratory checks for FT-Transformer, CatBoost, LightGBM and TabNet in `reports/INDIVIDUAL_MODEL_EVIDENCE.md` | Evidenced with explicitly different validation strength; FT final strict-nested rerun remains unexecuted |
+| Hyperparameter tuning / varieties | Five models have nested candidate-selection evidence; FT has historical controlled screening and completed fixed-FT02 epoch selection | Evidenced with different validation strength; equivalent nested candidate tuning is not claimed |
+| Different preprocessing / hyperparameter variants | XGBoost and EBM full five-fold comparisons; bounded paired exploratory checks for FT-Transformer, CatBoost, LightGBM and TabNet in `reports/INDIVIDUAL_MODEL_EVIDENCE.md` | Evidenced with explicitly different validation strength; FT completed scope is fixed FT02 plus historical screening |
 | Relevant metrics | AP, ROC-AUC, Brier, threshold metrics, fold stability | Evidenced |
 | Validation method | Frozen 80/20 split and five development CV folds | Evidenced |
 | Compare six individual models | `notebooks/group/02_model_comparison.ipynb`, `results/comparison/` | Completed on development OOF |
@@ -19,5 +19,5 @@
 
 1. Official Group ID and personal identity mapping are not present in the repository.
 2. EBM nested development results are imported from `main` and manifest-verified; a full local retraining of the 60 experimental fits has not been performed.
-3. FT-Transformer has saved controlled-screening/OOF evidence, but the final strict-nested candidate workflow has not been independently reproduced in this package.
+3. FT-Transformer has completed GPU fixed-FT02 OOF evidence, with historical screening. Its optional eight-candidate extension was not executed; original per-fold adapter diagnostics are unavailable. Its final fit uses inner-training rows only, so protocols are not equivalent across all six models.
 4. The final holdout remains intentionally untouched because no final model is frozen.

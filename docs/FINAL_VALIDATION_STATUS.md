@@ -6,6 +6,7 @@ This file records the state of the upgraded package, not a claim that every opti
 
 - Raw dataset: 100,000 rows × 20 columns, zero missing values, zero full-row duplicates, 10.01% positive target rate.
 - Frozen registry: 80,000 development rows, 20,000 holdout rows, five development folds.
+- Canonical FT GPU run `FT02_20261003T025004Z`: AP 0.099842, ROC-AUC 0.498905, Brier 0.247200, 8.52 minutes; fixed FT02 with inner epoch selection followed by a fresh inner-training fit. Saved-result loading is the default.
 - Six canonical OOF files align to the same 80,000 development Employee_IDs.
 - Formal holdout is absent from model-comparison/fairness/calibration inputs.
 - Member 3 XGBoost primary P1 one-hot nested search completed: 8 candidates × 5 outer folds with inner development-only selection; this is the canonical group input. P2/P3 are descriptive preprocessing comparisons.
@@ -15,7 +16,7 @@ This file records the state of the upgraded package, not a claim that every opti
 
 ## Not independently verified in this environment
 
-- Final eight-candidate strict-nested FT-Transformer execution. The required dependency is available in the current review environment, and the notebook now loads/validates the saved weighted historical run by default; no eight-candidate FT retraining was performed.
+- Optional eight-candidate FT search and full outer-training refit: not executed and outside the completed fixed-FT02 scope. Original GPU exports did not retain per-fold adapter diagnostics; their corrected protocol metadata explicitly discloses that gap.
 - Full local EBM retraining: the imported six-variety nested-development run is supported by saved artifacts; all 60 fits have not been independently rerun on this machine.
 - Official Group ID / member identity mapping, because these are not established by the repository.
 - Formal holdout performance, intentionally not evaluated before a final development freeze.

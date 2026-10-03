@@ -50,7 +50,7 @@ The repository does **not** establish which preprocessing IT number maps to whic
 
 The upgraded package contains executed development OOF evidence for all six headline models and completed group-stage development analysis without accessing the locked formal holdout.
 
-- FT-Transformer: saved five-fold OOF evidence and controlled screening are present; the final strict-nested eight-candidate workflow has **not** been independently reproduced in this package.
+- FT-Transformer: canonical GPU run `FT02_20261003T025004Z` has AP **0.099842**, ROC-AUC **0.498905**, and runtime **8.52 minutes**. Completed fixed FT02 GPU five-fold OOF with inner-AP epoch selection and a fresh fit on inner-training rows. Historical screening is descriptive; the optional eight-candidate search was not executed. The notebook loads this run read-only by default.
 - CatBoost: five-fold OOF evaluation and multi-candidate nested tuning evidence are present.
 - XGBoost: Member 3's primary **P1 one-hot, 8-candidate × 5-outer-fold strict nested search** is the group input at `results/models/xgboost/oof_predictions.csv`. P2/P3 preprocessing comparisons are sensitivity evidence; the older independent result under `strict_nested/` is historical.
 - LightGBM: strict-nested evaluation artifacts are present; the current adapter uses the supported `eval_set` API.
