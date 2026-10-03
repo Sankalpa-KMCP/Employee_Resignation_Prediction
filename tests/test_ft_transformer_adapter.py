@@ -574,3 +574,11 @@ def test_ft_transformer_adapter_save_and_load_round_trip(synthetic_data, tmp_pat
     assert loaded_adapter._fitted is True
     probs_loaded = loaded_adapter.predict_proba(X)
     np.testing.assert_allclose(probs_orig, probs_loaded, rtol=1e-5, atol=1e-5)
+
+
+def test_explicit_cpu_and_invalid_device_request():
+    pytest.importorskip("torch")
+    from src.models.ft_transformer import _select_device
+    assert str(_select_device("cpu")) == "cpu"
+    with pytest.raises(ValueError, match="Unsupported FT device"):
+        _select_device("invalid")

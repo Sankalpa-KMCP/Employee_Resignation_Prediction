@@ -17,7 +17,7 @@ model:
 # ------------------------------------------------------------
 reproducibility:
   seed: 42
-  device: "auto" # CUDA if available, else CPU
+  device: "auto" # CUDA, then Apple MPS if available, else CPU
   deterministic: true
 
 # ------------------------------------------------------------
@@ -60,11 +60,7 @@ fixed_params:
   min_delta: 1.0e-6
 
 # ------------------------------------------------------------
-# Available Candidate Registry (optional multi-candidate extension)
-# The completed notebook evaluates FT02 only, with refit_outer_train=False.
-# It selects epochs inside each outer fold and fits fresh on inner-training rows.
-# The config-driven auto mode below supports a separate full outer-training refit;
-# neither that mode nor its eight-candidate search describes the canonical GPU run.
+# Discrete Candidate Registry (Canonical v4.6.2 Section 8.21.3)
 # Bounded configurations: n_blocks {2, 3}; d_block {64, 128};
 # attention_n_heads {4, 8} with d_block % heads == 0;
 # learning_rate {1e-4, 1e-3}; ffn_dropout 0.1;

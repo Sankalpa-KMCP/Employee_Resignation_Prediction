@@ -51,26 +51,25 @@ def test_ft_weighted_historical_evidence_matches_current_candidate() -> None:
     assert all(actual[key] == value for key, value in saved.items() if key in actual)
     assert actual["weighting"] == "dynamic_ratio"
     assert metadata["class_weighting"] == "inner-training positive-class weight"
-    assert 'c["id"] == "FT02"' in code
-    assert "RUN_FT_TRAINING = False" in code
-    assert 'RESULTS_DIR / "reruns"' in code
+    assert "load_formal_ft_input" in code
+    assert "RUN_TRAINING=False" in code
 
 
 def test_canonical_ft_gpu_evidence_and_group_metrics_agree() -> None:
     registry = yaml.safe_load((ROOT / "configs/analysis_registry.yaml").read_text(encoding="utf-8"))
     entry = registry["models"]["FT-Transformer"]
     directory = (ROOT / entry["oof_path"]).parent
-    assert directory.name == "FT02_20261003T025004Z"
-    metadata = json.loads((directory / "ft_transformer_final_run_metadata.json").read_text())
-    summary = json.loads((directory / "ft_transformer_final_summary_metrics.json").read_text())
-    predictions = pd.read_csv(ROOT / entry["oof_path"])
+    assert directory.name == "strict_nested"
+    from src.models.ft_transformer_execution import load_formal_ft_input
+    predictions, folds, summary = load_formal_ft_input(ROOT)
+    evidence = json.loads((directory / "selection_evidence.json").read_text())
+    assert entry["candidate_search_executed"] and entry["tuning_complete"]
+    assert len(evidence) == 5 and all(len(e["all_candidates"]) == 8 for e in evidence)
+    assert all(e["fitted_on_all_outer_rows"] for e in evidence)
     comparison = pd.read_csv(ROOT / "results/comparison/model_comparison.csv")
     grouped = comparison.loc[comparison.model == "FT-Transformer"].squeeze()
-    assert metadata["candidate_search_executed"] is False
-    assert metadata["best_weights_restored"] is False
-    assert metadata["final_fit_partition"] == "inner_training"
-    assert metadata["adapter_metadata"] is None  # The original export did not capture it.
-    assert np.isclose(average_precision_score(predictions.y_true, predictions.y_probability), summary["pooled_average_precision"])
-    assert np.isclose(grouped.pooled_average_precision, summary["pooled_average_precision"])
-    assert np.isclose(grouped.pooled_roc_auc, summary["pooled_roc_auc"])
-    assert np.isclose(grouped.brier_score, summary["pooled_brier_score"])
+    assert np.isclose(average_precision_score(predictions.y_true, predictions.y_probability), summary["average_precision"])
+    assert np.isclose(grouped.pooled_average_precision, summary["average_precision"])
+    assert np.isclose(grouped.pooled_roc_auc, summary["roc_auc"])
+    assert np.isclose(grouped.brier_score, summary["brier_score"])
+    assert np.isclose(grouped.cv_ap_mean, folds.average_precision.mean())

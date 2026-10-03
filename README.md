@@ -50,7 +50,7 @@ The repository does **not** establish which preprocessing IT number maps to whic
 
 The upgraded package contains executed development OOF evidence for all six headline models and completed group-stage development analysis without accessing the locked formal holdout.
 
-- FT-Transformer: canonical GPU run `FT02_20261003T025004Z` has AP **0.099842**, ROC-AUC **0.498905**, and runtime **8.52 minutes**. Completed fixed FT02 GPU five-fold OOF with inner-AP epoch selection and a fresh fit on inner-training rows. Historical screening is descriptive; the optional eight-candidate search was not executed. The notebook loads this run read-only by default.
+- **FT-Transformer:** completed strict eight-candidate nested evaluation: 40 inner evaluations, five full outer-training winner refits, and 80,000 OOF predictions. Canonical evidence: `results/models/ft_transformer/strict_nested/`. Pooled AP 0.098648; mean fold AP 0.098065. Earlier fixed FT02 GPU results are historical.
 - CatBoost: five-fold OOF evaluation and multi-candidate nested tuning evidence are present.
 - XGBoost: Member 3's primary **P1 one-hot, 8-candidate × 5-outer-fold strict nested search** is the group input at `results/models/xgboost/oof_predictions.csv`. P2/P3 preprocessing comparisons are sensitivity evidence; the older independent result under `strict_nested/` is historical.
 - LightGBM: strict-nested evaluation artifacts are present; the current adapter uses the supported `eval_set` API.
@@ -111,3 +111,5 @@ CatBoost, XGBoost and EBM notebooks default to loading completed evidence. To de
 The command-line equivalents `python scripts/run_xgboost_nested.py` and `python scripts/run_ebm_nested.py` also default to saved review; add `--train` to deliberately create a new run. The EBM script performs 60 experimental fits; its notebook additionally performs the explanation fit. The prior eight-candidate EBM launcher is superseded.
 
 The TabNet and strict LightGBM inventories describe files available in this checkout. TabNet's 18 absent serialized artifacts are marked unavailable, with blank current hashes and sizes; its saved predictions remain usable. These inventories do not certify that unavailable model weights can be reloaded.
+
+Completed formal FT update: see `reports/Six_Model_Comparison.md` for the current six-member discussion. The group notebook retains main's declared pooled-AP ranking and separately reports mean fold AP. The existing Word export predates this update; rebuild it from the updated Markdown before submission.

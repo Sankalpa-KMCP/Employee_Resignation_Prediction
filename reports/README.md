@@ -14,3 +14,7 @@ Before formal submission the group must:
 5. update the title and filename using the confirmed Group ID and check the assessment submission instructions. The current deliverable uses Word as requested by the user.
 
 Do not invent the Group ID from repository filenames.
+
+## Completed formal six-model comparison update
+
+FT-Transformer has now completed all 40 inner candidate evaluations and five outer winner refits. The registry uses `results/models/ft_transformer/strict_nested/oof_predictions.csv`; the older screening estimates remain historical. All six registry entries have completed tuning evidence. Group ranking uses mean outer-fold Average Precision; pooled AP is separate. Current numerical results and performance discussion are in `reports/Six_Model_Comparison.md`, which supersedes older FT-incomplete status statements and tables. No final holdout evaluation or deployment freeze has been performed.

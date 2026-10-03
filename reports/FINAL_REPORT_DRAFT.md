@@ -70,14 +70,14 @@ Shared baselines include Dummy classifiers, and PCA is benchmarked with Logistic
 - **XGBoost:** Member 3's primary P1 one-hot, eight-candidate nested development selection is evidenced in `results/models/xgboost/`. P2 native-categorical and P3 salary-ablated experiments are descriptive preprocessing sensitivity evidence; `strict_nested/` is a superseded independent run.
 - **LightGBM:** strict nested candidate selection evidenced.
 - **TabNet:** strict nested candidate selection evidenced.
-- **FT-Transformer:** Completed fixed FT02 GPU five-fold OOF with inner-AP epoch selection and a fresh fit on inner-training rows. Historical screening is descriptive; the optional eight-candidate search was not executed. The canonical run is `FT02_20261003T025004Z` (8.52 minutes). The selection model uses AP-based early stopping and a scheduler; its weights are discarded. The final model fits the inner-training rows for the selected epoch count without a scheduler or further validation. This differs from full outer-training refits in other pipelines.
+- **FT-Transformer:** completed strict eight-candidate nested evaluation: 40 inner evaluations, five full outer-training winner refits, and 80,000 OOF predictions. Canonical evidence: `results/models/ft_transformer/strict_nested/`. Pooled AP 0.098648; mean fold AP 0.098065. Earlier fixed FT02 GPU results are historical.
 - **EBM:** nested five-fold development evaluation is complete with three raw primary candidates and three standardized sensitivity variants. The formal input is manifest-bound in `results/models/ebm/individual_IT25100429/`.
 
 ### Individual implementation and variation results
 
 The four short paired experiments below use the same stratified 5,000 training rows from development folds 2–5 and 2,000 validation rows from development fold 1. Training prevalence is 0.1002 and validation prevalence is 0.1000. Full input means all 17 approved predictors. Salary masking replaces salary with the training-only median of 6,500 in both partitions, preserving the input schema. FT and TabNet use five epochs; CatBoost and LightGBM use 120 trees. These exploratory results are not comparable with the full-development headline scores and did not change the group registry. Complete protocols and outputs are recorded in `reports/INDIVIDUAL_MODEL_EVIDENCE.md` and `results/models/preprocessing_sensitivity/`.
 
-**FT-Transformer.** The PyTorch implementation learns numerical and categorical feature tokens and their interactions through attention. The short FT01 and FT02 profiles both use three blocks, width 64, four heads and learning rate 0.001. FT02 changes the loss weighting from none to the training negative/positive ratio. The canonical fixed FT02 run uses inner AP to select the epoch count, discards selection weights, then fits a fresh model on the inner-training rows only. It does not perform the full outer-training refit used by several other models. It completed in 8.52 minutes. The optional eight-candidate extension is implemented but unexecuted; original per-fold epoch diagnostics were not exported.
+**FT-Transformer.** The PyTorch implementation learns numerical and categorical tokens and their interactions through attention. The canonical FT01–FT08 search varies depth, width, heads, learning rate and weighting. Inner AP selects configuration and epoch count within each outer training fold; fresh preprocessing and a fresh model then fit all 64,000 outer-training rows. All 40 candidate evaluations and five refits are exported, including selected epochs and inner scores. The short paired salary-masking experiments below remain descriptive sensitivity evidence.
 
 | FT profile | Input | AP | ROC-AUC | Brier |
 |---|---|---:|---:|---:|
@@ -153,17 +153,17 @@ All six canonical development OOF files cover the same 80,000 development employ
 | XGBoost | 0.101181 | 0.502471 | 0.175329 | 0.101643 ± 0.000990 |
 | LightGBM | 0.100153 | 0.498740 | 0.180215 | 0.100202 ± 0.002446 |
 | TabNet | 0.099965 | 0.499317 | 0.186177 | 0.101700 ± 0.003876 |
-| FT-Transformer | 0.099842 | 0.498905 | 0.247200 | 0.100396 ± 0.001809 |
 | CatBoost | 0.099346 | 0.500155 | 0.210753 | 0.100690 ± 0.002784 |
 | EBM | 0.099000 | 0.495976 | 0.090109 | 0.099558 ± 0.002073 |
+| FT-Transformer | 0.098648 | 0.497980 | 0.153086 | 0.098065 ± 0.002638 |
 
-The development prevalence/no-skill AP is approximately **0.1001**. The current Member 3 XGBoost P1 experiment is the numerical pooled-AP leader, but its AP uplift above prevalence is only about **0.00108**. The group ranks by pooled AP and reports mean outer-fold AP separately; TabNet has the highest mean fold AP (**0.101700**), so the aggregation rule matters. Neither summary supports a claim of meaningful predictive usefulness. FT uses fixed-candidate epoch selection and a smaller final training partition; historical screening and the optional unexecuted eight-candidate extension are not equivalent to completed nested candidate tuning. This protocol difference limits direct interpretation of small between-model differences.
+The development prevalence/no-skill AP is approximately **0.1001**. The current Member 3 XGBoost P1 experiment is the numerical pooled-AP leader, but its AP uplift above prevalence is only about **0.00108**. The group ranks by pooled AP and reports mean outer-fold AP separately; TabNet has the highest mean fold AP (**0.101700**), so the aggregation rule matters. Neither summary supports a claim of meaningful predictive usefulness. All six canonical inputs now have completed nested candidate tuning; different search budgets still limit interpretation of small differences.
 
 The majority-class Dummy benchmark reaches 0.8999 accuracy while finding no positive cases. This explains why accuracy alone is misleading. A constant prediction equal to development prevalence has Brier score 0.09007999. Every headline model has worse Brier error, including EBM at 0.090109. Brier measures total probability error and is not a standalone proof of calibration.
 
 ![Figure 1 Development Average Precision compared with prevalence](../results/comparison/figure_01_average_precision_comparison.png)
 
-Calibration diagnostics are saved in `results/calibration/`. EBM has the smallest raw expected calibration error (ECE 0.003337), while XGBoost has ECE 0.227166 and FT-Transformer 0.395671. ECE depends on the chosen binning. EBM probabilities stay close to the low base rate, so small calibration error can coexist with near-chance ranking. No calibrator has been fitted or frozen. Weighted training often changes score scale; a score of 0.5 should not automatically be treated as a reliable 50% resignation probability.
+Calibration diagnostics are saved in `results/calibration/`. EBM stays close to the base rate and has low raw calibration error, while FT has ECE 0.162174. Calibration quality does not establish useful ranking. No calibrator has been frozen.
 
 The project therefore records a **negative empirical result**: across six substantially different model families, development discrimination is effectively near chance/no-skill. No final predictive model is frozen and the 20,000-row formal holdout remains locked.
 
@@ -203,7 +203,7 @@ The most important lesson is that model sophistication cannot compensate for wea
 
 The project also demonstrates why leakage control and reproducibility matter: a high-looking score would be misleading if produced by holdout reuse, target leakage or inconsistent rows. The frozen split registry, common OOF contracts and development-only tuning help prevent those errors.
 
-Remaining limitations are explicit. FT's completed scope is fixed FT02 with historical screening, and its original export lacks per-fold selected epochs, inner scores and class weights. The imported EBM experimental fits have not been independently retrained locally, and the final report identity fields must be supplied by the group. The formal holdout remains untouched until a final development decision and pipeline freeze.
+Remaining limitations are explicit: development performance remains near chance, the imported EBM fits have not been independently retrained in this checkout, and report identity fields require group input. All six registered models now have completed candidate-search evidence. The formal holdout remains untouched until a final development decision and pipeline freeze.
 
 Future work should first improve data quality and provenance, define a prediction time and outcome horizon, and collect plausible pre-outcome signals with appropriate consent. Temporal or employer-level validation would test transfer more convincingly than random splits. Class weighting should be assessed alongside probability calibration. Proposed fairness ablations and feature changes should be evaluated using development data before any final freeze. The final-holdout notebook currently audits readiness and has a synthetic-tested evaluator; readiness is not an observed holdout performance result.
 
@@ -222,3 +222,5 @@ Future work should first improve data quality and provenance, define a predictio
 11. DreamQuark. PyTorch TabNet implementation. https://github.com/dreamquark-ai/tabnet .
 
 Online references checked on 3 October 2026. Installed experiment versions are recorded in the project environment and run metadata; current online documentation versions are not evidence of the versions used for training. Assessment documents are supplied course materials. Model metrics and protocol claims in this report are supported by the local configuration files, canonical OOF outputs and individual evidence report.
+
+Completed formal FT update: see `reports/Six_Model_Comparison.md` for the current six-member discussion. The group notebook retains main's declared pooled-AP ranking and separately reports mean fold AP. The existing Word export predates this update; rebuild it from the updated Markdown before submission.

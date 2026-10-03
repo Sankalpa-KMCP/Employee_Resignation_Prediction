@@ -1,0 +1,21 @@
+{
+  "fold": 5,
+  "fit_time_seconds": 687.2359676670003,
+  "predict_time_seconds": 0.20895716699942568,
+  "selected_candidate": "FT01",
+  "selected_epoch_count": 30,
+  "average_precision": 0.09669456781744243,
+  "roc_auc": 0.4905459629137699,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "balanced_accuracy": 0.5,
+  "accuracy": 0.899875,
+  "brier_score": 0.09014994760350827,
+  "tn": 14398,
+  "fp": 0,
+  "fn": 1602,
+  "tp": 0,
+  "predicted_positive_count": 0,
+  "predicted_positive_rate": 0.0
+}

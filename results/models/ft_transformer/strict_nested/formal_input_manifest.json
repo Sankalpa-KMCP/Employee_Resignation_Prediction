@@ -1,0 +1,19 @@
+{
+  "signature": {
+    "config": "6044d5e4de926cd5d57032d5f44566e6d209a17fb9e0f79be3737980b063851e",
+    "adapter": "f79ecbbc01ed0e98ba04e20a5e9be1963f393fab549840c4658382dbedc4dc99",
+    "registry": "87edc10ac38f2435c49beddbf412f9de293e3e0622558b27ffbdf31fadd7ea41",
+    "dataset": "2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb",
+    "torch": "2.14.1",
+    "python": "3.14.6",
+    "device": "mps"
+  },
+  "files": {
+    "oof_predictions.csv": "94b2a52c9e0688cc764e9c6bc89d14f2fe8508c809dd8add3959d07026145096",
+    "fold_metrics.csv": "0c53336954d05ea16c48cc8da292e751ea055b745a52afb08dd83e058c9424fa",
+    "summary_metrics.json": "efa786bf0503cfa996f9f28d2e841ad4f35ec2a9535743f3133d1eaf8df61bb7",
+    "selection_evidence.json": "48c498c141383af544c325ccdb00a8bacd60fba73d80347065528e2d1e5b4787",
+    "candidate_selection.csv": "46483c7df9537c0a36f3d5171c2bd1bfa67a4f5345627db4e370f5e67182f110"
+  },
+  "adapter_source": "results/models/ft_transformer/strict_nested/executed_adapter.py"
+}

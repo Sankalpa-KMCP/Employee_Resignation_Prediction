@@ -1,13 +1,11 @@
-# Canonical development-OOF artefacts used by group analysis.
-# The formal 20,000-row holdout is intentionally absent from this registry.
 models:
   FT-Transformer:
-    oof_path: results/models/ft_transformer/reruns/FT02_20261003T025004Z/ft_transformer_final_oof_predictions.csv
-    protocol: fixed FT02 GPU 5-fold OOF; inner-AP epoch selection then fresh fit on inner-training rows; historical screening is descriptive, no eight-candidate search
-    # This flag refers to multi-candidate nested tuning, not completion of fixed FT02 evaluation.
-    tuning_complete: false
+    oof_path: results/models/ft_transformer/strict_nested/oof_predictions.csv
+    protocol: strict nested FT01-FT08 inner AP candidate selection and full outer-training
+      winner refit
+    tuning_complete: true
     evaluation_complete: true
-    candidate_search_executed: false
+    candidate_search_executed: true
   CatBoost:
     model_name: CatBoost Classifier
     oof_path: results/models/catboost/oof_predictions.csv
@@ -15,7 +13,8 @@ models:
     tuning_complete: true
   XGBoost:
     oof_path: results/models/xgboost/oof_predictions.csv
-    protocol: Member 3 primary P1 one-hot; strict nested 8-candidate selection; P2/P3 preprocessing sensitivity results are descriptive
+    protocol: Member 3 primary P1 one-hot; strict nested 8-candidate selection; P2/P3
+      preprocessing sensitivity results are descriptive
     tuning_complete: true
   LightGBM:
     oof_path: results/models/lightgbm/strict_nested/oof_predictions.csv
@@ -23,7 +22,8 @@ models:
     tuning_complete: true
   EBM:
     oof_path: results/models/ebm/individual_IT25100429/oof_predictions.csv
-    protocol: nested inner-AP selection among three raw candidates; standardized variants are sensitivity evidence
+    protocol: nested inner-AP selection among three raw candidates; standardized variants
+      are sensitivity evidence
     tuning_complete: true
   TabNet:
     oof_path: results/models/tabnet/oof_predictions.csv

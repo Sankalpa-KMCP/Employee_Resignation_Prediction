@@ -1,0 +1,9 @@
+{
+  "config": "6044d5e4de926cd5d57032d5f44566e6d209a17fb9e0f79be3737980b063851e",
+  "adapter": "f79ecbbc01ed0e98ba04e20a5e9be1963f393fab549840c4658382dbedc4dc99",
+  "registry": "87edc10ac38f2435c49beddbf412f9de293e3e0622558b27ffbdf31fadd7ea41",
+  "dataset": "2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb",
+  "torch": "2.14.1",
+  "python": "3.14.6",
+  "device": "mps"
+}

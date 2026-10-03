@@ -347,6 +347,29 @@ def _evaluate_candidate(
 # FTTransformerAdapter Main Implementation
 # =============================================================================
 
+def _select_device(preference: str = "auto"):
+    """Choose CUDA, then Apple MPS, then CPU; respect explicit device requests."""
+    import torch
+    if preference == "auto":
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
+    if preference not in {"cpu", "cuda", "mps"}:
+        raise ValueError(f"Unsupported FT device: {preference}")
+    if preference == "cuda" and not torch.cuda.is_available():
+        raise ValueError("Requested CUDA device is unavailable.")
+    if preference == "mps" and not torch.backends.mps.is_available():
+        raise ValueError("Requested MPS device is unavailable.")
+    return torch.device(preference)
+
+
+# =============================================================================
+# Preprocessing Helpers (Strictly Scoped & Leakage-Safe)
+# =============================================================================
+
+
 class FTTransformerAdapter:
     """FT-Transformer model adapter with strict nested candidate selection and outer refit.
 
@@ -383,6 +406,7 @@ class FTTransformerAdapter:
         Training partitions, category mappings and class weights are established later during fit.
         """
         self.name = name
+        self.device_preference = str((config or {}).get("reproducibility", {}).get("device", "auto"))
         self.model_id = model_id
         self.candidate_id = candidate_id or "default"
         self._fitted = False
@@ -616,7 +640,7 @@ class FTTransformerAdapter:
                 "torch and rtdl-revisiting-models are required for FTTransformerAdapter."
             ) from exc
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = _select_device(self.device_preference)
 
         # Basic validations
         self._feature_names = list(X.columns)
@@ -976,7 +1000,7 @@ class FTTransformerAdapter:
         import torch
         from torch.utils.data import DataLoader
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = _select_device(self.device_preference)
         self._model.to(device)
         self._model.eval()
 

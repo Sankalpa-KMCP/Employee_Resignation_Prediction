@@ -65,6 +65,11 @@ def load_group_inputs(root):
             if entry["oof_path"] != config["canonical_results"]["oof_predictions"]:
                 raise ValueError("Group EBM registry must point to the configured formal OOF input.")
             predictions, _, _ = load_formal_ebm_input(root)
+        elif model == "FT-Transformer":
+            from src.models.ft_transformer_execution import load_formal_ft_input
+            if entry["oof_path"] != "results/models/ft_transformer/strict_nested/oof_predictions.csv":
+                raise ValueError("FT registry must point to the manifest-bound formal input.")
+            predictions, _, _ = load_formal_ft_input(root)
         else:
             predictions = pd.read_csv(root / entry["oof_path"])
         validate_oof_predictions(predictions, split, source_data=source,
