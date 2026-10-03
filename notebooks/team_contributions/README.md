@@ -29,3 +29,5 @@ The verified Member 5 EBM contribution identifies IT25100429 as the standardizat
 Each member should be able to explain model suitability, implementation, tuning/variants, validation, metrics, comparison, limitations and code/output during the viva.
 
 `reports/INDIVIDUAL_MODEL_EVIDENCE.md` collects compact comparison tables for all six members. The short paired preprocessing checks for Members 1, 2, 4 and 6 are exploratory and are clearly distinguished from their formal five-fold OOF results.
+
+Member 1's `models/member_1_ft_transformer/05_m1_ft_transformer.ipynb` combines the current strict nested evaluation with the earlier FT-Transformer notebook. Its historical appendix preserves the earlier explanations, code, tables and plots as a static record; Run All executes only the current formal workflow.
