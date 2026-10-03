@@ -1,0 +1,157 @@
+{
+  "name": "TabNet",
+  "model_name": "TabNet",
+  "model_id": "tabnet",
+  "outer_fold": null,
+  "selection_mode": "fixed",
+  "requested_candidate_id": "T01",
+  "candidate_id": "T01",
+  "selected_candidate_id": "T01",
+  "candidate": {
+    "id": "T01",
+    "n_d": 8,
+    "n_a": 8,
+    "n_steps": 3,
+    "gamma": 1.2,
+    "lambda_sparse": 0.0001,
+    "learning_rate": 0.02,
+    "batch_size": 1024,
+    "virtual_batch_size": 128,
+    "class_balance": false
+  },
+  "selected_candidate_parameters": {
+    "id": "T01",
+    "n_d": 8,
+    "n_a": 8,
+    "n_steps": 3,
+    "gamma": 1.2,
+    "lambda_sparse": 0.0001,
+    "learning_rate": 0.02,
+    "batch_size": 1024,
+    "virtual_batch_size": 128,
+    "class_balance": false
+  },
+  "best_inner_average_precision": 0.11921631200135399,
+  "seed": 42,
+  "class_balance": false,
+  "config_version": "2.0.0",
+  "project_context_version": "4.6.2",
+  "fitted": true,
+  "selected_epoch": 1,
+  "candidate_selection_records": [
+    {
+      "candidate_id": "T01",
+      "candidate_parameters": {
+        "id": "T01",
+        "n_d": 8,
+        "n_a": 8,
+        "n_steps": 3,
+        "gamma": 1.2,
+        "lambda_sparse": 0.0001,
+        "learning_rate": 0.02,
+        "batch_size": 1024,
+        "virtual_batch_size": 128,
+        "class_balance": false
+      },
+      "seed": 42,
+      "class_balance": false,
+      "success": true,
+      "inner_average_precision": 0.11921631200135399,
+      "best_epoch": 0,
+      "selected_epoch": 1,
+      "runtime_seconds": 3.1503056999645196
+    }
+  ],
+  "training_histories": {
+    "T01": {
+      "loss": [
+        0.9261063620362963,
+        0.41341684549195423,
+        0.3853679417542049
+      ],
+      "lr": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "inner_valid_average_precision": [
+        0.11921631200135399,
+        0.10876075401555171,
+        0.09916591658973618
+      ]
+    }
+  },
+  "selection_history": {
+    "loss": [
+      0.9261063620362963,
+      0.41341684549195423,
+      0.3853679417542049
+    ],
+    "lr": [
+      0.02,
+      0.02,
+      0.02
+    ],
+    "inner_valid_average_precision": [
+      0.11921631200135399,
+      0.10876075401555171,
+      0.09916591658973618
+    ]
+  },
+  "fit_summary": {
+    "outer_fold": null,
+    "outer_training_rows_before": 4000,
+    "outer_training_rows_after": 4000,
+    "inner_training_rows": 3500,
+    "inner_validation_rows": 500,
+    "positive_rate_outer_training": 0.10025,
+    "positive_rate_inner_training": 0.10028571428571428,
+    "positive_rate_inner_validation": 0.1,
+    "selected_candidate_id": "T01",
+    "selected_epoch": 1,
+    "best_inner_average_precision": 0.11921631200135399,
+    "candidate_count": 1,
+    "candidate_selection_time_seconds": 5.465235899959225,
+    "refit_time_seconds": 0.2875626000459306,
+    "fit_time_seconds": 5.752941099985037
+  },
+  "preprocessing": {
+    "feature_order": [
+      "Department",
+      "Gender",
+      "Job_Title",
+      "Education_Level",
+      "Age",
+      "Years_At_Company",
+      "Performance_Score",
+      "Monthly_Salary",
+      "Work_Hours_Per_Week",
+      "Projects_Handled",
+      "Overtime_Hours",
+      "Sick_Days",
+      "Remote_Work_Frequency",
+      "Team_Size",
+      "Training_Hours",
+      "Promotions",
+      "Employee_Satisfaction_Score"
+    ],
+    "cat_idxs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "cat_dims": [
+      10,
+      4,
+      8,
+      5
+    ],
+    "category_cardinalities": {
+      "Department": 9,
+      "Gender": 3,
+      "Job_Title": 7,
+      "Education_Level": 4
+    }
+  }
+}
