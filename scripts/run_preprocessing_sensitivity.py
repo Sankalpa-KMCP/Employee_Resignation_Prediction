@@ -28,29 +28,28 @@ from src.models.catboost_model import CatBoostAdapter
 from src.models.ft_transformer import FTTransformerAdapter
 from src.models.lightgbm_model import LightGBMAdapter
 from src.models.tabnet_model import TabNetAdapter, load_tabnet_config
+from src.evaluation.inputs import load_development_data
+from src.models.experiment_outputs import create_run_directory
 
 
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", 160)
 
-RAW_PATH = ROOT / "data/raw/Extended_Employee_Performance_and_Productivity_Data.csv"
-SPLIT_PATH = ROOT / "data/processed/split_registry.csv"
-CONTRACT_PATH = ROOT / "configs/feature_contract.yaml"
-OUTPUT_DIR = ROOT / "results/models/preprocessing_sensitivity"
 OUTER_FOLD = 1
 TRAIN_ROWS = 5_000
 VALIDATION_ROWS = 2_000
 
 
-def load_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series, list[str]]:
-    contract = yaml.safe_load(CONTRACT_PATH.read_text(encoding="utf-8"))
+def load_data(root=ROOT) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series, list[str]]:
+    """Sample only hash-verified development rows; never parse holdout outcomes."""
+    root = Path(root)
+    contract = yaml.safe_load((root / "configs/feature_contract.yaml").read_text(encoding="utf-8"))
     features = list(contract["primary_model_features"])
     categories = [item["name"] for item in contract["categorical_features"]]
-    registry = pd.read_csv(SPLIT_PATH)
+    raw, registry = load_development_data(root, usecols=features)
     development = registry.loc[registry["partition"] == "development", ["Employee_ID", "cv_fold"]]
-    raw = pd.read_csv(RAW_PATH, usecols=["Employee_ID", "Resigned", *features])
     data = raw.merge(development, on="Employee_ID", how="inner", validate="one_to_one")
-    assert len(data) == 80_000 and data["Employee_ID"].is_unique
+    assert len(data) == contract["split_registry"]["development_rows"] and data["Employee_ID"].is_unique
     assert set(data["Employee_ID"]).isdisjoint(
         registry.loc[registry["partition"] == "holdout", "Employee_ID"]
     )
@@ -105,6 +104,9 @@ def main() -> None:
 
     torch.set_num_threads(4)
     X_train, X_valid, y_train, y_valid, categories = load_data()
+    # Reserve a fresh destination before fitting. A repeat must not replace the
+    # original paired exercise or any previous rerun's evidence.
+    output_dir = create_run_directory(ROOT, "preprocessing_sensitivity")
     salary_median = float(X_train["Monthly_Salary"].median())
     assert X_train.shape == (TRAIN_ROWS, 17)
     assert X_valid.shape == (VALIDATION_ROWS, 17)
@@ -145,8 +147,7 @@ def main() -> None:
                 })
                 print(model, profile, preprocessing, f"AP={rows[-1]['average_precision']:.6f}", flush=True)
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(OUTPUT_DIR / "paired_exploratory.csv", index=False)
+    pd.DataFrame(rows).to_csv(output_dir / "paired_exploratory.csv", index=False)
     details = {
         "role": "Exploratory preprocessing sensitivity; never select the headline experiment from these validation scores",
         "outer_fold": OUTER_FOLD,
@@ -159,8 +160,8 @@ def main() -> None:
         "training_cap": "FT/TabNet 5 epochs; CatBoost/LightGBM 120 trees; all shorter than formal evaluations",
         "split": "training sample from folds 2-5; untouched validation sample from outer fold 1; no formal holdout IDs",
     }
-    (OUTPUT_DIR / "protocol.json").write_text(json.dumps(details, indent=2), encoding="utf-8")
-    print("Saved", OUTPUT_DIR / "paired_exploratory.csv")
+    (output_dir / "protocol.json").write_text(json.dumps(details, indent=2), encoding="utf-8")
+    print("Saved", output_dir / "paired_exploratory.csv")
 
 
 if __name__ == "__main__":
