@@ -1,0 +1,69 @@
+{
+  "model_name": "Random Forest Classifier",
+  "model_id": "random_forest",
+  "total_development_records": 80000,
+  "total_folds": 5,
+  "pooled_average_precision": 0.10078520006720507,
+  "pooled_pr_auc": 0.10078520006720507,
+  "pooled_roc_auc": 0.5011813580213541,
+  "pooled_f1": 0.09372071227741331,
+  "pooled_brier_score": 0.15327696933802767,
+  "cv_mean_average_precision": 0.10204185581379759,
+  "cv_std_average_precision": 0.003153769809406271,
+  "cv_mean_pr_auc": 0.10204185581379759,
+  "cv_std_pr_auc": 0.003153769809406271,
+  "cv_mean_roc_auc": 0.502872558319243,
+  "cv_std_roc_auc": 0.0060421239682723026,
+  "cv_mean_f1": 0.0334837164387678,
+  "cv_std_f1": 0.07280645863006265,
+  "total_fit_time_seconds": 52.943688200000906,
+  "total_predict_time_seconds": 0.689013299997896,
+  "pooled_precision": 0.10101010101010101,
+  "pooled_recall": 0.08741258741258741,
+  "pooled_balanced_accuracy": 0.500437597184458,
+  "pooled_accuracy": 0.830775,
+  "pooled_tn": 65762,
+  "pooled_fp": 6230,
+  "pooled_fn": 7308,
+  "pooled_tp": 700,
+  "pooled_predicted_positive_count": 6930,
+  "pooled_predicted_positive_rate": 0.086625,
+  "development_prevalence": 0.1001,
+  "ap_lift_over_prevalence": 1.006845155516534,
+  "formal_holdout_accessed": false,
+  "random_state": 42,
+  "candidates": {
+    "RF01": {
+      "n_estimators": 200,
+      "max_depth": 8,
+      "min_samples_split": 10,
+      "min_samples_leaf": 5,
+      "max_features": "sqrt",
+      "class_weight": null
+    },
+    "RF02": {
+      "n_estimators": 300,
+      "max_depth": 8,
+      "min_samples_split": 10,
+      "min_samples_leaf": 5,
+      "max_features": "sqrt",
+      "class_weight": "balanced"
+    },
+    "RF03": {
+      "n_estimators": 500,
+      "max_depth": 14,
+      "min_samples_split": 5,
+      "min_samples_leaf": 2,
+      "max_features": "sqrt",
+      "class_weight": "balanced_subsample"
+    },
+    "RF04": {
+      "n_estimators": 300,
+      "max_depth": 6,
+      "min_samples_split": 20,
+      "min_samples_leaf": 10,
+      "max_features": "log2",
+      "class_weight": "balanced"
+    }
+  }
+}
