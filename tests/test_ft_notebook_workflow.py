@@ -27,6 +27,9 @@ def notebook(name):
 def test_ft_saved_review_cannot_train_or_export(monkeypatch, name):
     import IPython.display
     from src.models import ft_transformer, runner, experiment_outputs
+    import torch
+    import joblib
+    import pickle
 
     def forbidden(*args, **kwargs):
         raise AssertionError("Saved FT review attempted training or artifact export.")
@@ -38,6 +41,11 @@ def test_ft_saved_review_cannot_train_or_export(monkeypatch, name):
     monkeypatch.setattr(pd.DataFrame, "to_csv", forbidden)
     monkeypatch.setattr(Path, "write_text", forbidden)
     monkeypatch.setattr(plt.Figure, "savefig", forbidden)
+    monkeypatch.setattr(Path, "mkdir", forbidden)
+    monkeypatch.setattr(Path, "write_bytes", forbidden)
+    monkeypatch.setattr(torch, "load", forbidden)
+    monkeypatch.setattr(joblib, "load", forbidden)
+    monkeypatch.setattr(pickle, "load", forbidden)
     monkeypatch.setattr(IPython.display, "display", lambda *args, **kwargs: None)
     monkeypatch.setattr(plt, "show", lambda: None)
     monkeypatch.chdir(DIRECTORY)
@@ -46,6 +54,14 @@ def test_ft_saved_review_cannot_train_or_export(monkeypatch, name):
         for cell in notebook(name)["cells"]:
             if cell["cell_type"] == "code":
                 exec(compile("".join(cell["source"]), name, "exec"), namespace)
+        if name == "05_m1_ft_transformer.ipynb":
+            assert len(namespace["FIGURES"]) == 6
+            assert namespace["prevalence"] == pytest.approx(0.1001)
+            assert namespace["pooled"]["average_precision"] == pytest.approx(0.09864796531239689)
+            assert namespace["pooled"]["roc_auc"] == pytest.approx(0.4979796229231931)
+            assert namespace["summary"]["cv_mean_ap"] == pytest.approx(0.09806541461164146)
+            assert namespace["normalized_cm"].sum(axis=1) == pytest.approx([1, 1])
+            assert namespace["observed"]["count"].gt(0).all()
     finally:
         plt.close("all")
 
@@ -53,9 +69,10 @@ def test_ft_saved_review_cannot_train_or_export(monkeypatch, name):
 def test_ft_notebook_cell_structure_preserves_executable_history():
     main = notebook("05_m1_ft_transformer.ipynb")["cells"]
     historical = notebook("05_m1_ft_transformer_historical.ipynb")["cells"]
-    assert len(main) == 28
-    assert sum(c["cell_type"] == "code" for c in main) == 14
-    assert sum(c["cell_type"] == "markdown" for c in main) == 14
+    assert len(main) == 24
+    assert sum(c["cell_type"] == "code" for c in main) == 12
+    assert sum(c["cell_type"] == "markdown" for c in main) == 12
+    assert all(c["cell_type"] == ("markdown" if i % 2 == 0 else "code") for i, c in enumerate(main))
     assert sum(c["cell_type"] == "code" for c in historical) == 15
 
 
@@ -101,9 +118,32 @@ def test_ft_notebook_new_training_uses_returned_evidence_in_isolated_directory(m
     namespace = {}
     exec("".join(cells[1]["source"]), namespace)
     namespace.update(ROOT=tmp_path, RUN_TRAINING=True, development_data=data, split_registry=registry)
-    exec("".join(cells[17]["source"]), namespace)
+    namespace["candidate_ids"] = [f"FT{i:02}" for i in range(1, 9)]
+    exec("".join(cells[13]["source"]), namespace)
     assert len(called) == 1
     assert namespace["active_results_dir"] == called[0]
     assert namespace["oof"] is saved_result[0]
     assert namespace["summary"] is saved_result[2]
     assert len(namespace["selection"]) == 40
+
+
+@pytest.mark.parametrize("corruption", ["id", "target", "fold", "nan", "infinity", "negative", "above_one"])
+def test_ft_review_rejects_invalid_predictions(corruption):
+    import numpy as np
+    from src.evaluation.oof_validation import validate_oof_predictions
+
+    source, registry = load_development_data(ROOT, usecols=[])
+    predictions, _, _ = execution.load_formal_ft_input(ROOT)
+    predictions = predictions.copy()
+    if corruption == "id":
+        predictions.loc[0, "Employee_ID"] = registry.loc[registry.partition == "holdout", "Employee_ID"].iloc[0]
+    elif corruption == "target":
+        predictions.loc[0, "y_true"] = 1 - predictions.loc[0, "y_true"]
+    elif corruption == "fold":
+        predictions.loc[0, "cv_fold"] = predictions.loc[0, "cv_fold"] % 5 + 1
+    else:
+        predictions.loc[0, "y_probability"] = {"nan": np.nan, "infinity": np.inf,
+                                                "negative": -0.01, "above_one": 1.01}[corruption]
+    with pytest.raises(ValueError):
+        validate_oof_predictions(predictions, registry, source_data=source,
+                                 expected_model_name="FT-Transformer")

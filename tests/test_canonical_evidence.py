@@ -1,6 +1,7 @@
 """Check that the group's shipped evidence matches its model registry."""
 
 from pathlib import Path
+import ast
 import json
 
 import numpy as np
@@ -52,7 +53,10 @@ def test_ft_weighted_historical_evidence_matches_current_candidate() -> None:
     assert actual["weighting"] == "dynamic_ratio"
     assert metadata["class_weighting"] == "inner-training positive-class weight"
     assert "load_formal_ft_input" in code
-    assert "RUN_TRAINING=False" in code
+    assert any(isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
+               and node.value.value is False
+               and any(isinstance(target, ast.Name) and target.id == "RUN_TRAINING" for target in node.targets)
+               for node in ast.walk(ast.parse(code)))
 
 
 def test_canonical_ft_gpu_evidence_and_group_metrics_agree() -> None:
