@@ -1,129 +1,285 @@
 # ============================================================
 # Model Configuration: CatBoost Classifier (Member 2)
-# Modernized Target Schema (v2.0.0)
+# Modernized Target Schema (v2.1.0 - Audited & Promoted)
 # ============================================================
 model:
-  id: "catboost"
-  model_id: "catboost"
-  name: "CatBoost Classifier"
-  owner: "member_2"
-  member: "Member 2"
-  algorithm_family: "Gradient Boosted Decision Trees"
-  implementation: "catboost.CatBoostClassifier"
-  config_version: "2.0.0"
-
-# ------------------------------------------------------------
-# Reproducibility & Environment
-# ------------------------------------------------------------
+  id: catboost
+  model_id: catboost
+  name: CatBoost Classifier
+  owner: member_2
+  member: Member 2
+  algorithm_family: Gradient Boosted Decision Trees
+  implementation: catboost.CatBoostClassifier
+  config_version: 2.1.0
+  description: Audited and Promoted CatBoost Classifier (Member 2)
 reproducibility:
   random_seed: 42
   thread_count: -1
   deterministic: true
-
-# ------------------------------------------------------------
-# Inner-Validation & Early Stopping Policy
-# (Operates strictly within outer-training folds; outer-val is never passed)
-# ------------------------------------------------------------
 inner_validation:
   fraction: 0.15
   stratified: true
-  metric: "average_precision"
-  early_stopping_rounds: 50
+  metric: average_precision
+  early_stopping_rounds: 200
   refit_outer_train: true
-
-# ------------------------------------------------------------
-# Semantic Class Imbalance Strategy
-# ------------------------------------------------------------
+  selection_metric: log_loss
+  repeat_seeds:
+  - 42
+  - 43
+  - 44
 class_imbalance:
-  strategy: "balanced"
-  param_name: "auto_class_weights"
-
-# ------------------------------------------------------------
-# Fixed Estimator Parameters
-# ------------------------------------------------------------
+  strategy: balanced
+  param_name: auto_class_weights
 fixed_params:
-  loss_function: "Logloss"
-  eval_metric: "PRAUC"
+  loss_function: Logloss
+  eval_metric: Logloss
   random_seed: 42
   thread_count: -1
   verbose: false
   allow_writing_files: false
-
-# ------------------------------------------------------------
-# Discrete Candidate Registry (Canonical v4.6.1 Section 8.21.4)
-# Bounded configurations: iterations 600; depth 4/6/8; lr 0.03/0.05/0.10;
-# l2 3/5/10; random_strength 0/1; auto_class_weights null/Balanced
-# ------------------------------------------------------------
+  boost_from_average: true
 candidates:
-  - id: "C01"
-    description: "Baseline unweighted (depth=6, lr=0.05, l2=3)"
-    params:
-      iterations: 600
-      depth: 6
-      learning_rate: 0.05
-      l2_leaf_reg: 3
-      auto_class_weights: null
-
-  - id: "C02"
-    description: "Baseline Balanced (depth=6, lr=0.05, l2=3)"
-    params:
-      iterations: 600
-      depth: 6
-      learning_rate: 0.05
-      l2_leaf_reg: 3
-      auto_class_weights: "Balanced"
-
-  - id: "C03"
-    description: "Conservative / Shallow unweighted (depth=4, lr=0.03, l2=5)"
-    params:
-      iterations: 600
-      depth: 4
-      learning_rate: 0.03
-      l2_leaf_reg: 5
-      auto_class_weights: null
-
-  - id: "C04"
-    description: "Conservative / Shallow Balanced (depth=4, lr=0.03, l2=5)"
-    params:
-      iterations: 600
-      depth: 4
-      learning_rate: 0.03
-      l2_leaf_reg: 5
-      auto_class_weights: "Balanced"
-
-  - id: "C05"
-    description: "High capacity unweighted (depth=8, lr=0.05, l2=5)"
-    params:
-      iterations: 600
-      depth: 8
-      learning_rate: 0.05
-      l2_leaf_reg: 5
-      auto_class_weights: null
-
-  - id: "C06"
-    description: "High capacity Balanced (depth=8, lr=0.05, l2=5)"
-    params:
-      iterations: 600
-      depth: 8
-      learning_rate: 0.05
-      l2_leaf_reg: 5
-      auto_class_weights: "Balanced"
-
-  - id: "C07"
-    description: "Regularized low-rate Balanced (depth=6, lr=0.03, l2=10, random_strength=1)"
-    params:
-      iterations: 600
-      depth: 6
-      learning_rate: 0.03
-      l2_leaf_reg: 10
-      random_strength: 1
-      auto_class_weights: "Balanced"
-
-  - id: "C08"
-    description: "Fast learning Balanced (depth=6, lr=0.10, l2=5)"
-    params:
-      iterations: 600
-      depth: 6
-      learning_rate: 0.10
-      l2_leaf_reg: 5
-      auto_class_weights: "Balanced"
+- id: R01
+  params:
+    iterations: 600
+    depth: 2
+    learning_rate: 0.08
+    l2_leaf_reg: 4.45
+    random_strength: 2.6
+    bagging_temperature: 1.39
+    border_count: 32
+    one_hot_max_size: 2
+    rsm: 0.8
+    auto_class_weights: null
+- id: R02
+  params:
+    iterations: 600
+    depth: 8
+    learning_rate: 0.05
+    l2_leaf_reg: 14.49
+    random_strength: 0.56
+    bagging_temperature: 0.9
+    border_count: 254
+    one_hot_max_size: 4
+    rsm: 0.8
+    auto_class_weights: null
+- id: R03
+  params:
+    iterations: 600
+    depth: 3
+    learning_rate: 0.08
+    l2_leaf_reg: 8.93
+    random_strength: 2.5
+    bagging_temperature: 0.89
+    border_count: 64
+    one_hot_max_size: 2
+    rsm: 0.5
+    auto_class_weights: null
+- id: R04
+  params:
+    iterations: 600
+    depth: 5
+    learning_rate: 0.08
+    l2_leaf_reg: 16.69
+    random_strength: 1.97
+    bagging_temperature: 1.52
+    border_count: 32
+    one_hot_max_size: 10
+    rsm: 0.8
+    auto_class_weights: null
+- id: R05
+  params:
+    iterations: 600
+    depth: 2
+    learning_rate: 0.08
+    l2_leaf_reg: 20.86
+    random_strength: 2.38
+    bagging_temperature: 0.39
+    border_count: 64
+    one_hot_max_size: 4
+    rsm: 0.8
+    auto_class_weights: null
+- id: R06
+  params:
+    iterations: 600
+    depth: 2
+    learning_rate: 0.05
+    l2_leaf_reg: 10.21
+    random_strength: 2.29
+    bagging_temperature: 1.94
+    border_count: 32
+    one_hot_max_size: 4
+    rsm: 0.5
+    auto_class_weights: null
+- id: R07
+  params:
+    iterations: 600
+    depth: 8
+    learning_rate: 0.03
+    l2_leaf_reg: 4.94
+    random_strength: 0.73
+    bagging_temperature: 0.26
+    border_count: 128
+    one_hot_max_size: 4
+    rsm: 0.5
+    auto_class_weights: null
+- id: R08
+  params:
+    iterations: 600
+    depth: 3
+    learning_rate: 0.05
+    l2_leaf_reg: 4.42
+    random_strength: 2.53
+    bagging_temperature: 1.4
+    border_count: 128
+    one_hot_max_size: 2
+    rsm: 0.5
+    auto_class_weights: null
+- id: R09
+  params:
+    iterations: 600
+    depth: 7
+    learning_rate: 0.08
+    l2_leaf_reg: 15.44
+    random_strength: 1.28
+    bagging_temperature: 0.58
+    border_count: 32
+    one_hot_max_size: 10
+    rsm: 0.8
+    auto_class_weights: null
+- id: R10
+  params:
+    iterations: 600
+    depth: 2
+    learning_rate: 0.08
+    l2_leaf_reg: 1.03
+    random_strength: 2.4
+    bagging_temperature: 1.33
+    border_count: 32
+    one_hot_max_size: 4
+    rsm: 1.0
+    auto_class_weights: null
+- id: R11
+  params:
+    iterations: 600
+    depth: 3
+    learning_rate: 0.08
+    l2_leaf_reg: 4.76
+    random_strength: 1.79
+    bagging_temperature: 0.28
+    border_count: 32
+    one_hot_max_size: 2
+    rsm: 0.8
+    auto_class_weights: null
+- id: R12
+  params:
+    iterations: 600
+    depth: 6
+    learning_rate: 0.05
+    l2_leaf_reg: 6.84
+    random_strength: 2.34
+    bagging_temperature: 1.27
+    border_count: 64
+    one_hot_max_size: 4
+    rsm: 0.8
+    auto_class_weights: null
+- id: R13
+  params:
+    iterations: 600
+    depth: 2
+    learning_rate: 0.05
+    l2_leaf_reg: 2.81
+    random_strength: 0.29
+    bagging_temperature: 0.87
+    border_count: 254
+    one_hot_max_size: 2
+    rsm: 0.5
+    auto_class_weights: null
+- id: R14
+  params:
+    iterations: 600
+    depth: 4
+    learning_rate: 0.08
+    l2_leaf_reg: 2.22
+    random_strength: 0.36
+    bagging_temperature: 0.56
+    border_count: 254
+    one_hot_max_size: 10
+    rsm: 0.5
+    auto_class_weights: null
+- id: R15
+  params:
+    iterations: 600
+    depth: 5
+    learning_rate: 0.05
+    l2_leaf_reg: 6.65
+    random_strength: 2.39
+    bagging_temperature: 1.33
+    border_count: 64
+    one_hot_max_size: 4
+    rsm: 0.8
+    auto_class_weights: null
+- id: R16
+  params:
+    iterations: 600
+    depth: 7
+    learning_rate: 0.03
+    l2_leaf_reg: 1.08
+    random_strength: 0.45
+    bagging_temperature: 1.44
+    border_count: 32
+    one_hot_max_size: 10
+    rsm: 0.8
+    auto_class_weights: null
+- id: R17
+  params:
+    iterations: 600
+    depth: 7
+    learning_rate: 0.02
+    l2_leaf_reg: 5.5
+    random_strength: 0.63
+    bagging_temperature: 1.39
+    border_count: 64
+    one_hot_max_size: 4
+    rsm: 0.5
+    auto_class_weights: null
+- id: R18
+  params:
+    iterations: 600
+    depth: 4
+    learning_rate: 0.02
+    l2_leaf_reg: 8.53
+    random_strength: 1.21
+    bagging_temperature: 0.18
+    border_count: 64
+    one_hot_max_size: 4
+    rsm: 0.5
+    auto_class_weights: null
+- id: R19
+  params:
+    iterations: 600
+    depth: 4
+    learning_rate: 0.08
+    l2_leaf_reg: 21.98
+    random_strength: 2.16
+    bagging_temperature: 0.53
+    border_count: 254
+    one_hot_max_size: 10
+    rsm: 0.5
+    auto_class_weights: null
+- id: R20
+  params:
+    iterations: 600
+    depth: 7
+    learning_rate: 0.03
+    l2_leaf_reg: 4.61
+    random_strength: 0.96
+    bagging_temperature: 0.19
+    border_count: 128
+    one_hot_max_size: 4
+    rsm: 1.0
+    auto_class_weights: null
+audit:
+  status: promoted
+  promoted_at: '2026-10-04T11:46:19.337887+00:00'
+  source: results/models/catboost/improvement/audit_report.md

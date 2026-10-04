@@ -290,3 +290,38 @@ def test_exact_topk_capacity_counts(raw_oof_df):
         reported_tp = int(row.iloc[0]["true_positives_captured"])
         assert actual_tp == reported_tp, f"TP captured mismatch for {cap_label}: expected {actual_tp}, reported {reported_tp}"
 
+
+def test_operational_confusion_matrix_reconciliation(raw_oof_df):
+    """Verify catboost_operational_confusion_matrix.csv exists and matches OOF predictions."""
+    csv_path = RESULTS_DIR / "catboost_operational_confusion_matrix.csv"
+    assert csv_path.exists(), f"Missing operational confusion matrix at: {csv_path}"
+    op_df = pd.read_csv(csv_path)
+    assert len(op_df) == 4
+
+    # Verify baseline 0.50 cutoff preserves exact contract reconciliation
+    row_05 = op_df.loc[op_df["policy"] == "Default 0.50 Cutoff"].iloc[0]
+    assert int(row_05["true_negatives_tn"]) == 71992
+    assert int(row_05["false_positives_fp"]) == 0
+    assert int(row_05["false_negatives_fn"]) == 8008
+    assert int(row_05["true_positives_tp"]) == 0
+
+    # Verify Base-Rate Prevalence row captures non-zero true positives
+    row_prev = op_df.loc[op_df["policy"] == "Base-Rate Prevalence"].iloc[0]
+    assert int(row_prev["true_positives_tp"]) == 4240
+    assert int(row_prev["false_negatives_fn"]) == 3768
+    assert int(row_prev["false_positives_fp"]) == 37848
+    assert int(row_prev["true_negatives_tn"]) == 34144
+    assert abs(float(row_prev["recall"]) - 0.5295) < TOLERANCE
+
+    # Verify Top 10% Budget Capacity row reconciles with topk analysis
+    row_top10 = op_df.loc[op_df["policy"] == "Top 10% Budget Capacity"].iloc[0]
+    assert int(row_top10["true_positives_tp"]) == 874
+    assert int(row_top10["false_positives_fp"]) == 7126
+    assert int(row_top10["flagged_count"]) == 8000
+
+    # Verify comparison figure exists
+    fig_path = RESULTS_DIR / "figure_operational_confusion_matrix.png"
+    assert fig_path.exists()
+    assert fig_path.stat().st_size > 0
+
+

@@ -1,0 +1,129 @@
+# ============================================================
+# Model Configuration: CatBoost Classifier (Member 2)
+# Modernized Target Schema (v2.0.0)
+# ============================================================
+model:
+  id: "catboost"
+  model_id: "catboost"
+  name: "CatBoost Classifier"
+  owner: "member_2"
+  member: "Member 2"
+  algorithm_family: "Gradient Boosted Decision Trees"
+  implementation: "catboost.CatBoostClassifier"
+  config_version: "2.0.0"
+
+# ------------------------------------------------------------
+# Reproducibility & Environment
+# ------------------------------------------------------------
+reproducibility:
+  random_seed: 42
+  thread_count: -1
+  deterministic: true
+
+# ------------------------------------------------------------
+# Inner-Validation & Early Stopping Policy
+# (Operates strictly within outer-training folds; outer-val is never passed)
+# ------------------------------------------------------------
+inner_validation:
+  fraction: 0.15
+  stratified: true
+  metric: "average_precision"
+  early_stopping_rounds: 50
+  refit_outer_train: true
+
+# ------------------------------------------------------------
+# Semantic Class Imbalance Strategy
+# ------------------------------------------------------------
+class_imbalance:
+  strategy: "balanced"
+  param_name: "auto_class_weights"
+
+# ------------------------------------------------------------
+# Fixed Estimator Parameters
+# ------------------------------------------------------------
+fixed_params:
+  loss_function: "Logloss"
+  eval_metric: "PRAUC"
+  random_seed: 42
+  thread_count: -1
+  verbose: false
+  allow_writing_files: false
+
+# ------------------------------------------------------------
+# Discrete Candidate Registry (Canonical v4.6.1 Section 8.21.4)
+# Bounded configurations: iterations 600; depth 4/6/8; lr 0.03/0.05/0.10;
+# l2 3/5/10; random_strength 0/1; auto_class_weights null/Balanced
+# ------------------------------------------------------------
+candidates:
+  - id: "C01"
+    description: "Baseline unweighted (depth=6, lr=0.05, l2=3)"
+    params:
+      iterations: 600
+      depth: 6
+      learning_rate: 0.05
+      l2_leaf_reg: 3
+      auto_class_weights: null
+
+  - id: "C02"
+    description: "Baseline Balanced (depth=6, lr=0.05, l2=3)"
+    params:
+      iterations: 600
+      depth: 6
+      learning_rate: 0.05
+      l2_leaf_reg: 3
+      auto_class_weights: "Balanced"
+
+  - id: "C03"
+    description: "Conservative / Shallow unweighted (depth=4, lr=0.03, l2=5)"
+    params:
+      iterations: 600
+      depth: 4
+      learning_rate: 0.03
+      l2_leaf_reg: 5
+      auto_class_weights: null
+
+  - id: "C04"
+    description: "Conservative / Shallow Balanced (depth=4, lr=0.03, l2=5)"
+    params:
+      iterations: 600
+      depth: 4
+      learning_rate: 0.03
+      l2_leaf_reg: 5
+      auto_class_weights: "Balanced"
+
+  - id: "C05"
+    description: "High capacity unweighted (depth=8, lr=0.05, l2=5)"
+    params:
+      iterations: 600
+      depth: 8
+      learning_rate: 0.05
+      l2_leaf_reg: 5
+      auto_class_weights: null
+
+  - id: "C06"
+    description: "High capacity Balanced (depth=8, lr=0.05, l2=5)"
+    params:
+      iterations: 600
+      depth: 8
+      learning_rate: 0.05
+      l2_leaf_reg: 5
+      auto_class_weights: "Balanced"
+
+  - id: "C07"
+    description: "Regularized low-rate Balanced (depth=6, lr=0.03, l2=10, random_strength=1)"
+    params:
+      iterations: 600
+      depth: 6
+      learning_rate: 0.03
+      l2_leaf_reg: 10
+      random_strength: 1
+      auto_class_weights: "Balanced"
+
+  - id: "C08"
+    description: "Fast learning Balanced (depth=6, lr=0.10, l2=5)"
+    params:
+      iterations: 600
+      depth: 6
+      learning_rate: 0.10
+      l2_leaf_reg: 5
+      auto_class_weights: "Balanced"

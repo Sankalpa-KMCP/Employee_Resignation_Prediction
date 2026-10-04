@@ -17,9 +17,10 @@ ROOT = Path(__file__).resolve().parents[1]
 CB = ROOT / "results/models/catboost"
 IMP = CB / "improvement"
 P1, FIN = IMP / "phase1", IMP / "final"
-MODELS_AFTER = ROOT / "models/catboost/audit"
+MODELS_AFTER = ROOT / "models/catboost/audit" if (ROOT / "models/catboost/audit").exists() else ROOT / "models/catboost"
 NB = ROOT / "notebooks/team_contributions/models/member_2_catboost/06_m2_catboost.ipynb"
-PRE_NB = sorted(NB.parent.glob("06_m2_catboost.pre_audit_*.ipynb"))[0]
+_pre_nbs = sorted(NB.parent.glob("06_m2_catboost.pre_audit_*.ipynb"))
+PRE_NB = _pre_nbs[0] if _pre_nbs else NB
 
 
 def J(p):

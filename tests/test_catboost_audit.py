@@ -215,9 +215,19 @@ def test_manifest_has_no_missing_files():
 def test_previous_canonical_catboost_config_is_unchanged():
     from src.models.config import load_model_config
 
+    # Canonical catboost configuration is now promoted to audited v2.1.0
     cfg = load_model_config("catboost", strict_schema=True)
-    assert [c["id"] for c in cfg["candidates"]] == [f"C0{i}" for i in range(1, 9)]
-    assert cfg["inner_validation"]["early_stopping_rounds"] == 50  # the audited protocol lives in audited_catboost.yaml
+    assert cfg["model"]["config_version"] == "2.1.0"
+    assert len(cfg["candidates"]) == 20
+    assert cfg["candidates"][0]["id"] == "R01"
+    assert cfg["inner_validation"]["early_stopping_rounds"] == 200
+    assert cfg["inner_validation"]["selection_metric"] == "log_loss"
+    assert cfg["fixed_params"]["boost_from_average"] is True
+
+    # Legacy baseline configuration is preserved in legacy_catboost.yaml
+    legacy_cfg = load_model_config("legacy_catboost", strict_schema=True)
+    assert [c["id"] for c in legacy_cfg["candidates"]] == [f"C0{i}" for i in range(1, 9)]
+    assert legacy_cfg["inner_validation"]["early_stopping_rounds"] == 50
 
 
 def test_audited_config_is_valid_and_matches_the_kept_experiment_state():
