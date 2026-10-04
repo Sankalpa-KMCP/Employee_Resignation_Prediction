@@ -355,6 +355,38 @@ show_fig("fig_12_gain_lift", f"Flagging the top 10% captures {tk[np.isclose(tk.t
 """)
 
 md("""
+### 8.1 Decision Threshold Analysis & Operational Confusion Matrix
+
+- **Academic Objective:** Audit and resolve the classification threshold pathology in calibrated imbalanced prediction, contrasting the default naive $\\tau=0.50$ cutoff against empirical base-rate ($\\tau=0.1001$) and capacity-constrained Top-10% budget thresholds.
+- **Key Methodology / Theory:** In binary classification under severe class imbalance (10.01% positive prevalence), a properly calibrated probabilistic model (such as CatBoost with `boost_from_average=True`, achieving the optimal Brier score floor of 0.09008) produces probabilities tightly centered at the empirical prior ($\\hat{p} \\in [0.0867, 0.1166]$). An unadjusted, symmetric decision threshold of $\\tau = 0.50$ is mathematically unreachable ($\\max(\\hat{p}) = 0.1166 < 0.50$), causing all predictions to default to negative (0 True Positives, 0% Recall).
+- **Expected Panel Takeaway:** Evaluating models at their empirical prevalence cutoff ($\\tau = 0.10010$) captures 4,240 True Positives (52.95% Recall), while an HR capacity-constrained Top-10% budget cutoff ($\\tau = 0.10226$) isolates 874 True Positives with 10.92% Precision and 1.09× Lift.
+""")
+
+code("""
+# Load operational confusion matrix comparison table across decision thresholds
+op_cm_path = CB / "catboost_operational_confusion_matrix.csv"
+assert op_cm_path.exists(), f"Operational confusion matrix missing at: {op_cm_path}"
+
+op_cm_df = pd.read_csv(op_cm_path)
+print("CatBoost Operational Confusion Matrices & Decision Threshold Diagnostics:")
+display(op_cm_df[[
+    "policy", "decision_threshold", "flagged_count", "flagged_rate",
+    "true_negatives_tn", "false_positives_fp", "false_negatives_fn", "true_positives_tp",
+    "precision", "recall", "f1_score", "balanced_accuracy"
+]])
+
+# Render Figure: Operational Confusion Matrix Visual Comparison
+op_fig_path = CB / "figure_operational_confusion_matrix.png"
+if op_fig_path.exists():
+    display(Image(filename=str(op_fig_path), width=920))
+    display(Markdown(
+        "**Takeaway.** The default 0.50 cutoff fails entirely due to properly calibrated probabilities ($\\\\max(p) = 0.1166$). "
+        "At the empirical base-rate threshold ($\\\\tau = 0.10010$), the model captures 4,240 True Positives (52.95% Recall). "
+        "Under a Top 10% HR intervention budget ($\\\\tau = 0.10226$), 874 True Positives are prioritized with 10.92% Precision (1.09× Lift)."
+    ))
+""")
+
+md("""
 ## 9. Interpretability and subgroups
 
 Importance is computed on the five fold models (stability across folds shown by the error bars), and permutation importance is measured on each outer-validation fold.
@@ -477,6 +509,29 @@ If the team needs a usable resignation model, the limiting factor is the informa
 3. Revisit the target definition (e.g. resignation within a fixed horizon after a snapshot date) so that the label is predictable from information available at prediction time.
 4. `Hire_Date`-derived tenure may be tried only after the contract is explicitly amended and the team is told; it was **not** used here.
 5. Do not read the formal holdout until the team freezes a model that shows development-set evidence of signal (see `docs/FINAL_HOLDOUT_PROTOCOL.md`).
+6. **Operational Threshold Selection:** For any downstream deployment on imbalanced employee data, decouple probability estimation from decision cutoffs. Never apply a default 0.50 cutoff to calibrated probabilities; set thresholds based on organizational intervention capacity (e.g. Top 10% budget) or relative costs of false negatives versus false positives.
+""")
+
+md("""
+## 13. Summary and Conclusion
+
+### Q&A
+- **Q: Does CatBoost demonstrate predictive power over trivial baselines for employee resignation prediction?**  
+  **A:** No. CatBoost v2.1.0 achieves a pooled out-of-fold PR-AUC of `0.10225` (95% CI: `[0.09931, 0.10566]`) against the analytical Dummy Prior baseline of `0.10009` (prevalence: `0.10010`), and a ROC-AUC of `0.50410` (95% CI: `[0.49733, 0.51083]`). Because both 95% paired bootstrap confidence intervals span zero ($\\Delta\\text{PR-AUC} \\in [-0.00032, +0.00486]$, $\\Delta\\text{ROC-AUC} \\in [-0.00469, +0.01288]$), and the empirical label-permutation test yielded $p = 0.091$, the model does not beat the no-skill baseline at statistical significance ($\\alpha = 0.05$).
+- **Q: Is CatBoost properly calibrated and tuned?**  
+  **A:** Yes. CatBoost is mathematically and probabilistically well-tuned. With `boost_from_average=True`, its raw Brier score is `0.09008` (matching the theoretical minimum for a 10.01% base rate), and Logloss dropped from `0.60521` to `0.32529`. The absence of high predictive accuracy is an information-theoretic bound of the 17 static features, not an algorithmic or hyperparameter tuning flaw.
+- **Q: Why does the standard confusion matrix at cutoff 0.50 yield zero predicted positives, and how is it resolved?**  
+  **A:** Because the model is calibrated to the true 10.01% base rate, all predicted probabilities lie between `0.0867` and `0.1166`. An unadjusted 0.50 threshold is unreachable. Decoupling probability calibration from decision thresholding resolves this: applying the empirical base-rate cutoff ($\\tau = 0.10010$) captures 4,240 True Positives (52.95% Recall), while a Top 10% HR budget cutoff ($\\tau = 0.10226$) isolates 874 True Positives with 10.92% Precision (1.09× Lift).
+
+### Data Analysis Key Findings
+- **Rigorous Leakage-Safe Nested Validation:** The 5-fold outer cross-validation with 3-seed inner candidate search (`[42, 43, 44]`) across 20 randomized candidates (`R01`–`R20`) proved that hyperparameter optimization reaches an early plateau: inner-validation Logloss flattens within 15–57 trees, and deeper tree structures merely fit sample variance.
+- **Univariate & Permutation Signal Absence:** Every single feature has an individual ROC-AUC between `0.4908` and `0.5092` (near exact 0.50 chance). Out-of-fold permutation importance showed that shuffling any of the 17 predictors causes a negligible PR-AUC shift of $\\le 0.0004$. TreeSHAP attributions tightly cluster at $0.00 \\pm 0.02$.
+- **Class Imbalance & Weighting Dynamics:** Systematic ablations (E3a–E3d) demonstrated that artificial class weighting (`auto_class_weights='Balanced'` or `scale_pos_weight`) severely distorts predicted probabilities (inflating Brier error from `0.09008` to `0.24923`) without producing any statistically significant gain in PR-AUC. Unweighted loss combined with operational thresholding is the optimal strategy.
+- **Demographic Subgroup Consistency:** Classification metrics evaluated across subgroups (`Department`, `Gender`, `Education_Level`) remained within normal binomial sampling variance of the overall population prevalence ($0.093$–$0.111$ AP and $0.477$–$0.522$ ROC-AUC), with no evidence of disparate subgroup degradation.
+
+### Insights or Next Steps
+- **Honest Academic Negative Result:** The project's findings constitute a verified, leak-free negative result. In academic data science, proving that a static tabular feature set lacks predictive signal through nested cross-validation and hypothesis testing is a scientifically robust outcome that prevents deploying pseudo-predictive models into production HR workflows.
+- **Next Steps & Feature Acquisition:** Future iterations should not spend compute on deeper learners or excessive tuning. Instead, efforts must focus on acquiring high-signal, causal features: longitudinal snapshot records (tracking quarterly compensation ratio changes, manager turnover, promotion latency, and engagement survey sentiment trajectories) as outlined in `configs/longitudinal_snapshot_contract.yaml` and `docs/longitudinal_data_availability_report.md`.
 """)
 
 nb = nbf.v4.new_notebook()
@@ -485,3 +540,4 @@ nb["metadata"] = {"kernelspec": {"display_name": "Python 3", "language": "python
                   "language_info": {"name": "python"}}
 nbf.write(nb, NB)
 print(f"wrote {NB.relative_to(ROOT)} with {len(cells)} cells")
+
