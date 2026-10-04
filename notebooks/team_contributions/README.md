@@ -34,6 +34,14 @@ Regularized Logistic Regression demonstration belongs to IT24100879.
 reviews nested L2 tuning, calibration, coefficients and risk × value-proxy ranking.
 These demonstrations do not replace the assigned models or the shared PCA benchmark.
 
+`models/member_1_ft_transformer/11_IT25100142_MLP_extra.ipynb` is the supplementary MLP
+for IT25100142, stored alongside the FT-Transformer notebooks. It compares eight weighted/unweighted
+settings using inner AP selection and five fresh outer-fold refits (45 fits).
+It defaults to saved-result review, includes measured learning curves and a current
+six-model comparison, and writes explicit retraining to a new run directory.
+MLP remains supplementary; the six-model group registry is unchanged.
+Employee-level MLP predictions stay in a locally Git-excluded results directory.
+
 `reports/INDIVIDUAL_MODEL_EVIDENCE.md` collects compact comparison tables for all six members. The short paired preprocessing checks for Members 1, 2, 4 and 6 are exploratory and are clearly distinguished from their formal five-fold OOF results.
 
 Member 1's `models/member_1_ft_transformer/05_m1_ft_transformer.ipynb` contains the complete formal evaluation in 24 cells (12 Markdown and 12 code), with six inline figure groups and a compact file-derived historical summary. The executable companion `05_m1_ft_transformer_historical.ipynb` preserves all 15 historical code cells. Both default to saved review without training or artifact export. Explicit historical FT02 or formal nested repetitions write to isolated rerun directories; the group registry continues to use the canonical strict nested evidence.

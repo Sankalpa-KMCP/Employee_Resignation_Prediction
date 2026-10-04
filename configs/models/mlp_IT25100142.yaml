@@ -1,0 +1,21 @@
+model_name: MLP
+student_id: IT25100142
+role: supplementary
+seed: 42
+inner_validation_fraction: 0.15
+fixed:
+  activation: relu
+  solver: adam
+  batch_size: 512
+  max_epochs: 100
+  patience: 15
+  minimum_ap_improvement: 0.000001
+candidates:
+  - {candidate_id: M01, hidden_layers: [64], learning_rate: 0.001, alpha: 0.0001, weighting: none}
+  - {candidate_id: M02, hidden_layers: [64], learning_rate: 0.001, alpha: 0.0001, weighting: balanced}
+  - {candidate_id: M03, hidden_layers: [128, 64], learning_rate: 0.001, alpha: 0.0001, weighting: none}
+  - {candidate_id: M04, hidden_layers: [128, 64], learning_rate: 0.001, alpha: 0.0001, weighting: balanced}
+  - {candidate_id: M05, hidden_layers: [128, 64], learning_rate: 0.0001, alpha: 0.0001, weighting: none}
+  - {candidate_id: M06, hidden_layers: [128, 64], learning_rate: 0.0001, alpha: 0.0001, weighting: balanced}
+  - {candidate_id: M07, hidden_layers: [128, 64], learning_rate: 0.001, alpha: 0.001, weighting: none}
+  - {candidate_id: M08, hidden_layers: [128, 64], learning_rate: 0.001, alpha: 0.001, weighting: balanced}
