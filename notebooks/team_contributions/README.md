@@ -28,6 +28,11 @@ The verified Member 5 EBM contribution identifies IT25100429 as the standardizat
 
 Each member should be able to explain model suitability, implementation, tuning/variants, validation, metrics, comparison, limitations and code/output during the viva.
 
+Member 5 also has supplementary Decision Tree and standalone Regularized Logistic
+Regression demonstrations. `models/member_5_ebm/11_IT25100429_logistic_regression_extra.ipynb`
+reviews nested L2 tuning, calibration, coefficients and risk × value-proxy ranking.
+These demonstrations do not replace the assigned EBM or the shared PCA benchmark.
+
 `reports/INDIVIDUAL_MODEL_EVIDENCE.md` collects compact comparison tables for all six members. The short paired preprocessing checks for Members 1, 2, 4 and 6 are exploratory and are clearly distinguished from their formal five-fold OOF results.
 
 Member 1's `models/member_1_ft_transformer/05_m1_ft_transformer.ipynb` contains the complete formal evaluation in 28 cells, with eight aggregate figure groups. The executable companion `05_m1_ft_transformer_historical.ipynb` preserves all 15 historical code cells. Both default to saved review without training or artifact export. Explicit historical FT02 or formal nested repetitions write to isolated rerun directories; the group registry continues to use the canonical strict nested evidence.

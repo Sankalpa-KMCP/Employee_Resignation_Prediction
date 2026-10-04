@@ -271,6 +271,7 @@ data/processed/*
 # ============================================================
 
 # Temporary model-training and experiment outputs
+results/models/logistic_regression/individual_IT25100429/oof_predictions.csv
 results/tmp/
 results/temp/
 
