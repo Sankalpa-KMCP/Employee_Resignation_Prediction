@@ -25,7 +25,7 @@ from src.evaluation.oof_validation import validate_oof_predictions
 from src.prioritization.ranking import evaluate_ranking
 
 MODEL_NAME = "Regularized Logistic Regression"
-DIRECTORY = Path("results/models/logistic_regression/individual_IT25100429")
+DIRECTORY = Path("results/models/logistic_regression/individual_IT24100879")
 PROXY_FEATURES = ["Performance_Score", "Monthly_Salary", "Years_At_Company"]
 CANDIDATES = [
     {"candidate_id": f"L{i + 1:02d}", "C": c, "class_weight": weight}
@@ -177,9 +177,9 @@ def run(root):
     ax.axhline(1, color="gray", linestyle="--", label="Random expected lift")
     ax.set(xlabel="Review capacity", ylabel="Mean fold lift ± SD", title="Academic ranking demonstration")
     ax.legend(); fig.tight_layout(); fig.savefig(out / "ranking.png", dpi=150); plt.close(fig)
-    report = f"""# IT25100429 — supplementary Regularized Logistic Regression
+    report = f"""# IT24100879 — supplementary Regularized Logistic Regression
 
-Standalone L2 Logistic Regression without PCA; EBM remains the assigned model.
+Standalone L2 Logistic Regression without PCA, contributed by IT24100879.
 Uses the approved predictors and frozen five-fold development registry. All
 scaling and encoding are training-local. Ten C/weight candidates per outer fold
 are selected by minimum log loss on a stratified 15% inner validation split,
@@ -225,9 +225,9 @@ ignored by Git. The shared PCA benchmark and group registry are unchanged.
 ## Reproduction
 
 Run `python scripts/run_logistic_regression_experiment.py`, then Restart and Run All
-in `11_IT25100429_logistic_regression_extra.ipynb` (saved review by default).
+in `11_IT24100879_logistic_regression_extra.ipynb` (saved review by default).
 Runtime versions: scikit-learn {sklearn.__version__}, pandas {pd.__version__},
 NumPy {np.__version__}, Matplotlib {matplotlib.__version__}.
 """
-    (root / "reports/IT25100429_Logistic_Regression_Experiment.md").write_text(report, encoding="utf-8")
+    (root / "reports/IT24100879_Logistic_Regression_Experiment.md").write_text(report, encoding="utf-8")
     return summary

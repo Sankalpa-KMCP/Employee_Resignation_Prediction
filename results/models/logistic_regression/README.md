@@ -1,6 +1,6 @@
 # Supplementary Regularized Logistic Regression
 
-Standalone L2 Logistic Regression without PCA, supplementary to Member 5's EBM.
+Standalone L2 Logistic Regression without PCA, contribution by IT24100879.
 It uses the approved predictors and frozen five development folds. The group model
 registry and existing PCA benchmark retain their current roles.
 

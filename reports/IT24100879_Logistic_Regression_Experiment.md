@@ -1,6 +1,6 @@
-# IT25100429 — supplementary Regularized Logistic Regression
+# IT24100879 — supplementary Regularized Logistic Regression
 
-Standalone L2 Logistic Regression without PCA; EBM remains the assigned model.
+Standalone L2 Logistic Regression without PCA, contributed by IT24100879.
 Uses the approved predictors and frozen five-fold development registry. All
 scaling and encoding are training-local. Ten C/weight candidates per outer fold
 are selected by minimum log loss on a stratified 15% inner validation split,
@@ -46,7 +46,7 @@ ignored by Git. The shared PCA benchmark and group registry are unchanged.
 ## Reproduction
 
 Run `python scripts/run_logistic_regression_experiment.py`, then Restart and Run All
-in `11_IT25100429_logistic_regression_extra.ipynb` (saved review by default).
+in `11_IT24100879_logistic_regression_extra.ipynb` (saved review by default).
 Runtime versions: scikit-learn 1.9.1, pandas 3.0.6,
 NumPy 2.5.3, Matplotlib 3.11.2.
 
