@@ -1,357 +1,449 @@
 {
-  "1": {
+  "fold_1": {
     "winning_candidate": "C03",
     "winning_inner_ap": 0.10873711633916897,
     "selected_trees": 2,
-    "auto_class_weights": null,
-    "oof_prob_min": 0.4759355240906983,
-    "oof_prob_max": 0.4780618794701411,
-    "oof_prob_mean": 0.47646475791820264,
-    "oof_pred_pos_rate_05": 0.0,
-    "oof_ap": 0.10016477686114632,
-    "oof_roc": 0.5043236398321956,
-    "oof_brier": 0.2317281670924242,
-    "all_candidates": {
+    "candidates": {
       "C01": {
         "inner_ap": 0.10408214671845921,
+        "inner_roc_auc": 0.5162661063572149,
+        "brier_score": 0.17961268183127588,
         "selected_trees": 4,
         "auto_class_weights": null,
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C02": {
         "inner_ap": 0.10408216141722554,
+        "inner_roc_auc": 0.5051434706896911,
+        "brier_score": 0.24951307728450706,
         "selected_trees": 19,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C03": {
         "inner_ap": 0.10873711633916897,
+        "inner_roc_auc": 0.5196605573134151,
+        "brier_score": 0.22510416555081122,
         "selected_trees": 2,
         "auto_class_weights": null,
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C04": {
         "inner_ap": 0.10193896310141988,
+        "inner_roc_auc": 0.5058102916149076,
+        "brier_score": 0.24966448513342024,
         "selected_trees": 104,
         "auto_class_weights": "Balanced",
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C05": {
         "inner_ap": 0.10832778256451514,
+        "inner_roc_auc": 0.5065673309059092,
+        "brier_score": 0.0900960041160283,
         "selected_trees": 98,
         "auto_class_weights": null,
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C06": {
         "inner_ap": 0.10352081235510341,
+        "inner_roc_auc": 0.5113524576193506,
+        "brier_score": 0.2492316262812448,
         "selected_trees": 5,
         "auto_class_weights": "Balanced",
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C07": {
         "inner_ap": 0.10258295131474394,
+        "inner_roc_auc": 0.499316255602964,
+        "brier_score": 0.24987668153590153,
         "selected_trees": 7,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 10
       },
       "C08": {
         "inner_ap": 0.10499153514534681,
+        "inner_roc_auc": 0.5095793475345152,
+        "brier_score": 0.24807472646492482,
         "selected_trees": 62,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.1
+        "learning_rate": 0.1,
+        "l2_leaf_reg": 5
       }
     }
   },
-  "2": {
+  "fold_2": {
     "winning_candidate": "C03",
     "winning_inner_ap": 0.10673220514256758,
     "selected_trees": 2,
-    "auto_class_weights": null,
-    "oof_prob_min": 0.4759565145428927,
-    "oof_prob_max": 0.4782359693449995,
-    "oof_prob_mean": 0.4764662001163603,
-    "oof_pred_pos_rate_05": 0.0,
-    "oof_ap": 0.10446825201601771,
-    "oof_roc": 0.5115653418051318,
-    "oof_brier": 0.23172787591254268,
-    "all_candidates": {
+    "candidates": {
       "C01": {
         "inner_ap": 0.10222992138794856,
+        "inner_roc_auc": 0.5066378554094704,
+        "brier_score": 0.1937935131353182,
         "selected_trees": 3,
         "auto_class_weights": null,
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C02": {
         "inner_ap": 0.10269380802609902,
+        "inner_roc_auc": 0.5119789272060649,
+        "brier_score": 0.249916344849072,
         "selected_trees": 1,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C03": {
         "inner_ap": 0.10673220514256758,
+        "inner_roc_auc": 0.5209636646435188,
+        "brier_score": 0.22511569152653388,
         "selected_trees": 2,
         "auto_class_weights": null,
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C04": {
         "inner_ap": 0.10451352864448452,
+        "inner_roc_auc": 0.5128576829972349,
+        "brier_score": 0.2499665236486555,
         "selected_trees": 4,
         "auto_class_weights": "Balanced",
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C05": {
         "inner_ap": 0.10227530732438794,
+        "inner_roc_auc": 0.510441601435014,
+        "brier_score": 0.1673206718699178,
         "selected_trees": 5,
         "auto_class_weights": null,
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C06": {
         "inner_ap": 0.10337733566948151,
+        "inner_roc_auc": 0.5136668778988975,
+        "brier_score": 0.24981754593605796,
         "selected_trees": 1,
         "auto_class_weights": "Balanced",
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C07": {
         "inner_ap": 0.10591565846095091,
+        "inner_roc_auc": 0.5109735163927012,
+        "brier_score": 0.2499172073029463,
         "selected_trees": 7,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 10
       },
       "C08": {
         "inner_ap": 0.10437189064093436,
+        "inner_roc_auc": 0.5119233989462157,
+        "brier_score": 0.2493768152914012,
         "selected_trees": 6,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.1
+        "learning_rate": 0.1,
+        "l2_leaf_reg": 5
       }
     }
   },
-  "3": {
+  "fold_3": {
     "winning_candidate": "C07",
     "winning_inner_ap": 0.10972672147987868,
     "selected_trees": 7,
-    "auto_class_weights": "Balanced",
-    "oof_prob_min": 0.4897170129198391,
-    "oof_prob_max": 0.50777641258883,
-    "oof_prob_mean": 0.4999044631963993,
-    "oof_pred_pos_rate_05": 0.4796875,
-    "oof_ap": 0.09703251521218365,
-    "oof_roc": 0.4896343021008432,
-    "oof_brier": 0.24993252074172936,
-    "all_candidates": {
+    "candidates": {
       "C01": {
         "inner_ap": 0.10813841661094652,
+        "inner_roc_auc": 0.5091100674903238,
+        "brier_score": 0.21013339100374784,
         "selected_trees": 2,
         "auto_class_weights": null,
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C02": {
         "inner_ap": 0.10845184230144186,
+        "inner_roc_auc": 0.5212363674207388,
+        "brier_score": 0.2496688653902264,
         "selected_trees": 19,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C03": {
         "inner_ap": 0.10433252803870974,
+        "inner_roc_auc": 0.5032155800974671,
+        "brier_score": 0.22511996362878525,
         "selected_trees": 2,
         "auto_class_weights": null,
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C04": {
         "inner_ap": 0.10464497759502835,
+        "inner_roc_auc": 0.5126039513716986,
+        "brier_score": 0.2500154479875205,
         "selected_trees": 5,
         "auto_class_weights": "Balanced",
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C05": {
         "inner_ap": 0.10277291852904047,
+        "inner_roc_auc": 0.5101167430471332,
+        "brier_score": 0.21007702939275413,
         "selected_trees": 2,
         "auto_class_weights": null,
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C06": {
         "inner_ap": 0.10131211623719048,
+        "inner_roc_auc": 0.5064902417816067,
+        "brier_score": 0.248927172092321,
         "selected_trees": 29,
         "auto_class_weights": "Balanced",
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C07": {
         "inner_ap": 0.10972672147987868,
+        "inner_roc_auc": 0.5216608996373077,
+        "brier_score": 0.24995033076686413,
         "selected_trees": 7,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 10
       },
       "C08": {
         "inner_ap": 0.1043369163218254,
+        "inner_roc_auc": 0.5009529540733111,
+        "brier_score": 0.24908521861345265,
         "selected_trees": 41,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.1
+        "learning_rate": 0.1,
+        "l2_leaf_reg": 5
       }
     }
   },
-  "4": {
+  "fold_4": {
     "winning_candidate": "C04",
     "winning_inner_ap": 0.10436654646604583,
     "selected_trees": 1,
-    "auto_class_weights": "Balanced",
-    "oof_prob_min": 0.49673333227348265,
-    "oof_prob_max": 0.5021418929468371,
-    "oof_prob_mean": 0.4999925551791555,
-    "oof_pred_pos_rate_05": 0.8073125,
-    "oof_ap": 0.09966895222522612,
-    "oof_roc": 0.49588647091538407,
-    "oof_brier": 0.24999590538204575,
-    "all_candidates": {
+    "candidates": {
       "C01": {
         "inner_ap": 0.10123055572795678,
+        "inner_roc_auc": 0.5057012225491953,
+        "brier_score": 0.17966511499152374,
         "selected_trees": 4,
         "auto_class_weights": null,
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C02": {
         "inner_ap": 0.09873180327827291,
+        "inner_roc_auc": 0.5039627423444176,
+        "brier_score": 0.24977164528015636,
         "selected_trees": 19,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C03": {
         "inner_ap": 0.10416001969870035,
+        "inner_roc_auc": 0.5124891006216636,
+        "brier_score": 0.20378521327179328,
         "selected_trees": 4,
         "auto_class_weights": null,
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C04": {
         "inner_ap": 0.10436654646604583,
+        "inner_roc_auc": 0.5162433409751943,
+        "brier_score": 0.24998109048800085,
         "selected_trees": 1,
         "auto_class_weights": "Balanced",
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C05": {
         "inner_ap": 0.0971132174180996,
+        "inner_roc_auc": 0.4871777298192416,
+        "brier_score": 0.22878659847560973,
         "selected_trees": 1,
         "auto_class_weights": null,
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C06": {
         "inner_ap": 0.10197290063841616,
+        "inner_roc_auc": 0.5125820893778534,
+        "brier_score": 0.24777918609362112,
         "selected_trees": 34,
         "auto_class_weights": "Balanced",
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C07": {
         "inner_ap": 0.09816481552278306,
+        "inner_roc_auc": 0.5016448891898042,
+        "brier_score": 0.2499195595481665,
         "selected_trees": 3,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 10
       },
       "C08": {
         "inner_ap": 0.10111946043664868,
+        "inner_roc_auc": 0.5067666183374068,
+        "brier_score": 0.24943944888472552,
         "selected_trees": 20,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.1
+        "learning_rate": 0.1,
+        "l2_leaf_reg": 5
       }
     }
   },
-  "5": {
+  "fold_5": {
     "winning_candidate": "C05",
     "winning_inner_ap": 0.10677178229842339,
     "selected_trees": 67,
-    "auto_class_weights": null,
-    "oof_prob_min": 0.10052807720886237,
-    "oof_prob_max": 0.1530990794957761,
-    "oof_prob_mean": 0.11629548418045198,
-    "oof_pred_pos_rate_05": 0.0,
-    "oof_ap": 0.10211426472753651,
-    "oof_roc": 0.5039829016341048,
-    "oof_brier": 0.09038075471018464,
-    "all_candidates": {
+    "candidates": {
       "C01": {
         "inner_ap": 0.10285026993195244,
+        "inner_roc_auc": 0.5055187983636388,
+        "brier_score": 0.1938272956618138,
         "selected_trees": 3,
         "auto_class_weights": null,
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C02": {
         "inner_ap": 0.10345486260130057,
+        "inner_roc_auc": 0.49951674755202885,
+        "brier_score": 0.24974815552592985,
         "selected_trees": 14,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3
       },
       "C03": {
         "inner_ap": 0.10381668294760352,
+        "inner_roc_auc": 0.5028231482740648,
+        "brier_score": 0.20378159143124133,
         "selected_trees": 4,
         "auto_class_weights": null,
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C04": {
         "inner_ap": 0.09976443736728935,
+        "inner_roc_auc": 0.4984370180047673,
+        "brier_score": 0.24997883689474945,
         "selected_trees": 1,
         "auto_class_weights": "Balanced",
         "depth": 4,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 5
       },
       "C05": {
         "inner_ap": 0.10677178229842339,
+        "inner_roc_auc": 0.5157429843777686,
+        "brier_score": 0.09010324530969138,
         "selected_trees": 67,
         "auto_class_weights": null,
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C06": {
         "inner_ap": 0.10292015007990177,
+        "inner_roc_auc": 0.49543234893332144,
+        "brier_score": 0.24850606759673605,
         "selected_trees": 15,
         "auto_class_weights": "Balanced",
         "depth": 8,
-        "learning_rate": 0.05
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5
       },
       "C07": {
         "inner_ap": 0.10163247453346035,
+        "inner_roc_auc": 0.5013641763707621,
+        "brier_score": 0.24967133123833038,
         "selected_trees": 52,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.03
+        "learning_rate": 0.03,
+        "l2_leaf_reg": 10
       },
       "C08": {
         "inner_ap": 0.10000143960379371,
+        "inner_roc_auc": 0.4902266046854047,
+        "brier_score": 0.2497104816317947,
         "selected_trees": 2,
         "auto_class_weights": "Balanced",
         "depth": 6,
-        "learning_rate": 0.1
+        "learning_rate": 0.1,
+        "l2_leaf_reg": 5
       }
     }
-  }
+  },
+  "aggregation_rule": "argmax_mean_inner_ap_across_5_folds",
+  "aggregated_mean_inner_ap": {
+    "C01": 0.10370626207545271,
+    "C02": 0.10348289552486797,
+    "C03": 0.10555571043335003,
+    "C04": 0.10304569063485358,
+    "C05": 0.10345220162689331,
+    "C06": 0.10262066299601866,
+    "C07": 0.1036045242623634,
+    "C08": 0.10296424842970979
+  },
+  "selected_final_candidate": "C03"
 }

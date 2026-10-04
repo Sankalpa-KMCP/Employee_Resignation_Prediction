@@ -370,3 +370,6 @@ temp/
 REVIEW_MANIFEST.md
 REVIEW_REQUIREMENTS.txt
 REVIEW_*
+
+# Personal study guide (not for the repository)
+docs/PROJECT_STUDY_GUIDE.md

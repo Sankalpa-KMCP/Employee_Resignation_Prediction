@@ -1,17 +1,116 @@
-file_name,relative_path,size_bytes,exists,sha256,availability_note
-catboost_development_model.cbm,models\catboost\catboost_development_model.cbm,,False,,not available in this checkout
-metadata.json,models\catboost\metadata.json,,False,,not available in this checkout
-catboost_oof_predictions.csv,results\models\catboost\catboost_oof_predictions.csv,4098360,True,d9c8c7ff412e2a32867072382b0f9f0d2e6d9246f264c98e5454a09133f639c2,available in this checkout
-oof_predictions.csv,results\models\catboost\oof_predictions.csv,4178361,True,90f904cdf2d73e8f5c586c30dc849a976ab0ebf8ccefe5f487b3b6b31b8c1d1d,available in this checkout
-catboost_fold_metrics.csv,results\models\catboost\catboost_fold_metrics.csv,1176,True,eb8e116ef3624cc4c2105c6d2583ffe05396db7ac30c59a1d0ad33214d22ffa0,available in this checkout
-fold_metrics.csv,results\models\catboost\fold_metrics.csv,1182,True,d1794ce9e0f3206b2c71b1b6e15f20d080ed32b40b75e2a9c00ba3960dcf0177,available in this checkout
-catboost_summary_metrics.csv,results\models\catboost\catboost_summary_metrics.csv,674,True,09e707fd56820ed99577aee422e70e90018020efab35183fc108cd56e5288e9b,available in this checkout
-catboost_summary_metrics.json,results\models\catboost\catboost_summary_metrics.json,915,True,7ae1b9d4c3c4c392a99bc31a5a2059be75de8a960c304128460aa94cd7af7e41,available in this checkout
-catboost_run_metadata.json,results\models\catboost\catboost_run_metadata.json,2940,True,fcfb16a9c486ad3e67e38ec01d0691f1feca0f8fc197e2704fad730f0a32f9b7,available in this checkout
-catboost_confusion_matrix.csv,results\models\catboost\catboost_confusion_matrix.csv,98,True,dbf4fb10e4fab6c1e7d7eebaeb8fbc7b4902213f479fa4661754a5dd67319b6a,available in this checkout
-catboost_feature_importance.csv,results\models\catboost\catboost_feature_importance.csv,436,True,0721cfbb427f7a8f2fc296a7d63bc72a1488c74664cdab2bfd9f19e8e901877a,available in this checkout
-term_importances.csv,results\models\catboost\term_importances.csv,436,True,0721cfbb427f7a8f2fc296a7d63bc72a1488c74664cdab2bfd9f19e8e901877a,available in this checkout
-figure_01_catboost_feature_importance.png,results\models\catboost\figure_01_catboost_feature_importance.png,93995,True,bc1a52fce52f35070842a92d9e320638b25ed0ecd03555c38ef5dea3fa9bd0cc,available in this checkout
-figure_02_catboost_precision_recall_curves.png,results\models\catboost\figure_02_catboost_precision_recall_curves.png,47071,True,a21fce537bbe28c0e43355df3e67969f35f34a7591bd888be12d550de5fba8a2,available in this checkout
-figure_03_catboost_confusion_matrix.png,results\models\catboost\figure_03_catboost_confusion_matrix.png,33350,True,5e5a8c44ef8d61c9ce15d52fa151a976df9446ae3bf2a381e3b8ea442567a03c,available in this checkout
-catboost_runtime_efficiency.csv,results\models\catboost\catboost_runtime_efficiency.csv,179,True,c8c895429f2335bfc48dd8154cc56c68592e220dc0f9f7407ef6b7bbacce7a86,available in this checkout
+artifact_name,relative_path,size_bytes,exists
+catboost_baseline_benchmark.csv,results\models\catboost\catboost_baseline_benchmark.csv,1600,True
+catboost_calibrated_oof_predictions.csv,results\models\catboost\catboost_calibrated_oof_predictions.csv,5727682,True
+catboost_calibration_diagnostics.csv,results\models\catboost\catboost_calibration_diagnostics.csv,339,True
+catboost_confusion_matrix.csv,results\models\catboost\catboost_confusion_matrix.csv,98,True
+catboost_development_model.cbm,models\catboost\catboost_development_model.cbm,8096,True
+catboost_feature_audit.csv,results\models\catboost\catboost_feature_audit.csv,2776,True
+catboost_feature_importance.csv,results\models\catboost\catboost_feature_importance.csv,436,True
+catboost_fold_candidate_selection.csv,results\models\catboost\catboost_fold_candidate_selection.csv,3747,True
+catboost_fold_metrics.csv,results\models\catboost\catboost_fold_metrics.csv,1182,True
+catboost_fold_selection_evidence.json,results\models\catboost\catboost_fold_selection_evidence.json,13517,True
+catboost_leakage_safe_experiments.csv,results\models\catboost\catboost_leakage_safe_experiments.csv,2775,True
+catboost_oof_predictions.csv,results\models\catboost\catboost_oof_predictions.csv,4178361,True
+catboost_output_manifest.csv,results\models\catboost\catboost_output_manifest.csv,3333,True
+catboost_run_metadata.json,results\models\catboost\catboost_run_metadata.json,2903,True
+catboost_runtime_efficiency.csv,results\models\catboost\catboost_runtime_efficiency.csv,179,True
+catboost_summary_metrics.csv,results\models\catboost\catboost_summary_metrics.csv,3047,True
+catboost_summary_metrics.json,results\models\catboost\catboost_summary_metrics.json,3660,True
+catboost_threshold_analysis.csv,results\models\catboost\catboost_threshold_analysis.csv,1092,True
+figure_01_catboost_feature_importance.png,results\models\catboost\figure_01_catboost_feature_importance.png,99668,True
+figure_02_catboost_precision_recall_curves.png,results\models\catboost\figure_02_catboost_precision_recall_curves.png,72903,True
+figure_03_catboost_confusion_matrix.png,results\models\catboost\figure_03_catboost_confusion_matrix.png,47309,True
+figure_04_catboost_roc_curve.png,results\models\catboost\figure_04_catboost_roc_curve.png,109519,True
+figure_05_catboost_probability_distribution.png,results\models\catboost\figure_05_catboost_probability_distribution.png,117637,True
+figure_06_catboost_calibration_curve.png,results\models\catboost\figure_06_catboost_calibration_curve.png,94489,True
+figure_07_catboost_topk_lift_curve.png,results\models\catboost\figure_07_catboost_topk_lift_curve.png,79995,True
+figure_08_catboost_inner_learning_curves.png,results\models\catboost\figure_08_catboost_inner_learning_curves.png,164617,True
+figure_09_catboost_fold_score_distributions.png,results\models\catboost\figure_09_catboost_fold_score_distributions.png,78175,True
+figure_10_catboost_shap_values.png,results\models\catboost\figure_10_catboost_shap_values.png,94808,True
+fold_metrics.csv,results\models\catboost\fold_metrics.csv,1182,True
+metadata.json,models\catboost\metadata.json,2933,True
+model.cbm,models\catboost\model.cbm,8096,True
+oof_predictions.csv,results\models\catboost\oof_predictions.csv,4178361,True
+summary_metrics.json,results\models\catboost\summary_metrics.json,1362,True
+term_importances.csv,results\models\catboost\term_importances.csv,436,True
+audit_report.md,results\models\catboost\improvement\audit_report.md,12781,True
+baseline_snapshot.json,results\models\catboost\improvement\baseline_snapshot.json,4701,True
+experiment_log.csv,results\models\catboost\improvement\experiment_log.csv,8869,True
+experiment_state.json,results\models\catboost\improvement\experiment_state.json,484,True
+boot_delta_pr_vs_baseline_catboost.npy,results\models\catboost\improvement\final\boot_delta_pr_vs_baseline_catboost.npy,8128,True
+boot_delta_pr_vs_prior.npy,results\models\catboost\improvement\final\boot_delta_pr_vs_prior.npy,8128,True
+boot_delta_roc_vs_prior.npy,results\models\catboost\improvement\final\boot_delta_roc_vs_prior.npy,8128,True
+calibration_comparison.csv,results\models\catboost\improvement\final\calibration_comparison.csv,355,True
+figure_index.json,results\models\catboost\improvement\final\figure_index.json,1996,True
+fig_01_target_and_fold_balance.png,results\models\catboost\improvement\final\figures\fig_01_target_and_fold_balance.png,131585,True
+fig_02_nested_cv_layout.png,results\models\catboost\improvement\final\figures\fig_02_nested_cv_layout.png,73339,True
+fig_03_roc_curves.png,results\models\catboost\improvement\final\figures\fig_03_roc_curves.png,206266,True
+fig_04_pr_curves.png,results\models\catboost\improvement\final\figures\fig_04_pr_curves.png,123914,True
+fig_05_per_fold_metrics.png,results\models\catboost\improvement\final\figures\fig_05_per_fold_metrics.png,185546,True
+fig_06_bootstrap_delta_vs_prior.png,results\models\catboost\improvement\final\figures\fig_06_bootstrap_delta_vs_prior.png,145596,True
+fig_07_inner_learning_curves.png,results\models\catboost\improvement\final\figures\fig_07_inner_learning_curves.png,253144,True
+fig_08_candidate_comparison.png,results\models\catboost\improvement\final\figures\fig_08_candidate_comparison.png,81943,True
+fig_09_tree_count_ablation.png,results\models\catboost\improvement\final\figures\fig_09_tree_count_ablation.png,171346,True
+fig_10_reliability.png,results\models\catboost\improvement\final\figures\fig_10_reliability.png,155085,True
+fig_11_probability_by_class.png,results\models\catboost\improvement\final\figures\fig_11_probability_by_class.png,74420,True
+fig_12_gain_lift.png,results\models\catboost\improvement\final\figures\fig_12_gain_lift.png,268832,True
+fig_13_feature_importance.png,results\models\catboost\improvement\final\figures\fig_13_feature_importance.png,266303,True
+fig_14_shap_summary.png,results\models\catboost\improvement\final\figures\fig_14_shap_summary.png,834184,True
+fig_15_single_feature_signal.png,results\models\catboost\improvement\final\figures\fig_15_single_feature_signal.png,200088,True
+fig_16_permutation_test.png,results\models\catboost\improvement\final\figures\fig_16_permutation_test.png,78103,True
+fig_17_subgroups.png,results\models\catboost\improvement\final\figures\fig_17_subgroups.png,156936,True
+fold_metrics_all_models.csv,results\models\catboost\improvement\final\fold_metrics_all_models.csv,3401,True
+fold_metrics_catboost_final.csv,results\models\catboost\improvement\final\fold_metrics_catboost_final.csv,1028,True
+fold_selection_summary.csv,results\models\catboost\improvement\final\fold_selection_summary.csv,383,True
+importance_permutation_oof.csv,results\models\catboost\improvement\final\importance_permutation_oof.csv,1822,True
+importance_prediction_values_change.csv,results\models\catboost\improvement\final\importance_prediction_values_change.csv,1645,True
+inner_evidence_final.json,results\models\catboost\improvement\final\inner_evidence_final.json,828805,True
+metrics_summary.csv,results\models\catboost\improvement\final\metrics_summary.csv,3229,True
+oof_catboost_final.csv,results\models\catboost\improvement\final\oof_catboost_final.csv,4217212,True
+oof_dummy_most_frequent.csv,results\models\catboost\improvement\final\oof_dummy_most_frequent.csv,2951252,True
+oof_dummy_prior.csv,results\models\catboost\improvement\final\oof_dummy_prior.csv,2903252,True
+oof_logistic_regression.csv,results\models\catboost\improvement\final\oof_logistic_regression.csv,4218713,True
+paired_vs_dummy_prior.csv,results\models\catboost\improvement\final\paired_vs_dummy_prior.csv,4352,True
+permutation_null.csv,results\models\catboost\improvement\final\permutation_null.csv,647,True
+run_metadata.json,results\models\catboost\improvement\final\run_metadata.json,946,True
+shap_info.json,results\models\catboost\improvement\final\shap_info.json,51,True
+shap_sample_features.csv,results\models\catboost\improvement\final\shap_sample_features.csv,373234,True
+shap_values.npy,results\models\catboost\improvement\final\shap_values.npy,680128,True
+subgroup_Department.csv,results\models\catboost\improvement\final\subgroup_Department.csv,1236,True
+subgroup_Education_Level.csv,results\models\catboost\improvement\final\subgroup_Education_Level.csv,677,True
+subgroup_Gender.csv,results\models\catboost\improvement\final\subgroup_Gender.csv,547,True
+topk_all_models.csv,results\models\catboost\improvement\final\topk_all_models.csv,3305,True
+tree_count_ablation.csv,results\models\catboost\improvement\final\tree_count_ablation.csv,833,True
+univariate_scan.csv,results\models\catboost\improvement\final\univariate_scan.csv,3380,True
+verdict.json,results\models\catboost\improvement\final\verdict.json,612,True
+improvement_plan.md,results\models\catboost\improvement\improvement_plan.md,9700,True
+inner_evidence_E0_baseline.json,results\models\catboost\improvement\inner_evidence_E0_baseline.json,243078,True
+inner_evidence_E1.json,results\models\catboost\improvement\inner_evidence_E1.json,235288,True
+inner_evidence_E1b.json,results\models\catboost\improvement\inner_evidence_E1b.json,392996,True
+inner_evidence_E2.json,results\models\catboost\improvement\inner_evidence_E2.json,447454,True
+inner_evidence_E3a.json,results\models\catboost\improvement\inner_evidence_E3a.json,155310,True
+inner_evidence_E3b.json,results\models\catboost\improvement\inner_evidence_E3b.json,147478,True
+inner_evidence_E3c.json,results\models\catboost\improvement\inner_evidence_E3c.json,143929,True
+inner_evidence_E3d.json,results\models\catboost\improvement\inner_evidence_E3d.json,136895,True
+inner_evidence_E4.json,results\models\catboost\improvement\inner_evidence_E4.json,974017,True
+oof_E0_baseline.csv,results\models\catboost\improvement\oof_E0_baseline.csv,4178361,True
+oof_E1.csv,results\models\catboost\improvement\oof_E1.csv,4186862,True
+oof_E1b.csv,results\models\catboost\improvement\oof_E1b.csv,4221457,True
+oof_E2.csv,results\models\catboost\improvement\oof_E2.csv,4218994,True
+oof_E3a.csv,results\models\catboost\improvement\oof_E3a.csv,4221457,True
+oof_E3b.csv,results\models\catboost\improvement\oof_E3b.csv,4163581,True
+oof_E3c.csv,results\models\catboost\improvement\oof_E3c.csv,4194289,True
+oof_E3d.csv,results\models\catboost\improvement\oof_E3d.csv,4193839,True
+oof_E4.csv,results\models\catboost\improvement\oof_E4.csv,4217212,True
+baseline_comparison_before.csv,results\models\catboost\improvement\phase1\baseline_comparison_before.csv,2385,True
+determinism.json,results\models\catboost\improvement\phase1\determinism.json,529,True
+early_stopping_probe.csv,results\models\catboost\improvement\phase1\early_stopping_probe.csv,1466,True
+integrity.json,results\models\catboost\improvement\phase1\integrity.json,3598,True
+leakage.json,results\models\catboost\improvement\phase1\leakage.json,971,True
+oof_rerun_canonical_protocol.csv,results\models\catboost\improvement\phase1\oof_rerun_canonical_protocol.csv,4178361,True
+paired_vs_prior_before.csv,results\models\catboost\improvement\phase1\paired_vs_prior_before.csv,3074,True
+reconcile.json,results\models\catboost\improvement\phase1\reconcile.json,3831,True
+topk_before.csv,results\models\catboost\improvement\phase1\topk_before.csv,2445,True
+univariate_scan_all_columns.csv,results\models\catboost\improvement\phase1\univariate_scan_all_columns.csv,3380,True
+metadata.json,models\catboost\audit\metadata.json,624357,True
+model.cbm,models\catboost\audit\model.cbm,68088,True

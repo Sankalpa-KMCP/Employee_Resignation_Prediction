@@ -20,6 +20,37 @@ import pandas as pd
 from src.models.base import ModelAdapter
 
 
+def temporal_inner_split_indices(
+    snapshot_dates: Sequence[object], inner_val_fraction: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Create a strictly time-ordered inner split from outer-training rows.
+
+    Every returned training timestamp is earlier than every validation timestamp.
+    Date ties remain in one partition, so this function never lets simultaneous
+    snapshots leak across the early-stopping boundary.
+    """
+    if not 0.0 < inner_val_fraction < 1.0:
+        raise ValueError("inner_val_fraction must be strictly between 0 and 1.")
+    dates = pd.to_datetime(pd.Series(snapshot_dates), errors="raise", utc=True)
+    if dates.isna().any():
+        raise ValueError("snapshot_dates cannot contain missing timestamps.")
+    if len(dates) < 2 or dates.nunique() < 2:
+        raise ValueError("Temporal inner validation requires at least two distinct dates.")
+
+    desired_validation_rows = max(1, int(np.ceil(len(dates) * inner_val_fraction)))
+    unique_dates = np.sort(dates.unique())
+    candidates: list[tuple[int, pd.Timestamp]] = []
+    for boundary in unique_dates[1:]:
+        validation_count = int((dates >= boundary).sum())
+        candidates.append((abs(validation_count - desired_validation_rows), boundary))
+    _, boundary = min(candidates, key=lambda item: (item[0], item[1]))
+    train_indices = np.flatnonzero((dates < boundary).to_numpy())
+    validation_indices = np.flatnonzero((dates >= boundary).to_numpy())
+    if not len(train_indices) or not len(validation_indices):
+        raise ValueError("Unable to form non-empty strictly ordered temporal inner split.")
+    return train_indices, validation_indices
+
+
 class CatBoostAdapter:
     """CatBoost model adapter with native categorical handling and inner-validation tuning.
 
@@ -44,6 +75,9 @@ class CatBoostAdapter:
         early_stopping_rounds: int | None = None,
         refit_outer_train: bool | None = None,
         random_seed: int | None = None,
+        selection_metric: str | None = None,
+        inner_seeds: Sequence[int] | None = None,
+        final_seeds: Sequence[int] | None = None,
     ) -> None:
         """Resolve fixed or automatically selected candidates and training options without fitting.
 
@@ -61,6 +95,7 @@ class CatBoostAdapter:
         self._candidate_pool: list[dict[str, Any]] = []
         self.candidate_selection_time_seconds_: float = 0.0
         self.refit_time_seconds_: float = 0.0
+        self._models: list[Any] = []
 
         # Default categorical predictors from canonical feature contract
         self.categorical_features = (
@@ -176,10 +211,101 @@ class CatBoostAdapter:
             self.early_stopping_rounds = None
             self.refit_outer_train = False
 
+        # Optional protocol extensions (all off by default, so behaviour is unchanged):
+        #   selection_metric: inner criterion that ranks candidates (average_precision | roc_auc | log_loss)
+        #   inner_seeds: repeat the stratified inner split with each seed and average candidate scores
+        #   final_seeds: refit the winner with each seed on all outer-train rows and average probabilities
+        cfg_map = config if isinstance(config, Mapping) else {}
+        inner_cfg = cfg_map.get("inner_validation", {}) or {}
+        self.selection_metric = str(
+            selection_metric or inner_cfg.get("selection_metric") or "average_precision"
+        )
+        if self.selection_metric not in ("average_precision", "roc_auc", "log_loss"):
+            raise ValueError("selection_metric must be average_precision, roc_auc or log_loss.")
+        seeds = inner_seeds if inner_seeds is not None else inner_cfg.get("repeat_seeds")
+        self.inner_seeds = [int(x) for x in seeds] if seeds else None
+        fseeds = final_seeds if final_seeds is not None else (cfg_map.get("ensemble", {}) or {}).get("final_seeds")
+        self.final_seeds = [int(x) for x in fseeds] if fseeds else None
+
+        # GPU capability may be inspected by diagnostics, but diagnostics must
+        # not silently select it for fitting. CPU is the reproducible default.
+        self.params.setdefault("task_type", "CPU")
+        self.params.setdefault("thread_count", -1)
+        if str(self.params["task_type"]).upper() != "CPU":
+            raise ValueError(
+                "CatBoostAdapter supports CPU training only; GPU availability is "
+                "reported diagnostically and is not a training default."
+            )
+        try:
+            thread_count = int(self.params["thread_count"])
+        except (TypeError, ValueError) as exc:
+            raise ValueError("thread_count must be -1 or a positive integer.") from exc
+        if thread_count == 0 or thread_count < -1:
+            raise ValueError("thread_count must be -1 or a positive integer.")
+        self.params["thread_count"] = thread_count
+
+    def _selection_score(self, metrics: Mapping[str, float]) -> float:
+        """Higher-is-better inner score for the configured selection metric."""
+        if self.selection_metric == "log_loss":
+            return -float(metrics["log_loss"])
+        return float(metrics[self.selection_metric])
+
+    def _build_inner_splits(self, X_proc, y_arr, snapshot_dates):
+        """Inner train/validation partitions carved only from the supplied outer-training rows."""
+        if snapshot_dates is None:
+            from sklearn.model_selection import train_test_split
+
+            seeds = self.inner_seeds or [self.random_seed]
+            splits = []
+            for seed in seeds:
+                X_tr, X_val, y_tr, y_val = train_test_split(
+                    X_proc, y_arr, test_size=self.inner_val_fraction, stratify=y_arr, random_state=seed
+                )
+                splits.append((X_tr, X_val, y_tr, y_val))
+            return splits, "stratified_random_historical"
+        if len(snapshot_dates) != len(X_proc):
+            raise ValueError("snapshot_dates must align one-to-one with X rows.")
+        train_indices, validation_indices = temporal_inner_split_indices(
+            snapshot_dates, self.inner_val_fraction
+        )
+        y_tr, y_val = y_arr[train_indices], y_arr[validation_indices]
+        if len(np.unique(y_tr)) != 2 or len(np.unique(y_val)) != 2:
+            raise ValueError(
+                "Temporal inner training and validation partitions must each "
+                "contain both target classes for CatBoost candidate selection."
+            )
+        split = (X_proc.iloc[train_indices], X_proc.iloc[validation_indices], y_tr, y_val)
+        return [split], "strict_temporal_ordered"
+
+    def _fit_inner(self, params, split, cat_indices):
+        """Fit one early-stopped inner model; return (model, trees, metrics, evals_result)."""
+        from catboost import CatBoostClassifier
+        from sklearn.metrics import average_precision_score, brier_score_loss, log_loss, roc_auc_score
+
+        X_tr, X_val, y_tr, y_val = split
+        inner_params = copy.deepcopy(params)
+        inner_params.setdefault("random_seed", self.random_seed)
+        inner_params["early_stopping_rounds"] = self.early_stopping_rounds
+        inner_params["verbose"] = False
+        inner_params["allow_writing_files"] = False
+        model = CatBoostClassifier(**inner_params, cat_features=cat_indices)
+        model.fit(X_tr, y_tr, eval_set=(X_val, y_val), verbose=False)
+        best_iter = model.get_best_iteration()
+        trees = int(best_iter + 1) if best_iter is not None else int(model.tree_count_)
+        probs = model.predict_proba(X_val)[:, 1]
+        metrics = {
+            "average_precision": float(average_precision_score(y_val, probs)),
+            "roc_auc": float(roc_auc_score(y_val, probs)),
+            "brier": float(brier_score_loss(y_val, probs)),
+            "log_loss": float(log_loss(y_val, probs, labels=[0, 1])),
+        }
+        return model, trees, metrics, copy.deepcopy(model.get_evals_result())
+
     def fit(
         self,
         X: pd.DataFrame,
         y: pd.Series | np.ndarray,
+        snapshot_dates: Sequence[object] | None = None,
     ) -> CatBoostAdapter:
         """Fit CatBoost model on training fold data with strict nested inner tuning.
 
@@ -189,6 +315,11 @@ class CatBoostAdapter:
             Predictor columns for outer-training rows.
         y : pd.Series or np.ndarray
             Binary target values for outer-training rows.
+        snapshot_dates : sequence, optional
+            Snapshot dates aligned with ``X``. When supplied, CatBoost uses a
+            strictly earlier/later inner split for tuning and early stopping.
+            Historical static-data workflows omit this argument and retain their
+            existing stratified random inner split.
 
         Returns
         -------
@@ -202,6 +333,7 @@ class CatBoostAdapter:
                 "catboost is required for CatBoostAdapter. Install with pip install catboost."
             ) from exc
 
+        self._models = []
         self._feature_names = list(X.columns)
         cat_indices = [
             i
@@ -226,64 +358,88 @@ class CatBoostAdapter:
         )
 
         if use_inner_val:
-            from sklearn.metrics import average_precision_score
-            from sklearn.model_selection import train_test_split
-
-            # Stratified inner split derived strictly from rows supplied to fit()
-            X_in_tr, X_in_val, y_in_tr, y_in_val = train_test_split(
-                X_proc,
-                y_arr,
-                test_size=self.inner_val_fraction,
-                stratify=y_arr,
-                random_state=self.random_seed,
-            )
-
+            splits, inner_split_strategy = self._build_inner_splits(X_proc, y_arr, snapshot_dates)
+            X_in_tr, X_in_val = splits[0][0], splits[0][1]
             sel_start = time.perf_counter()
             # -------------------------------------------------------------
             # Sub-case: Inner Candidate Selection across Candidate Pool
             # -------------------------------------------------------------
             if self.candidate_id in ("auto", "tune") and self._candidate_pool:
-                best_ap = -1.0
+                best_score = -np.inf
                 best_cid = None
                 best_trees = None
-                candidate_evals = {}
+                best_ap = None
+                candidate_evals: dict[str, dict[str, Any]] = {}
 
                 for cand in self._candidate_pool:
                     cid = str(cand.get("id"))
                     cand_params = copy.deepcopy(cand.get("params", {}))
                     cand_full = copy.deepcopy(self.params)
                     cand_full.update(cand_params)
+                    if str(cand_full.get("task_type", "CPU")).upper() != "CPU":
+                        raise ValueError(
+                            f"Candidate {cid} requests non-CPU training; GPU is not "
+                            "permitted by the reproducible CatBoost protocol."
+                        )
                     cand_full.setdefault("random_seed", self.random_seed)
                     cand_full.setdefault("thread_count", -1)
-                    cand_full["early_stopping_rounds"] = self.early_stopping_rounds
-                    cand_full["verbose"] = False
-                    cand_full["allow_writing_files"] = False
 
-                    cand_clf = CatBoostClassifier(**cand_full, cat_features=cat_indices)
-                    cand_clf.fit(
-                        X_in_tr,
-                        y_in_tr,
-                        eval_set=(X_in_val, y_in_val),
-                        verbose=False,
-                    )
-
-                    c_iter = cand_clf.get_best_iteration()
-                    c_trees = (
-                        int(c_iter + 1)
-                        if c_iter is not None
-                        else int(cand_clf.tree_count_)
-                    )
-                    c_probs = cand_clf.predict_proba(X_in_val)[:, 1]
-                    c_ap = float(average_precision_score(y_in_val, c_probs))
+                    per_split = [
+                        self._fit_inner(cand_full, split, cat_indices)[1:] for split in splits
+                    ]
+                    trees_list = [t for t, _, _ in per_split]
+                    c_trees = int(round(float(np.median(trees_list))))
+                    mean_metrics = {
+                        k: float(np.mean([m[k] for _, m, _ in per_split]))
+                        for k in ("average_precision", "roc_auc", "brier", "log_loss")
+                    }
+                    c_ap = mean_metrics["average_precision"]
+                    c_score = self._selection_score(mean_metrics)
+                    c_evals = per_split[0][2]
 
                     candidate_evals[cid] = {
+                        "candidate_id": cid,
                         "ap_score": c_ap,
                         "inner_ap": c_ap,
+                        "inner_roc_auc": mean_metrics["roc_auc"],
+                        "inner_log_loss": mean_metrics["log_loss"],
+                        "brier_score": mean_metrics["brier"],
+                        "selection_metric": self.selection_metric,
+                        "selection_score": c_score,
+                        "n_inner_splits": len(splits),
                         "selected_trees": c_trees,
                         "selected_tree_count": c_trees,
+                        "depth": cand_params.get("depth"),
+                        "learning_rate": cand_params.get("learning_rate"),
+                        "l2_leaf_reg": cand_params.get("l2_leaf_reg"),
+                        "auto_class_weights": cand_params.get("auto_class_weights"),
+                        "class_weights": cand_params.get("class_weights"),
+                        "random_strength": cand_params.get("random_strength"),
+                        "bagging_temperature": cand_params.get("bagging_temperature"),
+                        "one_hot_max_size": cand_params.get("one_hot_max_size"),
+                        "early_stopping_rounds": self.early_stopping_rounds,
+                        "evals_result": c_evals,
                     }
 
-                    if c_ap > best_ap:
+                    is_better = False
+                    if best_cid is None:
+                        is_better = True
+                    elif c_score > best_score + 1e-6:
+                        is_better = True
+                    elif abs(c_score - best_score) <= 1e-6:
+                        # Documented tie-break: prefer lower depth, then higher l2_leaf_reg
+                        curr_depth = cand_params.get("depth", 6)
+                        best_depth = candidate_evals[best_cid].get("depth", 6)
+                        if curr_depth < best_depth:
+                            is_better = True
+                        elif curr_depth == best_depth:
+                            curr_l2 = cand_params.get("l2_leaf_reg", 3)
+                            best_l2 = candidate_evals[best_cid].get("l2_leaf_reg", 3)
+                            if curr_l2 > best_l2:
+                                is_better = True
+
+                    if is_better:
+                        best_score = c_score
                         best_ap = c_ap
                         best_cid = cid
                         best_trees = c_trees
@@ -298,13 +454,17 @@ class CatBoostAdapter:
 
                 self.candidate_selection_time_seconds_ = float(time.perf_counter() - sel_start)
                 self._inner_eval_results = {
-                    "metric": "average_precision",
+                    "metric": self.selection_metric,
                     "best_candidate_id": best_cid,
                     "best_inner_val_ap": best_ap,
+                    "best_inner_selection_score": best_score,
                     "selected_tree_count": best_trees,
+                    "tie_break_rule": "higher_inner_ap_then_lower_depth_then_higher_l2_then_candidate_id",
                     "all_candidates": candidate_evals,
                     "inner_train_size": len(X_in_tr),
                     "inner_val_size": len(X_in_val),
+                    "n_inner_splits": len(splits),
+                    "inner_split_strategy": inner_split_strategy,
                     "candidate_selection_time_seconds": self.candidate_selection_time_seconds_,
                 }
 
@@ -312,47 +472,50 @@ class CatBoostAdapter:
             # Sub-case: Single Candidate Early-Stopping Tuning
             # -------------------------------------------------------------
             else:
-                inner_params = copy.deepcopy(self.params)
-                inner_params.setdefault("random_seed", self.random_seed)
-                inner_params["early_stopping_rounds"] = self.early_stopping_rounds
-                inner_params["verbose"] = False
-                inner_params["allow_writing_files"] = False
-
-                inner_model = CatBoostClassifier(
-                    **inner_params, cat_features=cat_indices
+                inner_model, trees, metrics, inner_evals = self._fit_inner(
+                    self.params, splits[0], cat_indices
                 )
-                inner_model.fit(
-                    X_in_tr,
-                    y_in_tr,
-                    eval_set=(X_in_val, y_in_val),
-                    verbose=False,
-                )
-
                 best_iter = inner_model.get_best_iteration()
-                self.selected_tree_count_ = (
-                    int(best_iter + 1)
-                    if best_iter is not None
-                    else int(inner_model.tree_count_)
-                )
+                self.selected_tree_count_ = trees
+                ap_score = metrics["average_precision"]
+                roc_score = metrics["roc_auc"]
+                brier_score = metrics["brier"]
 
-                val_probs = inner_model.predict_proba(X_in_val)[:, 1]
-                ap_score = float(average_precision_score(y_in_val, val_probs))
                 self.candidate_selection_time_seconds_ = float(time.perf_counter() - sel_start)
                 self._inner_eval_results = {
                     "metric": "average_precision",
                     "inner_val_ap": ap_score,
+                    "inner_val_roc_auc": roc_score,
+                    "inner_val_brier": brier_score,
+                    "inner_val_log_loss": metrics["log_loss"],
                     "best_iteration": best_iter,
                     "selected_tree_count": self.selected_tree_count_,
+                    "tie_break_rule": "higher_inner_ap_then_lower_depth_then_higher_l2_then_candidate_id",
+                    "evals_result": inner_evals,
                     "all_candidates": {
                         self.candidate_id: {
+                            "candidate_id": self.candidate_id,
                             "ap_score": ap_score,
                             "inner_ap": ap_score,
+                            "inner_roc_auc": roc_score,
+                            "brier_score": brier_score,
                             "selected_trees": self.selected_tree_count_,
                             "selected_tree_count": self.selected_tree_count_,
+                            "depth": self.params.get("depth"),
+                            "learning_rate": self.params.get("learning_rate"),
+                            "l2_leaf_reg": self.params.get("l2_leaf_reg"),
+                            "auto_class_weights": self.params.get("auto_class_weights"),
+                            "class_weights": self.params.get("class_weights"),
+                            "random_strength": self.params.get("random_strength"),
+                            "bagging_temperature": self.params.get("bagging_temperature"),
+                            "one_hot_max_size": self.params.get("one_hot_max_size"),
+                            "early_stopping_rounds": self.early_stopping_rounds,
+                            "evals_result": inner_evals,
                         }
                     },
                     "inner_train_size": len(X_in_tr),
                     "inner_val_size": len(X_in_val),
+                    "inner_split_strategy": inner_split_strategy,
                     "candidate_selection_time_seconds": self.candidate_selection_time_seconds_,
                 }
 
@@ -369,10 +532,14 @@ class CatBoostAdapter:
                 refit_params["verbose"] = False
                 refit_params["allow_writing_files"] = False
 
-                final_model = CatBoostClassifier(
-                    **refit_params, cat_features=cat_indices
-                )
-                final_model.fit(X_proc, y_arr, verbose=False)
+                final_models = []
+                for seed in self.final_seeds or [refit_params["random_seed"]]:
+                    seed_params = {**refit_params, "random_seed": seed}
+                    member = CatBoostClassifier(**seed_params, cat_features=cat_indices)
+                    member.fit(X_proc, y_arr, verbose=False)
+                    final_models.append(member)
+                final_model = final_models[0]
+                self._models = final_models
                 self.refit_time_seconds_ = float(time.perf_counter() - refit_start)
                 self._inner_eval_results["refit_time_seconds"] = self.refit_time_seconds_
                 self._model = final_model
@@ -417,7 +584,8 @@ class CatBoostAdapter:
             if col in X_proc.columns:
                 X_proc[col] = X_proc[col].astype(str)
 
-        probs = self._model.predict_proba(X_proc)[:, 1]
+        members = self._models or [self._model]
+        probs = np.mean([m.predict_proba(X_proc)[:, 1] for m in members], axis=0)
         return np.asarray(probs, dtype=float)
 
     def get_feature_importance(self) -> np.ndarray:
@@ -430,7 +598,8 @@ class CatBoostAdapter:
         """
         if not self._fitted or self._model is None:
             raise RuntimeError("CatBoostAdapter is not fitted. Call fit() first.")
-        return np.asarray(self._model.get_feature_importance(), dtype=float)
+        members = self._models or [self._model]
+        return np.mean([m.get_feature_importance() for m in members], axis=0).astype(float)
 
     def save(self, directory: Path) -> dict[str, Any]:
         """Serialize model artifacts and metadata to directory."""
@@ -475,6 +644,12 @@ class CatBoostAdapter:
             categorical_features=meta.get("categorical_features"),
         )
 
+        model_filename = meta.get("model_file")
+        if model_filename and (directory / model_filename).exists():
+            model_file = directory / model_filename
+        elif (directory / "catboost_development_model.cbm").exists() and not model_file.exists():
+            model_file = directory / "catboost_development_model.cbm"
+
         if model_file.exists():
             model = CatBoostClassifier()
             model.load_model(str(model_file))
@@ -496,7 +671,14 @@ class CatBoostAdapter:
             "fitted_on_all_outer_rows": self._fitted_on_all_outer_rows,
             "inner_val_fraction": self.inner_val_fraction,
             "early_stopping_rounds": self.early_stopping_rounds,
+            "selection_metric": self.selection_metric,
+            "inner_seeds": self.inner_seeds,
+            "final_seeds": self.final_seeds,
             "refit_outer_train": self.refit_outer_train,
+            "configured_max_iterations": int(self.params.get("iterations", 600)),
+            "selected_best_iteration": int((self.selected_tree_count_ - 1) if self.selected_tree_count_ is not None else 0),
+            "final_fitted_tree_count": int(self.selected_tree_count_) if self.selected_tree_count_ is not None else None,
+            "tie_break_rule": "higher_inner_ap_then_lower_depth_then_higher_l2_then_candidate_id",
             "params": copy.deepcopy(self.params),
             "categorical_features": list(self.categorical_features),
             "feature_names": list(self._feature_names),
@@ -541,6 +723,10 @@ class CatBoostAdapter:
                 float(winning_inner_ap) if winning_inner_ap is not None else None
             ),
             "selected_tree_count": self.selected_tree_count_,
+            "configured_max_iterations": int(self.params.get("iterations", 600)),
+            "selected_best_iteration": int((self.selected_tree_count_ - 1) if self.selected_tree_count_ is not None else 0),
+            "final_fitted_tree_count": int(self.selected_tree_count_) if self.selected_tree_count_ is not None else None,
+            "tie_break_rule": "higher_inner_ap_then_lower_depth_then_higher_l2_then_candidate_id",
             "inner_train_rows": self._inner_eval_results.get("inner_train_size"),
             "inner_val_rows": self._inner_eval_results.get("inner_val_size"),
             "inner_validation_rows": self._inner_eval_results.get("inner_val_size"),
@@ -557,4 +743,3 @@ class CatBoostAdapter:
             "fitted_on_all_outer_rows": self._fitted_on_all_outer_rows,
         }
         return copy.deepcopy(evidence)
-

@@ -1,0 +1,63 @@
+contract:
+  name: employee_resignation_longitudinal_snapshot_contract
+  version: "1.0.0"
+  status: blocked_pending_longitudinal_source_data
+  target_horizon_days: 90
+
+row_grain:
+  description: One employee state as known at one snapshot_date.
+  required_columns:
+    - Employee_ID
+    - snapshot_date
+    - resignation_date
+    - resigned_within_90_days
+
+target:
+  name: resigned_within_90_days
+  construction: >
+    1 only when resignation_date is strictly after snapshot_date and on or before
+    snapshot_date plus 90 calendar days. Snapshots on or after resignation_date are excluded.
+  outcome_window_rule: snapshot_date plus 90 days must be no later than data_as_of_date.
+  target_construction_only_fields:
+    - resignation_date
+    - data_as_of_date
+  prohibited_feature_tokens:
+    - employee_id
+    - resigned
+    - resignation_date
+    - exit
+    - final_work
+    - last_work
+    - severance
+    - termination
+    - settlement
+    - notice_period
+
+availability:
+  rule: Every feature must have a documented availability timestamp at or before snapshot_date.
+  required_mapping: feature_availability_columns
+  examples:
+    Monthly_Salary: salary_effective_date
+    Performance_Score: performance_review_date
+    Employee_Satisfaction_Score: survey_response_date
+    Overtime_Hours: overtime_period_end_date
+
+temporal_evaluation:
+  historical_baseline: data/processed/split_registry.csv
+  new_registry_path: data/processed/longitudinal/v1/temporal_split_registry.csv
+  ordering_rule: Training periods precede validation periods, which precede the untouched holdout.
+  cv_rule: Expanding-window or rolling-origin folds only inside development periods.
+  holdout_rule: >
+    The final temporal holdout must not be used for feature engineering, tuning,
+    calibration, threshold selection, or model selection.
+
+required_future_sources:
+  - employee_snapshot_or_observation_date
+  - resignation_effective_date
+  - department_role_manager_team_location_history_with_effective_dates
+  - salary_history_with_effective_dates
+  - promotion_and_internal_mobility_history_with_effective_dates
+  - performance_history_with_review_dates
+  - satisfaction_or_engagement_history_with_response_dates
+  - overtime_workload_leave_absence_history_with_period_end_dates
+  - training_history_with_completion_dates

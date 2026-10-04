@@ -19,6 +19,21 @@ from src.evaluation.oof_validation import validate_oof_predictions
 from src.models.base import ModelAdapter, OOFResult
 
 
+# A future feature-contract edit cannot override this semantic guard. These
+# labels describe information only known at or after employment separation.
+POST_OUTCOME_FEATURE_TOKENS = (
+    "exit",
+    "final_work",
+    "last_work",
+    "severance",
+    "termination",
+    "settlement",
+    "resignation_reason",
+    "notice_period",
+    "left_date",
+)
+
+
 def run_5fold_cv(
     adapter_factory: Callable[[], ModelAdapter],
     data: pd.DataFrame,
@@ -106,6 +121,16 @@ def run_5fold_cv(
     leaked_features = forbidden.intersection(feature_cols)
     if leaked_features:
         raise ValueError(f"Forbidden predictor columns: {sorted(leaked_features)}")
+    post_outcome_features = [
+        feature
+        for feature in feature_cols
+        if any(token in feature.lower() for token in POST_OUTCOME_FEATURE_TOKENS)
+    ]
+    if post_outcome_features:
+        raise ValueError(
+            "Potential post-outcome predictor columns are prohibited: "
+            f"{sorted(post_outcome_features)}"
+        )
 
     required_registry_cols = {id_col, partition_col, fold_col}
     missing_registry_cols = required_registry_cols - set(split_registry.columns)

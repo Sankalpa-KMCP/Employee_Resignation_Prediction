@@ -1,4 +1,15 @@
-Experiment,PR_AUC,ROC_AUC,Brier_Score,Balanced_Acc_05,Pred_Pos_Rate_05,Prob_Min,Prob_Mean,Prob_Max
-"Exp 1: Conservative Unweighted (C03, depth=4, lr=0.03, l2=5, unweighted)",0.10046,0.499683,0.09047,0.5,0.0,0.1125,0.1198,0.1295
-"Exp 2: Conservative Balanced (C04, depth=4, lr=0.03, l2=5, Balanced)",0.100215,0.499755,0.24956,0.49905,0.5236,0.4496,0.4994,0.5269
-"Exp 3: Baseline Unweighted (C01, depth=6, lr=0.05, l2=3, unweighted)",0.099761,0.498695,0.090109,0.5,0.0,0.0827,0.1027,0.1305
+experiment,pr_auc,roc_auc,brier_score,log_loss,balanced_acc_05,pred_pos_rate_05,prob_min,prob_mean,prob_max,methodological_note
+"Exp 1: Baseline Unweighted (C01, depth=6, lr=0.05, l2=3, unweighted)",0.099761,0.498695,0.090109,0.325455,0.5,0.0,0.0827,0.1027,0.1305,Standard default candidate
+"Exp 2: Balanced Standard (C02, depth=6, lr=0.05, l2=3, Balanced)",0.099864,0.49854,0.248311,0.689761,0.497094,0.4729,0.3988,0.4976,0.5671,Inverse class frequency weighting
+"Exp 3: Conservative Unweighted (C03, depth=4, lr=0.03, l2=5, unweighted)",0.10046,0.499683,0.09047,0.327245,0.5,0.0,0.1125,0.1198,0.1295,Selected final model configuration
+"Exp 4: Conservative Balanced (C04, depth=4, lr=0.03, l2=5, Balanced)",0.100215,0.499755,0.24956,0.692267,0.49905,0.5236,0.4496,0.4994,0.5269,Conservative depth with class balance
+"Exp 5: Regularized Deep Unweighted (C05, depth=8, lr=0.05, l2=10, unweighted)",0.100475,0.499184,0.09016,0.325713,0.5,0.0,0.0824,0.1046,0.1589,Higher depth with heavy L2 leaf regularization
+"Exp 6: Manual Class Weight Alternative (depth=4, lr=0.03, l2=5, scale_pos_weight=3.0)",0.100025,0.496946,0.116365,0.407642,0.5,0.0,0.2386,0.2621,0.2846,Square-root prevalence balancing (sqrt(8.99) ~ 3.0)
+"Exp 7: Engineered Features Nested OOF (depth=4, lr=0.03, l2=5, unweighted)",0.100606,0.499485,0.09018,0.325824,0.5,0.0,0.0956,0.1098,0.1252,"6 non-leaky engineered tenure, workload & interaction features"
+"Exp 8: Shuffled-Target Sanity Check (depth=4, lr=0.03, l2=5, unweighted)",0.098009,0.49297,0.090479,0.327286,0.5,0.0,0.1127,0.1198,0.1284,Sanity check: permuted target (true zero-signal baseline)
+"Exp 9a: Fixed Trees = 2 (depth=4, lr=0.03, l2=5, unweighted)",0.100882,0.503641,0.231731,0.656583,0.5,0.0,0.2241,0.2468,0.2709,Fixed 2 trees ablation: noise fitting peak on inner fold
+"Exp 9b: Fixed Trees = 10 (depth=4, lr=0.03, l2=5, unweighted)",0.102028,0.507497,0.177391,0.545926,0.5,0.0,0.1652,0.1874,0.2145,Fixed 10 trees ablation: transient AP fluctuation within noise band
+"Exp 9c: Fixed Trees = 25 (depth=4, lr=0.03, l2=5, unweighted)",0.101593,0.501699,0.125413,0.430343,0.5,0.0,0.1235,0.1421,0.1689,Fixed 25 trees ablation: ROC-AUC collapses toward 0.50
+"Exp 9d: Fixed Trees = 50 (depth=4, lr=0.03, l2=5, unweighted)",0.101722,0.50151,0.097922,0.355083,0.5,0.0,0.0984,0.1189,0.1456,Fixed 50 trees ablation: probabilities shrink toward base rate
+"Exp 9e: Fixed Trees = 100 (depth=4, lr=0.03, l2=5, unweighted)",0.10046,0.499683,0.09047,0.327245,0.5,0.0,0.1125,0.1198,0.1295,Fixed 100 trees ablation: indistinguishable from random prior
+"Exp 9f: Fixed Trees = 300 (depth=4, lr=0.03, l2=5, unweighted)",0.100004,0.499218,0.0901,0.325416,0.5,0.0,0.0912,0.1004,0.1123,Fixed 300 trees ablation: complete convergence to constant base rate

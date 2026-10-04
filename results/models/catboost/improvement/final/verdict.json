@@ -1,0 +1,18 @@
+{
+  "calibration_choice_rule": "lowest cross-fitted pooled log loss, then Brier",
+  "calibration_choice": "CatBoost (platt)",
+  "practical_effect_threshold": 0.01,
+  "final_raw_vs_baseline_raw": {
+    "delta_pr_auc_ci": [
+      0.00013529390543743497,
+      0.0055049586461968355
+    ],
+    "delta_roc_auc_ci": [
+      -0.00446321481284906,
+      0.012263632522883539
+    ]
+  },
+  "n_bootstrap": 1000,
+  "bootstrap_seed": 42,
+  "verdict_rule": "better only if the 95% paired-bootstrap lower bound of delta PR-AUC and delta ROC-AUC vs Dummy prior is > 0 AND both point differences >= threshold"
+}

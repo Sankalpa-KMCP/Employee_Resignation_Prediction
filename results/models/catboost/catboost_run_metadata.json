@@ -1,95 +1,104 @@
 {
-    "name": "CatBoost Classifier",
-    "model_id": "catboost",
-    "candidate_id": "C03",
-    "fitted": true,
+  "name": "CatBoost Classifier",
+  "model_id": "catboost",
+  "candidate_id": "C03",
+  "fitted": true,
+  "selected_tree_count": 2,
+  "fitted_on_all_outer_rows": true,
+  "inner_val_fraction": 0.15,
+  "early_stopping_rounds": 50,
+  "refit_outer_train": true,
+  "params": {
+    "loss_function": "Logloss",
+    "eval_metric": "PRAUC",
+    "random_seed": 42,
+    "thread_count": -1,
+    "verbose": false,
+    "allow_writing_files": false,
+    "iterations": 600,
+    "depth": 4,
+    "learning_rate": 0.03,
+    "l2_leaf_reg": 5,
+    "auto_class_weights": null,
+    "configured_max_iterations": 600,
+    "selected_best_iteration": 1,
     "selected_tree_count": 2,
-    "fitted_on_all_outer_rows": true,
-    "inner_val_fraction": 0.15,
-    "early_stopping_rounds": 50,
-    "refit_outer_train": true,
-    "params": {
-        "loss_function": "Logloss",
-        "eval_metric": "PRAUC",
-        "random_seed": 42,
-        "thread_count": -1,
-        "verbose": false,
-        "allow_writing_files": false,
-        "iterations": 600,
-        "depth": 4,
-        "learning_rate": 0.03,
-        "l2_leaf_reg": 5,
-        "auto_class_weights": null
+    "final_fitted_tree_count": 2
+  },
+  "categorical_features": [
+    "Department",
+    "Gender",
+    "Job_Title",
+    "Education_Level"
+  ],
+  "feature_names": [
+    "Department",
+    "Gender",
+    "Job_Title",
+    "Education_Level",
+    "Age",
+    "Years_At_Company",
+    "Performance_Score",
+    "Monthly_Salary",
+    "Work_Hours_Per_Week",
+    "Projects_Handled",
+    "Overtime_Hours",
+    "Sick_Days",
+    "Remote_Work_Frequency",
+    "Team_Size",
+    "Training_Hours",
+    "Promotions",
+    "Employee_Satisfaction_Score"
+  ],
+  "candidate_selection_time_seconds": 5.883883700000297,
+  "refit_time_seconds": 0.3206973000051221,
+  "inner_evaluation": {
+    "metric": "average_precision",
+    "inner_val_ap": 0.10491027197859845,
+    "best_iteration": 1,
+    "selected_tree_count": 2,
+    "all_candidates": {
+      "C03": {
+        "ap_score": 0.10491027197859845,
+        "inner_ap": 0.10491027197859845,
+        "selected_trees": 2,
+        "selected_tree_count": 2
+      }
     },
-    "categorical_features": [
-        "Department",
-        "Gender",
-        "Job_Title",
-        "Education_Level"
-    ],
-    "feature_names": [
-        "Department",
-        "Gender",
-        "Job_Title",
-        "Education_Level",
-        "Age",
-        "Years_At_Company",
-        "Performance_Score",
-        "Monthly_Salary",
-        "Work_Hours_Per_Week",
-        "Projects_Handled",
-        "Overtime_Hours",
-        "Sick_Days",
-        "Remote_Work_Frequency",
-        "Team_Size",
-        "Training_Hours",
-        "Promotions",
-        "Employee_Satisfaction_Score"
-    ],
+    "inner_train_size": 68000,
+    "inner_val_size": 12000,
+    "candidate_selection_time_seconds": 5.883883700000297,
+    "refit_time_seconds": 0.3206973000051221
+  },
+  "selection_evidence": {
+    "winning_candidate_id": "C03",
+    "winning_candidate": "C03",
+    "candidate_id": "C03",
+    "winning_inner_ap": 0.10491027197859845,
+    "selected_tree_count": 2,
+    "inner_train_rows": 68000,
+    "inner_val_rows": 12000,
+    "inner_validation_rows": 12000,
+    "inner_val_fraction": 0.15,
+    "inner_validation_fraction": 0.15,
+    "random_seed": 42,
+    "selected_class_weight": null,
+    "all_candidates": {
+      "C03": {
+        "ap_score": 0.10491027197859845,
+        "inner_ap": 0.10491027197859845,
+        "selected_trees": 2,
+        "selected_tree_count": 2
+      }
+    },
     "candidate_selection_time_seconds": 5.883883700000297,
     "refit_time_seconds": 0.3206973000051221,
-    "inner_evaluation": {
-        "metric": "average_precision",
-        "inner_val_ap": 0.10491027197859845,
-        "best_iteration": 1,
-        "selected_tree_count": 2,
-        "all_candidates": {
-            "C03": {
-                "ap_score": 0.10491027197859845,
-                "inner_ap": 0.10491027197859845,
-                "selected_trees": 2,
-                "selected_tree_count": 2
-            }
-        },
-        "inner_train_size": 68000,
-        "inner_val_size": 12000,
-        "candidate_selection_time_seconds": 5.883883700000297,
-        "refit_time_seconds": 0.3206973000051221
-    },
-    "selection_evidence": {
-        "winning_candidate_id": "C03",
-        "winning_candidate": "C03",
-        "candidate_id": "C03",
-        "winning_inner_ap": 0.10491027197859845,
-        "selected_tree_count": 2,
-        "inner_train_rows": 68000,
-        "inner_val_rows": 12000,
-        "inner_validation_rows": 12000,
-        "inner_val_fraction": 0.15,
-        "inner_validation_fraction": 0.15,
-        "random_seed": 42,
-        "selected_class_weight": null,
-        "all_candidates": {
-            "C03": {
-                "ap_score": 0.10491027197859845,
-                "inner_ap": 0.10491027197859845,
-                "selected_trees": 2,
-                "selected_tree_count": 2
-            }
-        },
-        "candidate_selection_time_seconds": 5.883883700000297,
-        "refit_time_seconds": 0.3206973000051221,
-        "metric": "average_precision",
-        "fitted_on_all_outer_rows": true
-    }
+    "metric": "average_precision",
+    "fitted_on_all_outer_rows": true
+  },
+  "selected_candidate_id": "C03",
+  "configured_max_iterations": 600,
+  "selected_best_iteration": 1,
+  "final_fitted_tree_count": 2,
+  "training_timestamp": "2026-10-04T02:23:48.274821"
 }

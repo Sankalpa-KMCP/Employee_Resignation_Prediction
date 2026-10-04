@@ -1,0 +1,18 @@
+feature_name,feature_type,missing_rate,unique_values,primary_association_metric,association_value,spearman_rho,p_value,mean_stayed,std_stayed,mean_resigned,std_resigned,fold_support_min_count,signal_verdict
+Age,numerical,0.0,39,Pearson r = +0.0018,0.00176,0.00176,0.6195873017098238,41.016,11.236,41.081,11.236,N/A,No Significant Out-of-Sample Signal
+Years_At_Company,numerical,0.0,11,Pearson r = -0.0004,-0.00043,-0.00044,0.9025856407746258,4.478,2.87,4.473,2.87,N/A,No Significant Out-of-Sample Signal
+Performance_Score,numerical,0.0,5,Pearson r = -0.0045,-0.00453,-0.00453,0.19974011800760605,2.999,1.413,2.978,1.415,N/A,No Significant Out-of-Sample Signal
+Monthly_Salary,numerical,0.0,28,Pearson r = -0.0002,-0.00017,-0.00018,0.9615928610648965,6404.119,1371.954,6403.34,1369.303,N/A,No Significant Out-of-Sample Signal
+Work_Hours_Per_Week,numerical,0.0,31,Pearson r = +0.0008,0.00078,0.00076,0.8261175698081688,44.943,8.93,44.966,9.034,N/A,No Significant Out-of-Sample Signal
+Projects_Handled,numerical,0.0,50,Pearson r = -0.0011,-0.00112,-0.00111,0.7505680130963596,24.456,14.464,24.402,14.347,N/A,No Significant Out-of-Sample Signal
+Overtime_Hours,numerical,0.0,30,Pearson r = +0.0009,0.0009,0.0009,0.7992956523532206,14.514,8.662,14.54,8.66,N/A,No Significant Out-of-Sample Signal
+Sick_Days,numerical,0.0,15,Pearson r = -0.0000,-5e-05,-2e-05,0.9896092309228154,7.011,4.33,7.01,4.336,N/A,No Significant Out-of-Sample Signal
+Remote_Work_Frequency,numerical,0.0,5,Pearson r = +0.0098,0.0098,0.00981,0.005553150504151586,49.922,35.391,51.077,35.207,N/A,Weak Correlation (Artifact |r| < 0.01)
+Team_Size,numerical,0.0,19,Pearson r = +0.0014,0.00135,0.00135,0.7019396381914632,9.991,5.503,10.016,5.493,N/A,No Significant Out-of-Sample Signal
+Training_Hours,numerical,0.0,100,Pearson r = +0.0012,0.00118,0.00117,0.7378232903540929,49.528,28.874,49.642,28.728,N/A,No Significant Out-of-Sample Signal
+Promotions,numerical,0.0,3,Pearson r = +0.0003,0.00029,0.00029,0.9356070594535361,1.0,0.816,1.001,0.819,N/A,No Significant Out-of-Sample Signal
+Employee_Satisfaction_Score,numerical,0.0,401,Pearson r = -0.0039,-0.00389,-0.00386,0.2712767934014771,3.0,1.149,2.986,1.152,N/A,No Significant Out-of-Sample Signal
+Department,categorical,0.0,9,Cramér's V = 0.0120,0.01197,N/A,0.1772099246503889,N/A,N/A,N/A,N/A,1664,No Significant Out-of-Sample Signal
+Gender,categorical,0.0,3,Cramér's V = 0.0022,0.00225,N/A,0.817173436283636,N/A,N/A,N/A,N/A,593,No Significant Out-of-Sample Signal
+Job_Title,categorical,0.0,7,Cramér's V = 0.0085,0.00845,N/A,0.45561183602917354,N/A,N/A,N/A,N/A,2216,No Significant Out-of-Sample Signal
+Education_Level,categorical,0.0,4,Cramér's V = 0.0012,0.00124,N/A,0.9890300724549318,N/A,N/A,N/A,N/A,784,No Significant Out-of-Sample Signal

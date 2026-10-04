@@ -1,0 +1,19 @@
+{
+  "fig_01_target_and_fold_balance": "results\\models\\catboost\\improvement\\final\\figures\\fig_01_target_and_fold_balance.png",
+  "fig_02_nested_cv_layout": "results\\models\\catboost\\improvement\\final\\figures\\fig_02_nested_cv_layout.png",
+  "fig_03_roc_curves": "results\\models\\catboost\\improvement\\final\\figures\\fig_03_roc_curves.png",
+  "fig_04_pr_curves": "results\\models\\catboost\\improvement\\final\\figures\\fig_04_pr_curves.png",
+  "fig_05_per_fold_metrics": "results\\models\\catboost\\improvement\\final\\figures\\fig_05_per_fold_metrics.png",
+  "fig_06_bootstrap_delta_vs_prior": "results\\models\\catboost\\improvement\\final\\figures\\fig_06_bootstrap_delta_vs_prior.png",
+  "fig_07_inner_learning_curves": "results\\models\\catboost\\improvement\\final\\figures\\fig_07_inner_learning_curves.png",
+  "fig_08_candidate_comparison": "results\\models\\catboost\\improvement\\final\\figures\\fig_08_candidate_comparison.png",
+  "fig_09_tree_count_ablation": "results\\models\\catboost\\improvement\\final\\figures\\fig_09_tree_count_ablation.png",
+  "fig_10_reliability": "results\\models\\catboost\\improvement\\final\\figures\\fig_10_reliability.png",
+  "fig_11_probability_by_class": "results\\models\\catboost\\improvement\\final\\figures\\fig_11_probability_by_class.png",
+  "fig_12_gain_lift": "results\\models\\catboost\\improvement\\final\\figures\\fig_12_gain_lift.png",
+  "fig_13_feature_importance": "results\\models\\catboost\\improvement\\final\\figures\\fig_13_feature_importance.png",
+  "fig_14_shap_summary": "results\\models\\catboost\\improvement\\final\\figures\\fig_14_shap_summary.png",
+  "fig_15_single_feature_signal": "results\\models\\catboost\\improvement\\final\\figures\\fig_15_single_feature_signal.png",
+  "fig_16_permutation_test": "results\\models\\catboost\\improvement\\final\\figures\\fig_16_permutation_test.png",
+  "fig_17_subgroups": "results\\models\\catboost\\improvement\\final\\figures\\fig_17_subgroups.png"
+}

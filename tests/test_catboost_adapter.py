@@ -12,7 +12,7 @@ import pandas as pd
 import pytest
 
 from src.models.base import ModelAdapter
-from src.models.catboost_model import CatBoostAdapter
+from src.models.catboost_model import CatBoostAdapter, temporal_inner_split_indices
 from src.models.config import (
     _detect_unresolved_placeholders,
     load_model_config,
@@ -154,6 +154,27 @@ def test_catboost_outer_validation_never_used_internally():
     assert "eval_set" not in params, "CatBoostAdapter.fit must not expose an eval_set argument."
     assert "X_val" not in params, "CatBoostAdapter.fit must not expose an X_val argument."
     assert "y_val" not in params, "CatBoostAdapter.fit must not expose an y_val argument."
+
+
+def test_temporal_inner_split_is_strictly_earlier_than_validation():
+    """Temporal tuning must not mix a snapshot date across train and validation."""
+    dates = pd.Series([
+        "2026-01-01", "2026-01-01", "2026-02-01", "2026-02-01", "2026-03-01",
+        "2026-03-01", "2026-04-01", "2026-04-01", "2026-05-01", "2026-05-01",
+    ])
+    train_idx, validation_idx = temporal_inner_split_indices(dates, 0.30)
+    parsed = pd.to_datetime(dates, utc=True)
+    assert parsed.iloc[train_idx].max() < parsed.iloc[validation_idx].min()
+    assert set(train_idx).isdisjoint(validation_idx)
+    assert len(train_idx) + len(validation_idx) == len(dates)
+
+
+def test_temporal_inner_split_rejects_missing_or_single_timestamp():
+    """A time-aware model must fail closed when chronology cannot be proven."""
+    with pytest.raises(ValueError, match="missing"):
+        temporal_inner_split_indices(["2026-01-01", None], 0.20)
+    with pytest.raises(ValueError, match="distinct dates"):
+        temporal_inner_split_indices(["2026-01-01", "2026-01-01"], 0.20)
 
 
 def test_catboost_selected_tree_count_captured(catboost_raw_config: dict, synthetic_mixed_data):
@@ -363,4 +384,3 @@ def test_catboost_selection_evidence_multi_candidate_tuning(
     assert evidence["inner_train_rows"] + evidence["inner_val_rows"] == len(X)
     assert evidence["inner_val_fraction"] == 0.20
     assert evidence["fitted_on_all_outer_rows"] is True
-

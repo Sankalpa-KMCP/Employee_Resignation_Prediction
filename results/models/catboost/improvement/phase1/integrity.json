@@ -1,0 +1,160 @@
+{
+  "n_dev_rows": 80000,
+  "n_holdout_registry_ids": 20000,
+  "id_overlap_dev_holdout": 0,
+  "dev_ids_equal_loaded_ids": true,
+  "fold_sizes": {
+    "1": 16000,
+    "2": 16000,
+    "3": 16000,
+    "4": 16000,
+    "5": 16000
+  },
+  "fold_positive_rate": {
+    "1": 0.1000625,
+    "2": 0.1000625,
+    "3": 0.100125,
+    "4": 0.100125,
+    "5": 0.100125
+  },
+  "overall_positive_rate": 0.1001,
+  "duplicate_employee_ids": 0,
+  "missing_values_predictors": 0,
+  "dtypes": {
+    "Department": "str",
+    "Gender": "str",
+    "Job_Title": "str",
+    "Education_Level": "str",
+    "Age": "int64",
+    "Years_At_Company": "int64",
+    "Performance_Score": "int64",
+    "Monthly_Salary": "float64",
+    "Work_Hours_Per_Week": "int64",
+    "Projects_Handled": "int64",
+    "Overtime_Hours": "int64",
+    "Sick_Days": "int64",
+    "Remote_Work_Frequency": "int64",
+    "Team_Size": "int64",
+    "Training_Hours": "int64",
+    "Promotions": "int64",
+    "Employee_Satisfaction_Score": "float64"
+  },
+  "feature_contract_n": 17,
+  "feature_contract_features": [
+    "Department",
+    "Gender",
+    "Job_Title",
+    "Education_Level",
+    "Age",
+    "Years_At_Company",
+    "Performance_Score",
+    "Monthly_Salary",
+    "Work_Hours_Per_Week",
+    "Projects_Handled",
+    "Overtime_Hours",
+    "Sick_Days",
+    "Remote_Work_Frequency",
+    "Team_Size",
+    "Training_Hours",
+    "Promotions",
+    "Employee_Satisfaction_Score"
+  ],
+  "categorical_from_contract": [
+    "Department",
+    "Gender",
+    "Job_Title",
+    "Education_Level"
+  ],
+  "notebook_primary_features_source": "feature_contract['primary_model_features']",
+  "notebook_loads_holdout_labels_in_memory": true,
+  "notebook_uses_canonical_dev_loader": false,
+  "notebook_reads_raw_csv_directly": true,
+  "notebook_default_mode_is_review": true,
+  "notebook_applies_preprocessing_outputs": false,
+  "holdout_receipt_present": false,
+  "frozen_pipeline_present": false,
+  "imports": {
+    "catboost": {
+      "ok": true,
+      "version": "1.2.10"
+    },
+    "sklearn": {
+      "ok": true,
+      "version": "1.9.0"
+    },
+    "numpy": {
+      "ok": true,
+      "version": "2.5.2"
+    },
+    "pandas": {
+      "ok": true,
+      "version": "3.0.5"
+    },
+    "matplotlib": {
+      "ok": true,
+      "version": "3.11.1"
+    },
+    "seaborn": {
+      "ok": true,
+      "version": "0.13.2"
+    },
+    "yaml": {
+      "ok": true,
+      "version": "6.0.3"
+    },
+    "scipy": {
+      "ok": true,
+      "version": "1.18.0"
+    },
+    "src.evaluation.metrics": {
+      "ok": true,
+      "version": null
+    },
+    "src.evaluation.oof_validation": {
+      "ok": true,
+      "version": null
+    },
+    "src.models.catboost_model": {
+      "ok": true,
+      "version": null
+    },
+    "src.models.config": {
+      "ok": true,
+      "version": null
+    },
+    "src.models.runner": {
+      "ok": true,
+      "version": null
+    }
+  },
+  "version_vs_requirements": {
+    "catboost": {
+      "installed": "1.2.10",
+      "pinned": "1.2.10"
+    },
+    "sklearn": {
+      "installed": "1.9.0",
+      "pinned": "1.9.0"
+    },
+    "numpy": {
+      "installed": "2.5.2",
+      "pinned": "2.5.1"
+    },
+    "pandas": {
+      "installed": "3.0.5",
+      "pinned": "3.0.5"
+    },
+    "matplotlib": {
+      "installed": "3.11.1",
+      "pinned": "3.11.1"
+    },
+    "seaborn": {
+      "installed": "0.13.2",
+      "pinned": "0.13.2"
+    },
+    "yaml": {
+      "installed": "6.0.3",
+      "pinned": "6.0.3"
+    }
+  }
+}

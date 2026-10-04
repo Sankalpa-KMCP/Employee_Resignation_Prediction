@@ -1,0 +1,51 @@
+{
+  "fit_seconds_total": 5310.499319900002,
+  "config_candidates": [
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06",
+    "R07",
+    "R08",
+    "R09",
+    "R10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16",
+    "R17",
+    "R18",
+    "R19",
+    "R20"
+  ],
+  "inner_validation": {
+    "fraction": 0.15,
+    "stratified": true,
+    "metric": "average_precision",
+    "early_stopping_rounds": 200,
+    "refit_outer_train": true,
+    "selection_metric": "log_loss",
+    "repeat_seeds": [
+      42,
+      43,
+      44
+    ]
+  },
+  "fixed_params": {
+    "loss_function": "Logloss",
+    "eval_metric": "Logloss",
+    "random_seed": 42,
+    "thread_count": -1,
+    "verbose": false,
+    "allow_writing_files": false,
+    "boost_from_average": true
+  },
+  "final_dev_model_trees": 28,
+  "final_dev_model_candidate": "R09",
+  "catboost_task_type": "CPU",
+  "seed": 42
+}
