@@ -374,3 +374,6 @@ REVIEW_*
 
 # Personal study guide (not for the repository)
 docs/PROJECT_STUDY_GUIDE.md
+
+# FT-Transformer interactive demo predictor (weights + metadata)
+results/models/ft_transformer/demo_predictor/
