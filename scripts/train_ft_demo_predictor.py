@@ -22,6 +22,7 @@ from src.models.config import load_model_config
 from src.models.ft_transformer import FTTransformerAdapter
 
 CANDIDATE_ID = "FT01"
+MAX_EPOCHS = 40  # bounded for a CPU demo run; early stopping (patience 15) usually ends sooner
 OUTPUT_DIR = ROOT / "results/models/ft_transformer/demo_predictor"
 
 
@@ -38,7 +39,7 @@ def main():
     adapter = FTTransformerAdapter(config=config, candidate_id=CANDIDATE_ID,
                                    categorical_features=categorical)
     started = time.perf_counter()
-    adapter.fit(development[features], development.Resigned.astype(int))
+    adapter.fit(development[features], development.Resigned.astype(int), epochs=MAX_EPOCHS)
     seconds = time.perf_counter() - started
 
     adapter.save(OUTPUT_DIR)
@@ -47,6 +48,7 @@ def main():
         "candidate_id": CANDIDATE_ID,
         "rows_used": len(development),
         "selected_epoch_count": adapter.selected_epoch_count_,
+        "max_epochs_cap": MAX_EPOCHS,
         "fit_seconds": round(seconds, 1),
         "holdout_used": False,
         "deployment_model": False,
