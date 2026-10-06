@@ -377,3 +377,8 @@ docs/PROJECT_STUDY_GUIDE.md
 
 # FT-Transformer interactive demo predictor (weights + metadata)
 results/models/ft_transformer/demo_predictor/
+
+# IT25100565 CatBoost (Member 2): deliberate retraining runs stay local until adopted.
+# (data/processed/catboost/ and models/catboost/ are already
+#  covered by data/processed/* and models/*/*.)
+results/models/catboost/reruns/

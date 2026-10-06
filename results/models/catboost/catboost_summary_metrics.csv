@@ -1,5 +1,0 @@
-result_group,model_name,pr_auc,roc_auc,brier_score,log_loss,balanced_accuracy,precision,recall,f1,pred_pos_rate,ci_pr_auc,ci_roc_auc,verdict
-A. Nested-CV Raw CatBoost OOF,CatBoost OOF (Member 2 - Promoted Raw),0.102248,0.504103,0.090077,0.325286,0.5,0.0,0.0,0.0,0.0,"[0.099314, 0.105658]","[0.497330, 0.510825]","Promoted Audited GBDT: calibrated base rate, well-conditioned probability scale"
-B. Cross-Fitted Calibrated CatBoost OOF,CatBoost OOF (Member 2 - Promoted Calibrated),0.102264,0.504132,0.090077,0.325285,0.5,0.0,0.0,0.0,0.0,Platt scaled (ranking unchanged),Platt scaled (ranking unchanged),Platt scaling cross-fitted across folds preserves well-calibrated baseline
-D. Baselines,Dummy Prior,0.100085,0.499917,0.09008,0.325303,0.5,0.0,0.0,0.0,0.0,0.100085 +/- 0.000034,0.499917 +/- 0.000000,Constant probability prior = 0.1001 (Brier lower bound)
-D. Baselines,Logistic Regression,0.099615,0.498416,0.090135,0.325613,0.5,0.0,0.0,0.0,0.0,0.099615 +/- 0.001541,0.498416 +/- 0.004460,Linear baseline: chance discrimination (no linear signal)

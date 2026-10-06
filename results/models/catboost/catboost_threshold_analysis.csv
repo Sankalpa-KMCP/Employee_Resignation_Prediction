@@ -1,7 +1,0 @@
-capacity_target,capacity_fraction,flagged_count,probability_threshold,true_positives_captured,false_positives,precision,precision_95_ci,recall,f1_score,expected_tp_random,lift_vs_prevalence,operational_verdict
-Top 1%,0.01,800,0.10572,78,722,0.0975,"[0.0769, 0.1181]",0.00974,0.01771,80.1,0.974,Lift = 0.97 (indistinguishable from random prior 0.1001)
-Top 2%,0.02,1600,0.10458,168,1432,0.105,"[0.0900, 0.1200]",0.02098,0.03497,160.2,1.049,Lift = 1.05 (indistinguishable from random prior 0.1001)
-Top 5%,0.05,4000,0.10323,442,3558,0.1105,"[0.1008, 0.1202]",0.05519,0.07362,400.4,1.104,Lift = 1.10 (indistinguishable from random prior 0.1001)
-Top 10%,0.1,8000,0.10226,874,7126,0.10925,"[0.1024, 0.1161]",0.10914,0.1092,800.8,1.091,Lift = 1.09 (indistinguishable from random prior 0.1001)
-Top 20%,0.2,16000,0.10134,1660,14340,0.10375,"[0.0990, 0.1085]",0.20729,0.13829,1601.6,1.036,Lift = 1.04 (indistinguishable from random prior 0.1001)
-Top 50%,0.5,40000,0.10019,4026,35974,0.10065,"[0.0977, 0.1036]",0.50275,0.16772,4004.0,1.005,Lift = 1.01 (indistinguishable from random prior 0.1001)

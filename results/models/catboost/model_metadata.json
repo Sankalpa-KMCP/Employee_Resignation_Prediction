@@ -1,0 +1,195 @@
+{
+  "model_name": "CatBoost Classifier (Member 2, IT25100565)",
+  "created_utc": "2026-10-05T17:42:21+00:00",
+  "model_file": "models/catboost/catboost_resignation_model.cbm",
+  "model_class": "catboost.CatBoostClassifier",
+  "task": "binary classification (Resigned: 1 = resigned)",
+  "preprocessing_variant": "P1_baseline",
+  "feature_order": [
+    "Department",
+    "Gender",
+    "Job_Title",
+    "Education_Level",
+    "Age",
+    "Years_At_Company",
+    "Performance_Score",
+    "Monthly_Salary",
+    "Work_Hours_Per_Week",
+    "Projects_Handled",
+    "Overtime_Hours",
+    "Sick_Days",
+    "Remote_Work_Frequency",
+    "Team_Size",
+    "Training_Hours",
+    "Promotions",
+    "Employee_Satisfaction_Score"
+  ],
+  "cat_features": [
+    "Department",
+    "Gender",
+    "Job_Title",
+    "Education_Level"
+  ],
+  "allowed_categories": {
+    "Department": [
+      "Customer Support",
+      "Engineering",
+      "Finance",
+      "HR",
+      "IT",
+      "Legal",
+      "Marketing",
+      "Operations",
+      "Sales"
+    ],
+    "Gender": [
+      "Female",
+      "Male",
+      "Other"
+    ],
+    "Job_Title": [
+      "Analyst",
+      "Consultant",
+      "Developer",
+      "Engineer",
+      "Manager",
+      "Specialist",
+      "Technician"
+    ],
+    "Education_Level": [
+      "High School",
+      "Bachelor",
+      "Master",
+      "PhD"
+    ]
+  },
+  "numeric_ranges_development": {
+    "Age": {
+      "min": 22.0,
+      "max": 60.0
+    },
+    "Years_At_Company": {
+      "min": 0.0,
+      "max": 10.0
+    },
+    "Performance_Score": {
+      "min": 1.0,
+      "max": 5.0
+    },
+    "Monthly_Salary": {
+      "min": 3850.0,
+      "max": 9000.0
+    },
+    "Work_Hours_Per_Week": {
+      "min": 30.0,
+      "max": 60.0
+    },
+    "Projects_Handled": {
+      "min": 0.0,
+      "max": 49.0
+    },
+    "Overtime_Hours": {
+      "min": 0.0,
+      "max": 29.0
+    },
+    "Sick_Days": {
+      "min": 0.0,
+      "max": 14.0
+    },
+    "Remote_Work_Frequency": {
+      "min": 0.0,
+      "max": 100.0
+    },
+    "Team_Size": {
+      "min": 1.0,
+      "max": 19.0
+    },
+    "Training_Hours": {
+      "min": 0.0,
+      "max": 99.0
+    },
+    "Promotions": {
+      "min": 0.0,
+      "max": 2.0
+    },
+    "Employee_Satisfaction_Score": {
+      "min": 1.0,
+      "max": 5.0
+    }
+  },
+  "discrete_numeric_values": {
+    "Performance_Score": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "Remote_Work_Frequency": [
+      0,
+      25,
+      50,
+      75,
+      100
+    ],
+    "Promotions": [
+      0,
+      1,
+      2
+    ]
+  },
+  "selected_config": "B21",
+  "params": {
+    "loss_function": "Logloss",
+    "eval_metric": "Logloss",
+    "boost_from_average": true,
+    "iterations": 10,
+    "random_seed": 42,
+    "allow_writing_files": false,
+    "bagging_temperature": 0.1481,
+    "border_count": 64,
+    "depth": 6,
+    "l2_leaf_reg": 7.9506,
+    "learning_rate": 0.0318,
+    "one_hot_max_size": 4,
+    "random_strength": 0.814
+  },
+  "tree_count": 10,
+  "selection": {
+    "stage_a_rule": "replace P1 only if per-fold PR-AUC gain is significant (one-sided paired t-test, p < 0.05)",
+    "stage_b_rule": "lowest pooled OOF log-loss among configs within 1 SE of best mean PR-AUC",
+    "nested_rule": "lowest inner-validation log-loss inside each outer fold",
+    "configurations_evaluated": 30
+  },
+  "threshold": {
+    "name": "Top-10% HR budget (OOF)",
+    "value": 0.105574047903538,
+    "chosen_on": "development nested OOF predictions only",
+    "all_candidates": {
+      "0.50 default": 0.5,
+      "Base rate": 0.1001,
+      "F1-optimal (OOF)": 0.0808754381119945,
+      "Top-10% HR budget (OOF)": 0.105574047903538
+    }
+  },
+  "base_rate_development": 0.1001,
+  "nested_cv": {
+    "pooled_average_precision": 0.0998602973846157,
+    "pooled_roc_auc": 0.49960542794381974,
+    "pooled_brier_score": 0.09010151924064533,
+    "cv_ap_mean": 0.1001797397621567,
+    "cv_ap_sd": 0.0020809228744036686
+  },
+  "formal_holdout_accessed": false,
+  "data": {
+    "processed_sha256": "9e0bd42658bf0faeffc276e9307522b04699cf51e04cfeaaa67b63e2e4f5b2c1",
+    "split_registry_sha256": "87edc10ac38f2435c49beddbf412f9de293e3e0622558b27ffbdf31fadd7ea41"
+  },
+  "versions": {
+    "python": "3.13.16",
+    "catboost": "1.2.10",
+    "scikit_learn": "1.9.1",
+    "pandas": "3.0.5",
+    "numpy": "2.5.3"
+  }
+}

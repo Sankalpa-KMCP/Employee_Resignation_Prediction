@@ -1,5 +1,0 @@
-policy,decision_threshold,flagged_count,flagged_rate,true_negatives_tn,false_positives_fp,false_negatives_fn,true_positives_tp,precision,recall,f1_score,balanced_accuracy,operational_description
-Default 0.50 Cutoff,0.5,0,0.0,71992,0,8008,0,0.0,0.0,0.0,0.5,Standard naive classification cutoff (unadjusted for class imbalance)
-Base-Rate Prevalence,0.1001,42088,0.5261,34144,37848,3768,4240,0.1007,0.5295,0.1693,0.5019,Flags employees with predicted risk above company prevalence (0.1001)
-Top 10% Budget Capacity,0.10226,8000,0.1,64866,7126,7134,874,0.1092,0.1091,0.1092,0.5051,"Flags highest-risk 10% of employees (8,000 capacity-constrained cohort)"
-Top 20% Budget Capacity,0.10134,16000,0.2,57652,14340,6348,1660,0.1037,0.2073,0.1383,0.5041,"Flags highest-risk 20% of employees (16,000 capacity-constrained cohort)"

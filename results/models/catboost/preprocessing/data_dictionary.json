@@ -1,0 +1,162 @@
+{
+  "created_utc": "2026-10-06T01:58:15+00:00",
+  "created_by": "IT25100565_Preprocessing.ipynb",
+  "raw_file": "data/raw/Extended_Employee_Performance_and_Productivity_Data.csv",
+  "raw_sha256": "2b1e07caf58e7678a780d428c1a8893a95d9c4a556134fd8e7368db5ed596cdb",
+  "processed_file": "data/processed/catboost/employee_resignation_clean.csv",
+  "processed_sha256": "9e0bd42658bf0faeffc276e9307522b04699cf51e04cfeaaa67b63e2e4f5b2c1",
+  "rows": 100000,
+  "id_column": "Employee_ID",
+  "target": {
+    "column": "Resigned",
+    "positive_class": 1,
+    "mapping": {
+      "False": 0,
+      "True": 1
+    },
+    "positive_rate": 0.1001
+  },
+  "dropped_columns": {
+    "Hire_Date": "Redundant with Years_At_Company (r = 0.995); generation artefact."
+  },
+  "categorical_features": {
+    "Department": [
+      "Customer Support",
+      "Engineering",
+      "Finance",
+      "HR",
+      "IT",
+      "Legal",
+      "Marketing",
+      "Operations",
+      "Sales"
+    ],
+    "Gender": [
+      "Female",
+      "Male",
+      "Other"
+    ],
+    "Job_Title": [
+      "Analyst",
+      "Consultant",
+      "Developer",
+      "Engineer",
+      "Manager",
+      "Specialist",
+      "Technician"
+    ],
+    "Education_Level": [
+      "High School",
+      "Bachelor",
+      "Master",
+      "PhD"
+    ]
+  },
+  "numeric_features": {
+    "Age": {
+      "dtype": "int64",
+      "min": 22.0,
+      "max": 60.0
+    },
+    "Years_At_Company": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 10.0
+    },
+    "Performance_Score": {
+      "dtype": "int64",
+      "min": 1.0,
+      "max": 5.0,
+      "allowed_values": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "Monthly_Salary": {
+      "dtype": "float64",
+      "min": 3850.0,
+      "max": 9000.0
+    },
+    "Work_Hours_Per_Week": {
+      "dtype": "int64",
+      "min": 30.0,
+      "max": 60.0
+    },
+    "Projects_Handled": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 49.0
+    },
+    "Overtime_Hours": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 29.0
+    },
+    "Sick_Days": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 14.0
+    },
+    "Remote_Work_Frequency": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 100.0,
+      "allowed_values": [
+        0,
+        25,
+        50,
+        75,
+        100
+      ]
+    },
+    "Team_Size": {
+      "dtype": "int64",
+      "min": 1.0,
+      "max": 19.0
+    },
+    "Training_Hours": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 99.0
+    },
+    "Promotions": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 2.0,
+      "allowed_values": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Employee_Satisfaction_Score": {
+      "dtype": "float64",
+      "min": 1.0,
+      "max": 5.0
+    }
+  },
+  "feature_order": [
+    "Department",
+    "Gender",
+    "Job_Title",
+    "Education_Level",
+    "Age",
+    "Years_At_Company",
+    "Performance_Score",
+    "Monthly_Salary",
+    "Work_Hours_Per_Week",
+    "Projects_Handled",
+    "Overtime_Hours",
+    "Sick_Days",
+    "Remote_Work_Frequency",
+    "Team_Size",
+    "Training_Hours",
+    "Promotions",
+    "Employee_Satisfaction_Score"
+  ],
+  "row_removals": 0,
+  "transformations_learned_from_data": "none"
+}

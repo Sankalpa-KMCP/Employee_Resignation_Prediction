@@ -1,6 +1,0 @@
-fold,candidate_id,selected_trees,selection_metric,n_inner_splits,depth,learning_rate,l2_leaf_reg,auto_class_weights,boost_from_average,eval_metric
-1,R02,4,log_loss,3,8,0.05,14.49,,True,Logloss
-2,R07,15,log_loss,3,8,0.03,4.94,,True,Logloss
-3,R09,1,log_loss,3,7,0.08,15.44,,True,Logloss
-4,R20,57,log_loss,3,7,0.03,4.61,,True,Logloss
-5,R12,31,log_loss,3,6,0.05,6.84,,True,Logloss

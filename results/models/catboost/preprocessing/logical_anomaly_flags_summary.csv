@@ -1,0 +1,4 @@
+anomaly,rows_flagged,percent_of_data,resign_rate_flagged_%,resign_rate_not_flagged_%
+hire_age_under_18,3784,3.78,9.65,10.02
+promotion_with_zero_tenure,6764,6.76,9.49,10.05
+overtime_with_under_40h_week,31397,31.4,10.08,9.98

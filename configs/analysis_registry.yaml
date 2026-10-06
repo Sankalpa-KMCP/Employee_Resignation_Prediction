@@ -9,8 +9,11 @@ models:
   CatBoost:
     model_name: CatBoost Classifier
     oof_path: results/models/catboost/oof_predictions.csv
-    protocol: strict nested candidate selection
+    protocol: IT25100565 strict nested selection of 26 candidates per outer fold by inner
+      log-loss, with outer-training refit; native cat_features
     tuning_complete: true
+    evaluation_complete: true
+    candidate_search_executed: true
   XGBoost:
     oof_path: results/models/xgboost/oof_predictions.csv
     protocol: Member 3 primary P1 one-hot; strict nested 8-candidate selection; P2/P3

@@ -1,7 +1,7 @@
 outcome,employee_count,percentage_of_development
-correct_by_all_six,20469,25.58625
-wrong_by_all_six,2368,2.96
-all_six_predict_negative,22837,28.54625
+correct_by_all_six,25787,32.23375
+wrong_by_all_six,2947,3.68375
+all_six_predict_negative,28734,35.9175
 all_six_predict_positive,0,0.0
-at_least_one_model_disagreement,57163,71.45375
-maximum_disagreement_three_vs_three,7221,9.02625
+at_least_one_model_disagreement,51266,64.0825
+maximum_disagreement_three_vs_three,1864,2.33
